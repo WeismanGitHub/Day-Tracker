@@ -1,14 +1,17 @@
 ﻿namespace Server.Database;
 
+using System;
 using Microsoft.EntityFrameworkCore;
 using Server.Database.Models;
-using System;
-
 
 public class DayTrackerContext : DbContext
 {
     public DbSet<User> Users { get; set; }
-	public DbSet<Chart> Charts { get; set; }
+    public DbSet<Chart> Charts { get; set; }
+
+    public DbSet<CounterEntry> CounterEntries { get; set; }
+    public DbSet<CheckmarkEntry> CheckmarkEntries { get; set; }
+    public DbSet<ScaleEntry> ScaleEntries { get; set; }
 
     public string DbPath { get; }
 
