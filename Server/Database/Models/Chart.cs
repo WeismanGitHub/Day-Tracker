@@ -19,4 +19,6 @@ public class Chart {
 	public required ChartType Type { get; set; }
 	[Required]
 	public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+	public required User User { get; set; }
 }

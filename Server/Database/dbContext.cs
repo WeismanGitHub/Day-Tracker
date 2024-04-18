@@ -8,6 +8,7 @@ using System;
 public class DayTrackerContext : DbContext
 {
     public DbSet<User> Users { get; set; }
+	public DbSet<Chart> Charts { get; set; }
 
     public string DbPath { get; }
 
