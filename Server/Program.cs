@@ -1,29 +1,38 @@
-var builder = WebApplication.CreateBuilder(args);
+using Microsoft.OpenApi.Models;
+using Server.Api;
+using Server;
 
-// Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.AddEnvironmentVariables();
+var config = builder.Configuration.Get<Configuration>()!;
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton(config);
+builder.Services.AddSwaggerGen(x =>
+	x.SwaggerDoc(
+		"v1",
+		new OpenApiInfo() {
+			Title = "Day Tracker Api",
+			Description = "placeholder",
+			Version = "1.0"
+		}
+	)
+);
 
 var app = builder.Build();
 
-app.UseDefaultFiles();
-app.UseStaticFiles();
-
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
-app.UseAuthorization();
-
-app.MapControllers();
+app.UseSecurityHeaders(SecurityHeadersPolicy.Create());
+app.UseHsts();
 
 app.MapFallbackToFile("/index.html");
+app.UseStaticFiles();
+app.MapControllers();
 
 app.Run();
