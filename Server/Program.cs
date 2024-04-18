@@ -8,21 +8,23 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSingleton(config);
 builder.Services.AddSwaggerGen(x =>
-	x.SwaggerDoc(
-		"v1",
-		new OpenApiInfo() {
-			Title = "Day Tracker Api",
-			Description = "placeholder",
-			Version = "1.0"
-		}
-	)
+    x.SwaggerDoc(
+        "v1",
+        new OpenApiInfo()
+        {
+            Title = "Day Tracker Api",
+            Description = "placeholder",
+            Version = "1.0"
+        }
+    )
 );
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment()) {
-	app.UseSwagger();
-	app.UseSwaggerUI();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
