@@ -27,4 +27,5 @@ public class Chart
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public required User User { get; set; }
+    public required IList<EntryBase> Entries { get; set; }
 }

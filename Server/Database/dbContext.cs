@@ -22,6 +22,12 @@ public class DayTrackerContext : DbContext
         DbPath = Path.Join(path, "daytracker.db");
     }
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>().HasMany(u => u.Charts).WithOne(c => c.User);
+        modelBuilder.Entity<Chart>().HasMany(c => c.Entries).WithOne(e => e.Chart);
+    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder options) =>
         options.UseSqlite($"Data Source={DbPath}");
 }
