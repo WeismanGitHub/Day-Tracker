@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Day_Tracker.Server.Controllers {
+namespace Server.Controllers {
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase {
