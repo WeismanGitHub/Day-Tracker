@@ -1,6 +1,4 @@
 using Microsoft.OpenApi.Models;
-using Server.Api;
-using Server;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
