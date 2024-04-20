@@ -6,6 +6,7 @@
 .env.development
 .env.production
 .env
+wwwroot
 
 # User-specific files
 *.rsuser
