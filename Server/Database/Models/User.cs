@@ -5,7 +5,7 @@ namespace Server.Database.Models;
 public class User
 {
     [Key, Required]
-    public required Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required]
     public required string Name { get; set; }
@@ -16,5 +16,5 @@ public class User
     [Required]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public required IList<Chart> Charts { get; set; }
+    public IList<Chart> Charts { get; set; } = [];
 }

@@ -8,10 +8,7 @@ public class DayTrackerContext : DbContext
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Chart> Charts { get; set; }
-
-    public DbSet<CounterEntry> CounterEntries { get; set; }
-    public DbSet<CheckmarkEntry> CheckmarkEntries { get; set; }
-    public DbSet<ScaleEntry> ScaleEntries { get; set; }
+    public DbSet<Entry> Entries { get; set; }
 
     public string DbPath { get; }
 
@@ -24,10 +21,19 @@ public class DayTrackerContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder
+            .Entity<Entry>()
+            .HasDiscriminator<string>("EntryType")
+            .HasValue<CounterEntry>("Counter")
+            .HasValue<ScaleEntry>("Scale")
+            .HasValue<CheckmarkEntry>("Checkmark");
+
         modelBuilder.Entity<User>().HasMany(u => u.Charts).WithOne(c => c.User);
         modelBuilder.Entity<Chart>().HasMany(c => c.Entries).WithOne(e => e.Chart);
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder options) =>
+    protected override void OnConfiguring(DbContextOptionsBuilder options)
+    {
         options.UseSqlite($"Data Source={DbPath}");
+    }
 }

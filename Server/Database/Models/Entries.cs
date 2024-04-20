@@ -2,32 +2,32 @@
 
 namespace Server.Database.Models;
 
-public class EntryBase
+public abstract class Entry
 {
     [Key, Required]
-    public required Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required]
     public required Guid ChartId { get; set; }
 
     [Required]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public required Chart Chart { get; set; }
+    public Chart Chart { get; set; }
 }
 
-public class CounterEntry : EntryBase
+public class CounterEntry : Entry
 {
     [Required]
     public required uint Counter { get; set; }
 }
 
-public class ScaleEntry : EntryBase
+public class ScaleEntry : Entry
 {
     [Required]
     public required uint Rating { get; set; }
 }
 
-public class CheckmarkEntry : EntryBase
+public class CheckmarkEntry : Entry
 {
     [Required]
     public required bool Checked { get; set; }

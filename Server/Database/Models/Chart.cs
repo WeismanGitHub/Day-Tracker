@@ -12,7 +12,7 @@ public enum ChartType
 public class Chart
 {
     [Key, Required]
-    public required Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.NewGuid();
 
     [Required]
     public required Guid UserId { get; set; }
@@ -26,6 +26,6 @@ public class Chart
     [Required]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public required User User { get; set; }
-    public required IList<EntryBase> Entries { get; set; }
+    public User User { get; set; }
+    public IList<Entry> Entries { get; set; } = [];
 }
