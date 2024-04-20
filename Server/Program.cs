@@ -1,12 +1,15 @@
 using Microsoft.OpenApi.Models;
+using Server.Database.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
 var config = builder.Configuration.Get<Configuration>()!;
 
+builder.Services.AddSingleton(config);
+builder.Services.AddScoped<UserService>();
+
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSingleton(config);
 builder.Services.AddSwaggerGen(x =>
     x.SwaggerDoc(
         "v1",
