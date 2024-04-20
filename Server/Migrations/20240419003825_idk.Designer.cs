@@ -11,8 +11,8 @@ using Server.Database;
 namespace Server.Migrations
 {
     [DbContext(typeof(DayTrackerContext))]
-    [Migration("20240418053156_FinishRelationships")]
-    partial class FinishRelationships
+    [Migration("20240419003825_idk")]
+    partial class idk
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -46,7 +46,7 @@ namespace Server.Migrations
                     b.ToTable("Charts");
                 });
 
-            modelBuilder.Entity("Server.Database.Models.EntryBase", b =>
+            modelBuilder.Entity("Server.Database.Models.Entry", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,18 +58,18 @@ namespace Server.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("Discriminator")
+                    b.Property<string>("EntryType")
                         .IsRequired()
-                        .HasMaxLength(21)
+                        .HasMaxLength(13)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ChartId");
 
-                    b.ToTable("EntryBase");
+                    b.ToTable("Entries");
 
-                    b.HasDiscriminator<string>("Discriminator").HasValue("EntryBase");
+                    b.HasDiscriminator<string>("EntryType").HasValue("Entry");
 
                     b.UseTphMappingStrategy();
                 });
@@ -98,32 +98,32 @@ namespace Server.Migrations
 
             modelBuilder.Entity("Server.Database.Models.CheckmarkEntry", b =>
                 {
-                    b.HasBaseType("Server.Database.Models.EntryBase");
+                    b.HasBaseType("Server.Database.Models.Entry");
 
                     b.Property<bool>("Checked")
                         .HasColumnType("INTEGER");
 
-                    b.HasDiscriminator().HasValue("CheckmarkEntry");
+                    b.HasDiscriminator().HasValue("Checkmark");
                 });
 
             modelBuilder.Entity("Server.Database.Models.CounterEntry", b =>
                 {
-                    b.HasBaseType("Server.Database.Models.EntryBase");
+                    b.HasBaseType("Server.Database.Models.Entry");
 
                     b.Property<uint>("Counter")
                         .HasColumnType("INTEGER");
 
-                    b.HasDiscriminator().HasValue("CounterEntry");
+                    b.HasDiscriminator().HasValue("Counter");
                 });
 
             modelBuilder.Entity("Server.Database.Models.ScaleEntry", b =>
                 {
-                    b.HasBaseType("Server.Database.Models.EntryBase");
+                    b.HasBaseType("Server.Database.Models.Entry");
 
                     b.Property<uint>("Rating")
                         .HasColumnType("INTEGER");
 
-                    b.HasDiscriminator().HasValue("ScaleEntry");
+                    b.HasDiscriminator().HasValue("Scale");
                 });
 
             modelBuilder.Entity("Server.Database.Models.Chart", b =>
@@ -137,7 +137,7 @@ namespace Server.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Server.Database.Models.EntryBase", b =>
+            modelBuilder.Entity("Server.Database.Models.Entry", b =>
                 {
                     b.HasOne("Server.Database.Models.Chart", "Chart")
                         .WithMany("Entries")

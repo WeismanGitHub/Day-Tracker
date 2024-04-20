@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Server.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class idk : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -47,59 +47,22 @@ namespace Server.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CheckmarkEntries",
+                name: "Entries",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "TEXT", nullable: false),
                     ChartId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Checked = table.Column<bool>(type: "INTEGER", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    EntryType = table.Column<string>(type: "TEXT", maxLength: 13, nullable: false),
+                    Checked = table.Column<bool>(type: "INTEGER", nullable: true),
+                    Counter = table.Column<uint>(type: "INTEGER", nullable: true),
+                    Rating = table.Column<uint>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CheckmarkEntries", x => x.Id);
+                    table.PrimaryKey("PK_Entries", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CheckmarkEntries_Charts_ChartId",
-                        column: x => x.ChartId,
-                        principalTable: "Charts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CounterEntries",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ChartId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Counter = table.Column<uint>(type: "INTEGER", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CounterEntries", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CounterEntries_Charts_ChartId",
-                        column: x => x.ChartId,
-                        principalTable: "Charts",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ScaleEntries",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    ChartId = table.Column<Guid>(type: "TEXT", nullable: false),
-                    Rating = table.Column<uint>(type: "INTEGER", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "TEXT", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ScaleEntries", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_ScaleEntries_Charts_ChartId",
+                        name: "FK_Entries_Charts_ChartId",
                         column: x => x.ChartId,
                         principalTable: "Charts",
                         principalColumn: "Id",
@@ -112,18 +75,8 @@ namespace Server.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_CheckmarkEntries_ChartId",
-                table: "CheckmarkEntries",
-                column: "ChartId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CounterEntries_ChartId",
-                table: "CounterEntries",
-                column: "ChartId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_ScaleEntries_ChartId",
-                table: "ScaleEntries",
+                name: "IX_Entries_ChartId",
+                table: "Entries",
                 column: "ChartId");
         }
 
@@ -131,13 +84,7 @@ namespace Server.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "CheckmarkEntries");
-
-            migrationBuilder.DropTable(
-                name: "CounterEntries");
-
-            migrationBuilder.DropTable(
-                name: "ScaleEntries");
+                name: "Entries");
 
             migrationBuilder.DropTable(
                 name: "Charts");
