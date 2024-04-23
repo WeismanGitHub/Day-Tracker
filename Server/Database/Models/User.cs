@@ -9,7 +9,7 @@ public class User
     [Key, Required]
     public Guid Id { get; set; } = Guid.NewGuid();
 
-    [Required]
+    [Required, MaxLength(50), MinLength(1)]
     public required string Name { get; set; }
 
     [Required]

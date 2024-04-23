@@ -17,7 +17,7 @@ public class Chart
     [Required]
     public required Guid UserId { get; set; }
 
-    [Required]
+    [Required, MaxLength(50), MinLength(1)]
     public required string Name { get; set; }
 
     [Required]
