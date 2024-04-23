@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Server.Database.Models;
 
+[Index(nameof(Name), IsUnique = true)]
 public class User
 {
     [Key, Required]
