@@ -7,7 +7,7 @@ var config = builder.Configuration.Get<Configuration>()!;
 builder.Services.AddSingleton(config);
 builder.Services.AddScoped<UserService>();
 
-Services.Add(builder);
+Services.Add(builder, config);
 
 var app = builder.Build();
 
