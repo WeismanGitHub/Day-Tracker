@@ -21,17 +21,8 @@ void AddServices()
     builder.Services.AddSingleton(config);
     builder.Services.AddScoped<UserService>();
 
-    builder.Services.AddSwaggerGen(x =>
-        x.SwaggerDoc(
-            "v1",
-            new OpenApiInfo()
-            {
-                Title = "Day Tracker Api",
-                Description = "placeholder",
-                Version = "1.0"
-            }
-        )
-    );
+    builder.Services.AddControllers();
+
     builder
         .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
@@ -48,6 +39,7 @@ void AddServices()
                 )
             };
         });
+
     builder.Services.AddProblemDetails(options =>
     {
         options.IncludeExceptionDetails = (ctx, ex) => builder.Environment.IsDevelopment();
@@ -66,6 +58,19 @@ void AddServices()
             Status = StatusCodes.Status500InternalServerError,
         });
     });
+
+    builder.Services.AddEndpointsApiExplorer();
+    builder.Services.AddSwaggerGen(x =>
+        x.SwaggerDoc(
+            "v1",
+            new OpenApiInfo()
+            {
+                Title = "Day Tracker Api",
+                Description = "placeholder",
+                Version = "1.0"
+            }
+        )
+    );
 }
 
 void SetMiddleware()
