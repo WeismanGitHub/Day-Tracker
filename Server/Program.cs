@@ -1,4 +1,5 @@
 using System.Text;
+using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -23,7 +24,6 @@ builder.Services.AddSwaggerGen(x =>
         }
     )
 );
-
 builder
     .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
@@ -38,6 +38,24 @@ builder
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.JWT.Secret))
         };
     });
+builder.Services.AddProblemDetails(options =>
+{
+    options.IncludeExceptionDetails = (ctx, ex) => builder.Environment.IsDevelopment();
+
+    options.Map<UsernameTakenException>(ex => new ProblemDetails()
+    {
+        Title = "Conflict",
+        Detail = ex.Message,
+        Status = StatusCodes.Status409Conflict,
+    });
+
+    options.Map<Exception>(ex => new ProblemDetails()
+    {
+        Title = "Internal Server Error",
+        Detail = ex.Message,
+        Status = StatusCodes.Status500InternalServerError,
+    });
+});
 
 var app = builder.Build();
 
@@ -46,6 +64,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseProblemDetails();
 
 app.UseHttpsRedirection();
 app.UseHsts();
