@@ -88,20 +88,17 @@ void SetMiddleware()
     app.Use(
         async (context, next) =>
         {
-            //     fetchMetadata({
-            //allowedFetchSites: ['same-origin', 'same-site', 'none'],
-            //       disallowedNavigationRequests: ['frame', 'iframe'],
-            //       errorStatusCode: 403,
-            //       allowedPaths: [],
-            //       onError: (_req, res, _next, options) => {
-            //		res.statusCode = options.errorStatusCode;
-            //		res.end();
-            //	},
-            //   })
+            List<string> fetchSites = ["same-origin", "same-site", "none"];
+            List<string> disallowedDestinations = ["object", "embed"];
+            List<string> modes = ["navigate"];
 
-            List<string> allowedFetchSites = ["same-origin", "same-site", "none"];
+            var headers = context.Request.Headers;
 
-            if (allowedFetchSites.Contains(context.Request.Headers["Sec-Fetch-Site"]))
+            if (
+                !fetchSites.Contains(headers["Sec-Fetch-Site"])
+                || disallowedDestinations.Contains(headers["Sec-Fetch-Dest"])
+                || !modes.Contains(headers["Sec-Fetch-Mode"])
+            )
             {
                 context.Response.StatusCode = 403;
 
@@ -110,10 +107,13 @@ void SetMiddleware()
                     {
                         Title = "Forbidden",
                         Status = 403,
-                        Detail = "Invalid fetch metadata header(s)"
+                        Detail = "Invalid fetch metadata"
                     }
                 );
+
+                return;
             }
+
             await next(context);
         }
     );
