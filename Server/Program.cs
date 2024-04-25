@@ -8,8 +8,14 @@ using Server.Database.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
-var config = builder.Configuration.Get<Configuration>()!;
+var config = builder.Configuration.GetSection("Config").Get<Configuration>();
 
+if (config == null)
+{
+    throw new Exception("Invalid config.");
+}
+
+Console.WriteLine(config.Jwt.ValidIssuer);
 AddServices();
 var app = builder.Build();
 SetMiddleware();
@@ -32,10 +38,10 @@ void AddServices()
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateIssuerSigningKey = true,
-                ValidIssuer = config.JWT.ValidIssuer,
-                ValidAudience = config.JWT.ValidAudience,
+                ValidIssuer = config.Jwt.ValidIssuer,
+                ValidAudience = config.Jwt.ValidAudience,
                 IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(config.JWT.Secret)
+                    Encoding.UTF8.GetBytes(config.Jwt.Secret)
                 )
             };
         });
