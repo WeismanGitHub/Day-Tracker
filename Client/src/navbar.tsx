@@ -50,7 +50,7 @@ export default function NavBar() {
                                     href="https://github.com/WeismanGitHub/Day-Tracker"
                                     style={{ color: 'white' }}
                                 >
-                                    Github
+                                    GitHub
                                 </a>
                             </li>
                         </ul>
