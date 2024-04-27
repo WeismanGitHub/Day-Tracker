@@ -1,13 +1,11 @@
-﻿namespace Server;
+﻿using FluentValidation.Results;
 
-public class CustomException : Exception
-{
-    public CustomException(string message)
-        : base(message) { }
-}
+namespace Server;
 
-public class UsernameTakenException : CustomException
-{
-    public UsernameTakenException(string message = "This username has been taken.")
-        : base(message) { }
-}
+public class CustomException(string message) : Exception(message) { }
+
+public class UsernameTakenException(string message = "This username has been taken.")
+    : CustomException(message) { }
+
+public class ValidationException(ValidationResult res)
+    : CustomException(res.Errors.First().ErrorMessage) { }
