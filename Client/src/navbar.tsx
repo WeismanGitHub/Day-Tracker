@@ -12,7 +12,7 @@ export default function NavBar() {
                 <div className="container-fluid">
                     <a className="navbar-brand" href="/">
                         <img src="/icon.svg" width="50" height="50" alt="icon" className="me-2" />
-                        <span className="d-block d-sm-inline-block test">Day Tracker</span>
+                        <span className="d-block d-sm-inline-block">Day Tracker</span>
                     </a>
                     <button
                         className="navbar-toggler"
