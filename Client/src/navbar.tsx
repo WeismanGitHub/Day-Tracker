@@ -16,7 +16,7 @@ export default function NavBar() {
                             width="50"
                             height="50"
                             alt="icon"
-                            className="me-2 bg-white"
+                            className="me-2"
                         />
                         <span className="d-block d-sm-inline-block">Day Tracker</span>
                     </a>
@@ -35,7 +35,7 @@ export default function NavBar() {
                         id="navbarNav"
                     >
                         <ul className="navbar-nav d-flex justify-content-center align-items-center">
-                            <li className={`m-1 w-75 ${isNavOpen ? ' mb-2' : ''}`}>
+                            <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
                                 <a
                                     className="nav-item nav-link active w-100"
                                     href="/about"
@@ -44,7 +44,7 @@ export default function NavBar() {
                                     About
                                 </a>
                             </li>
-                            <li className={`m-1 w-75 ${isNavOpen ? ' mb-2' : ''}`}>
+                            <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
                                 <a
                                     className="nav-item nav-link active w-100"
                                     href="https://github.com/WeismanGitHub/Day-Tracker"
