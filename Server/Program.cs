@@ -96,7 +96,7 @@ void SetMiddleware()
         {
             List<string> fetchSites = ["same-origin", "same-site", "none"];
             List<string> disallowedDestinations = ["object", "embed"];
-            List<string> modes = ["navigate"];
+            List<string> modes = ["navigate", "same-origin", "cors", "no-cors"];
 
             var headers = context.Request.Headers;
 
