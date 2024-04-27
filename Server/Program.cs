@@ -1,8 +1,5 @@
-using System.Text;
 using Hellang.Middleware.ProblemDetails;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Server.Database.Services;
 
@@ -15,7 +12,6 @@ if (config == null)
     throw new Exception("Invalid config.");
 }
 
-Console.WriteLine(config.Jwt.ValidIssuer);
 AddServices();
 var app = builder.Build();
 SetMiddleware();
@@ -28,23 +24,24 @@ void AddServices()
     builder.Services.AddScoped<UserService>();
 
     builder.Services.AddControllers();
-
-    builder
-        .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = config.Jwt.ValidIssuer,
-                ValidAudience = config.Jwt.ValidAudience,
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(config.Jwt.Secret)
-                )
-            };
-        });
+    builder.Services.AddAuthentication().AddJwtBearer();
+    builder.Services.AddAuthorization();
+    //builder
+    //    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    //    .AddJwtBearer(options =>
+    //    {
+    //        options.TokenValidationParameters = new TokenValidationParameters
+    //        {
+    //            ValidateIssuer = true,
+    //            ValidateAudience = true,
+    //            ValidateIssuerSigningKey = true,
+    //            ValidIssuer = config.Jwt.ValidIssuer,
+    //            ValidAudience = config.Jwt.ValidAudience,
+    //            IssuerSigningKey = new SymmetricSecurityKey(
+    //                Encoding.UTF8.GetBytes(config.Jwt.Secret)
+    //            )
+    //        };
+    //    });
 
     builder.Services.AddProblemDetails(options =>
     {
@@ -63,10 +60,18 @@ void AddServices()
             Detail = ex.Message,
             Status = StatusCodes.Status500InternalServerError,
         });
+
+        options.Map<ValidationException>(ex => new ProblemDetails()
+        {
+            Title = "Validation Error",
+            Detail = ex.Message,
+            Status = StatusCodes.Status400BadRequest,
+        });
     });
 
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(x =>
+    {
         x.SwaggerDoc(
             "v1",
             new OpenApiInfo()
@@ -75,8 +80,8 @@ void AddServices()
                 Description = "placeholder",
                 Version = "1.0"
             }
-        )
-    );
+        );
+    });
 }
 
 void SetMiddleware()
@@ -167,7 +172,8 @@ void SetMiddleware()
     );
 
     app.MapFallbackToFile("/index.html");
-    app.UseAuthentication();
     app.UseStaticFiles();
+    app.UseAuthentication();
+    app.UseAuthorization();
     app.MapControllers();
 }
