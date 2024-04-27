@@ -11,14 +11,8 @@ export default function NavBar() {
             >
                 <div className="container-fluid">
                     <a className="navbar-brand" href="/">
-                        <img
-                            src="/icon.svg"
-                            width="50"
-                            height="50"
-                            alt="icon"
-                            className="me-2"
-                        />
-                        <span className="d-block d-sm-inline-block">Day Tracker</span>
+                        <img src="/icon.svg" width="50" height="50" alt="icon" className="me-2" />
+                        <span className="d-block d-sm-inline-block test">Day Tracker</span>
                     </a>
                     <button
                         className="navbar-toggler"
@@ -36,17 +30,13 @@ export default function NavBar() {
                     >
                         <ul className="navbar-nav d-flex justify-content-center align-items-center">
                             <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
-                                <a
-                                    className="nav-item nav-link active w-100"
-                                    href="/about"
-                                    style={{ color: 'white' }}
-                                >
+                                <a className="nav-item active w-100" href="/about" style={{ color: 'white' }}>
                                     About
                                 </a>
                             </li>
                             <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
                                 <a
-                                    className="nav-item nav-link active w-100"
+                                    className="nav-item active w-100"
                                     href="https://github.com/WeismanGitHub/Day-Tracker"
                                     style={{ color: 'white' }}
                                 >

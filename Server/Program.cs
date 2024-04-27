@@ -29,22 +29,22 @@ void AddServices()
 
     builder.Services.AddControllers();
 
-    builder
-        .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = config.Jwt.ValidIssuer,
-                ValidAudience = config.Jwt.ValidAudience,
-                IssuerSigningKey = new SymmetricSecurityKey(
-                    Encoding.UTF8.GetBytes(config.Jwt.Secret)
-                )
-            };
-        });
+    //builder
+    //    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    //    .AddJwtBearer(options =>
+    //    {
+    //        options.TokenValidationParameters = new TokenValidationParameters
+    //        {
+    //            ValidateIssuer = true,
+    //            ValidateAudience = true,
+    //            ValidateIssuerSigningKey = true,
+    //            ValidIssuer = config.Jwt.ValidIssuer,
+    //            ValidAudience = config.Jwt.ValidAudience,
+    //            IssuerSigningKey = new SymmetricSecurityKey(
+    //                Encoding.UTF8.GetBytes(config.Jwt.Secret)
+    //            )
+    //        };
+    //    });
 
     builder.Services.AddProblemDetails(options =>
     {
