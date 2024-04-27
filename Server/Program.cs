@@ -137,7 +137,7 @@ void SetMiddleware()
                 builder.AddDefaultSrc().Self();
                 builder.AddObjectSrc().None();
                 builder.AddBlockAllMixedContent();
-                builder.AddImgSrc().Self();
+                builder.AddImgSrc().Self().From("data:");
                 builder.AddFormAction().None();
                 builder.AddFontSrc().Self();
                 builder.AddStyleSrc().Self();
