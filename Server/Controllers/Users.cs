@@ -45,8 +45,8 @@ public class UsersController : CustomBase
     [Tags("Create", "User")]
     [HttpPost(Name = "Signup")]
     public async Task<IActionResult> Signup(
-        HttpResponse res,
         [FromBody] SignupModel model,
+        //HttpResponse res,
         UserService service,
         Configuration config
     )
