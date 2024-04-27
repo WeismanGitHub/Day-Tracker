@@ -51,6 +51,13 @@ public class UsersController : CustomBase
         Configuration config
     )
     {
+        var validationResult = new Validator().Validate(model);
+
+        if (!validationResult.IsValid)
+        {
+            throw new ValidationException(validationResult);
+        }
+
         var exists = await service.UserExists(model.Name);
 
         if (exists)
