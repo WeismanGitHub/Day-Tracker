@@ -1,11 +1,6 @@
-using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Server.Database.Services;
 
 namespace Server.Controllers;
@@ -14,10 +9,7 @@ public class UsersController : CustomBase
 {
     public class SignupModel
     {
-        [Required]
         public required string Name { get; set; }
-
-        [Required]
         public required string Password { get; set; }
     }
 
@@ -47,8 +39,8 @@ public class UsersController : CustomBase
     public async Task<IActionResult> Signup(
         [FromBody] SignupModel model,
         //HttpResponse res,
-        UserService service,
-        Configuration config
+        UserService service
+    //Configuration config
     )
     {
         var validationResult = new Validator().Validate(model);
@@ -65,20 +57,20 @@ public class UsersController : CustomBase
             throw new UsernameTakenException();
         }
 
-        var user = await service.CreateUser(model.Name, model.Password);
+        //        var user = await service.CreateUser(model.Name, model.Password);
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.Jwt.Secret));
-        var claims = new List<Claim>() { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) };
+        //        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.Jwt.Secret));
+        //        var claims = new List<Claim>() { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) };
 
-        var token = new JwtSecurityToken(
-            issuer: config.Jwt.ValidIssuer,
-            audience: config.Jwt.ValidAudience,
-            expires: DateTime.Now.AddMonths(1),
-            claims: claims,
-            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-        );
+        //        var token = new JwtSecurityToken(
+        //            issuer: config.Jwt.ValidIssuer,
+        //            audience: config.Jwt.ValidAudience,
+        //            expires: DateTime.Now.AddMonths(1),
+        //            claims: claims,
+        //            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
+        //        );
 
-        res.Cookies.Append("AuthCookie", token.ToString());
+        //        res.Cookies.Append("AuthCookie", token.ToString());
 
         return Created();
     }
