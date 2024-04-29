@@ -22,14 +22,13 @@ export default function Auth() {
                 </div>
             </div>
         </>
-    );}
+    );
+}
 
 function Signin() {
-    return <>
-    </>
+    return <></>;
 }
 
 function Signup() {
-    return <>
-    </>
+    return <></>;
 }
