@@ -7,7 +7,7 @@ public static class Extensions
         if (password == null)
             return false;
 
-        var meetsLengthRequirements = password.Length >= 50 && password.Length <= 10;
+        var meetsLengthRequirements = password.Length <= 72 && password.Length >= 10;
         var hasUpperCaseLetter = false;
         var hasLowerCaseLetter = false;
         var hasDecimalDigit = false;
