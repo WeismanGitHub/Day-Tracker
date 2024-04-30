@@ -46,18 +46,18 @@ void AddServices()
             Status = StatusCodes.Status409Conflict,
         });
 
-        options.Map<Exception>(ex => new ProblemDetails()
-        {
-            Title = "Internal Server Error",
-            Detail = ex.Message,
-            Status = StatusCodes.Status500InternalServerError,
-        });
-
         options.Map<ValidationException>(ex => new ProblemDetails()
         {
             Title = "Validation Error",
             Detail = ex.Message,
             Status = StatusCodes.Status400BadRequest,
+        });
+
+        options.Map<Exception>(ex => new ProblemDetails()
+        {
+            Title = "Internal Server Error",
+            Detail = ex.Message,
+            Status = StatusCodes.Status500InternalServerError,
         });
     });
 
