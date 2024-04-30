@@ -1,4 +1,6 @@
 using Hellang.Middleware.ProblemDetails;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Server.Database.Services;
@@ -24,24 +26,14 @@ void AddServices()
     builder.Services.AddScoped<UserService>();
 
     builder.Services.AddControllers();
-    builder.Services.AddAuthentication().AddJwtBearer();
     builder.Services.AddAuthorization();
-    //builder
-    //    .Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    //    .AddJwtBearer(options =>
-    //    {
-    //        options.TokenValidationParameters = new TokenValidationParameters
-    //        {
-    //            ValidateIssuer = true,
-    //            ValidateAudience = true,
-    //            ValidateIssuerSigningKey = true,
-    //            ValidIssuer = config.Jwt.ValidIssuer,
-    //            ValidAudience = config.Jwt.ValidAudience,
-    //            IssuerSigningKey = new SymmetricSecurityKey(
-    //                Encoding.UTF8.GetBytes(config.Jwt.Secret)
-    //            )
-    //        };
-    //    });
+    builder
+        .Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(options =>
+        {
+            options.ExpireTimeSpan = TimeSpan.FromDays(30);
+            options.SlidingExpiration = true;
+        });
 
     builder.Services.AddProblemDetails(options =>
     {
@@ -171,6 +163,14 @@ void SetMiddleware()
             })
     );
 
+    var cookiePolicy = new CookiePolicyOptions()
+    {
+        HttpOnly = HttpOnlyPolicy.Always,
+        MinimumSameSitePolicy = SameSiteMode.Strict,
+        Secure = CookieSecurePolicy.Always,
+    };
+
+    app.UseCookiePolicy(cookiePolicy);
     app.MapFallbackToFile("/index.html");
     app.UseStaticFiles();
     app.UseAuthentication();

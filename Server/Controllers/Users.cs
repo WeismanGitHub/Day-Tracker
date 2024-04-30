@@ -1,4 +1,7 @@
+using System.Security.Claims;
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Database.Services;
@@ -36,12 +39,7 @@ public class UsersController : CustomBase
     [AllowAnonymous]
     [Tags("Create", "User")]
     [HttpPost(Name = "Signup")]
-    public async Task<IActionResult> Signup(
-        [FromBody] SignupModel model,
-        //HttpResponse res,
-        UserService service
-    //Configuration config
-    )
+    public async Task<IActionResult> Signup([FromBody] SignupModel model, UserService service)
     {
         var validationResult = new Validator().Validate(model);
 
@@ -57,20 +55,22 @@ public class UsersController : CustomBase
             throw new UsernameTakenException();
         }
 
-        //        var user = await service.CreateUser(model.Name, model.Password);
+        var user = await service.CreateUser(model.Name, model.Password);
 
-        //        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.Jwt.Secret));
-        //        var claims = new List<Claim>() { new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()) };
+        var claims = new List<Claim>() { new(ClaimTypes.NameIdentifier, user.Id.ToString()) };
 
-        //        var token = new JwtSecurityToken(
-        //            issuer: config.Jwt.ValidIssuer,
-        //            audience: config.Jwt.ValidAudience,
-        //            expires: DateTime.Now.AddMonths(1),
-        //            claims: claims,
-        //            signingCredentials: new SigningCredentials(key, SecurityAlgorithms.HmacSha256)
-        //        );
+        var claimsIdentity = new ClaimsIdentity(
+            claims,
+            CookieAuthenticationDefaults.AuthenticationScheme
+        );
 
-        //        res.Cookies.Append("AuthCookie", token.ToString());
+        var authProperties = new AuthenticationProperties { };
+
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(claimsIdentity),
+            authProperties
+        );
 
         return Created();
     }
