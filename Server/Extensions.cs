@@ -30,4 +30,12 @@ public static class Extensions
             && hasLowerCaseLetter
             && hasDecimalDigit;
     }
+
+    public static Guid? GetUserId(this HttpContext context)
+    {
+        var value = context.User.Claims.FirstOrDefault()?.Value;
+        var isValidGuid = Guid.TryParse(value, out var guid);
+
+        return isValidGuid ? guid : null;
+    }
 }
