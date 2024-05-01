@@ -74,4 +74,43 @@ public class UsersController : CustomBase
 
         return Created();
     }
+
+    public class SelfModel
+    {
+        public required Guid Id { get; set; }
+        public required string Name { get; set; }
+        public required DateTime CreatedAt { get; set; }
+    }
+
+    [ProducesResponseType(
+        StatusCodes.Status200OK | StatusCodes.Status404NotFound | StatusCodes.Status401Unauthorized
+    )]
+    [AllowAnonymous]
+    [Tags("Users", "Get")]
+    [HttpGet("Self", Name = "GetSelf")]
+    public async Task<IActionResult> GetSelf(UserService service)
+    {
+        var id = HttpContext.GetUserId();
+
+        if (id is null)
+        {
+            throw new UnauthorizedException();
+        }
+
+        var user = await service.GetUser((Guid)id);
+
+        if (user is null)
+        {
+            throw new NotFoundException("Could not find your account.");
+        }
+
+        return Ok(
+            new SelfModel()
+            {
+                Id = user.Id,
+                Name = user.Name,
+                CreatedAt = user.CreatedAt,
+            }
+        );
+    }
 }
