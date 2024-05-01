@@ -9,3 +9,7 @@ public class UsernameTakenException(string message = "This username has been tak
 
 public class ValidationException(ValidationResult res)
     : CustomException(res.Errors.First().ErrorMessage) { }
+
+public class UnauthorizedException(string message = "Please login.") : CustomException(message) { }
+
+public class NotFoundException(string message) : CustomException(message) { }
