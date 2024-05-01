@@ -53,6 +53,13 @@ void AddServices()
             Status = StatusCodes.Status400BadRequest,
         });
 
+        options.Map<UnauthorizedException>(ex => new ProblemDetails()
+        {
+            Title = "Unauthorized",
+            Detail = ex.Message,
+            Status = StatusCodes.Status401Unauthorized,
+        });
+
         options.Map<Exception>(ex => new ProblemDetails()
         {
             Title = "Internal Server Error",
