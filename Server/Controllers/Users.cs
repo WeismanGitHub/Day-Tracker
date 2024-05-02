@@ -170,6 +170,7 @@ public class UsersController : CustomBase
         }
 
         await service.DeleteUser(account);
+        await HttpContext.SignOutAsync();
 
         return Ok();
     }
