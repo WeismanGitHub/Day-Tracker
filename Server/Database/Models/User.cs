@@ -13,7 +13,7 @@ public class User
     public required string Name { get; set; }
 
     [Required]
-    public required string Password { get; set; }
+    public required string PasswordHash { get; set; }
 
     [Required]
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

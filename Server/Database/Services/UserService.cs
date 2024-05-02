@@ -20,7 +20,7 @@ public class UserService
     public async Task<User> CreateUser(string name, string password)
     {
         var user = await _context.Users.AddAsync(
-            new() { Name = name, Password = HashPassword(password) }
+            new() { Name = name, PasswordHash = HashPassword(password) }
         );
 
         await _context.SaveChangesAsync();
