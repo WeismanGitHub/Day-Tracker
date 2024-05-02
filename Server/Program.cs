@@ -178,9 +178,20 @@ void SetMiddleware()
     };
 
     app.UseCookiePolicy(cookiePolicy);
+    app.UseAuthentication();
+    app.Use(
+        async (context, next) =>
+        {
+            if (context.User?.Identity?.IsAuthenticated != true)
+            {
+                throw new UnauthorizedException();
+            }
+
+            await next();
+        }
+    );
+    app.UseAuthorization();
     app.MapFallbackToFile("/index.html");
     app.UseStaticFiles();
-    app.UseAuthentication();
-    app.UseAuthorization();
     app.MapControllers();
 }
