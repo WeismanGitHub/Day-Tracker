@@ -1,4 +1,5 @@
 using FluentValidation;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Database.Services;
@@ -35,8 +36,8 @@ public class UsersController : CustomBase
     [ProducesResponseType(StatusCodes.Status201Created | StatusCodes.Status400BadRequest)]
     [AllowAnonymous]
     [Tags("Create", "Users")]
-    [HttpPost(Name = "Signup")]
-    public async Task<IActionResult> Signup([FromBody] SignupModel model, UserService service)
+    [HttpPost("SignUp", Name = "SignUp")]
+    public async Task<IActionResult> SignUp([FromBody] SignupModel model, UserService service)
     {
         var validationResult = new Validator().Validate(model);
 
@@ -101,5 +102,16 @@ public class UsersController : CustomBase
                 ChatCount = user.Charts.Count
             }
         );
+    }
+
+    [ProducesResponseType(
+        StatusCodes.Status200OK | StatusCodes.Status404NotFound | StatusCodes.Status401Unauthorized
+    )]
+    [Tags("Users")]
+    [HttpPost("SignOut", Name = "SignOut")]
+    public async Task<IActionResult> SignOut()
+    {
+        await HttpContext.SignOutAsync();
+        return Ok();
     }
 }
