@@ -1,6 +1,7 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Server.Database.Services;
 
@@ -8,13 +9,13 @@ namespace Server.Controllers;
 
 public class UsersController : CustomBase
 {
-    public class SignupModel
+    public class UserModel
     {
         public required string Name { get; set; }
         public required string Password { get; set; }
     }
 
-    private class Validator : AbstractValidator<SignupModel>
+    private class Validator : AbstractValidator<UserModel>
     {
         public Validator()
         {
@@ -39,7 +40,7 @@ public class UsersController : CustomBase
     [AllowAnonymous]
     [Tags("Create", "Users")]
     [HttpPost("SignUp", Name = "SignUp")]
-    public async Task<IActionResult> SignUp([FromBody] SignupModel model, UserService service)
+    public async Task<IActionResult> SignUp([FromBody] UserModel model, UserService service)
     {
         var validationResult = new Validator().Validate(model);
 
@@ -61,6 +62,39 @@ public class UsersController : CustomBase
         return Created();
     }
 
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [AllowAnonymous]
+    [Tags("Users")]
+    [HttpPost("SignIn", Name = "SignIn")]
+    public async Task<IActionResult> SignIn([FromBody] UserModel model, UserService service)
+    {
+        var validationResult = new Validator().Validate(model);
+
+        if (!validationResult.IsValid)
+        {
+            throw new ValidationException(validationResult);
+        }
+
+        var id = HttpContext.GetUserId();
+        var user = await service.GetUser(id);
+
+        if (user is null)
+        {
+            throw new BadRequestException("Invalid Credentials");
+        }
+
+        var passwordsMatch = Verify(model.Password, user.PasswordHash);
+
+        if (!passwordsMatch)
+        {
+            throw new BadRequestException("Invalid Credentials");
+        }
+
+        await HttpContext.SignInHelper(user.Id);
+        return Ok();
+    }
+
     public class SelfModel
     {
         public required Guid Id { get; set; }
@@ -77,13 +111,7 @@ public class UsersController : CustomBase
     public async Task<IActionResult> GetSelf(UserService service)
     {
         var id = HttpContext.GetUserId();
-
-        if (id is null)
-        {
-            throw new UnauthorizedException();
-        }
-
-        var user = await service.GetUser((Guid)id);
+        var user = await service.GetUser(id);
 
         if (user is null)
         {
