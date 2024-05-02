@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Server.Database.Services;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddEnvironmentVariables();
@@ -22,11 +23,14 @@ app.Run();
 
 void AddServices()
 {
-    builder.Services.AddSingleton(config);
+    var services = builder.Services;
     builder.Services.AddScoped<UserService>();
 
-    builder.Services.AddControllers();
-    builder.Services.AddAuthorization();
+    services.AddSingleton(config);
+    services.AddScoped<UserService>();
+
+    services.AddControllers();
+    services.AddAuthorization();
     builder
         .Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
         .AddCookie(options =>
@@ -35,7 +39,7 @@ void AddServices()
             options.SlidingExpiration = true;
         });
 
-    builder.Services.AddProblemDetails(options =>
+    services.AddProblemDetails(options =>
     {
         options.IncludeExceptionDetails = (ctx, ex) => builder.Environment.IsDevelopment();
 
@@ -68,8 +72,9 @@ void AddServices()
         });
     });
 
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen(x =>
+    services.AddEndpointsApiExplorer();
+    services.Configure<SwaggerUIOptions>(options => options.EnableTryItOutByDefault());
+    services.AddSwaggerGen(x =>
     {
         x.SwaggerDoc(
             "v1",
