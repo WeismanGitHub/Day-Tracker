@@ -1,5 +1,6 @@
 using Hellang.Middleware.ProblemDetails;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
@@ -24,7 +25,6 @@ app.Run();
 void AddServices()
 {
     var services = builder.Services;
-    builder.Services.AddScoped<UserService>();
 
     services.AddSingleton(config);
     services.AddScoped<UserService>();
@@ -187,7 +187,14 @@ void SetMiddleware()
     app.Use(
         async (context, next) =>
         {
-            if (context.User?.Identity?.IsAuthenticated != true)
+            var metadata = context.GetEndpoint()?.Metadata;
+            var requiresAuthorization = metadata?.GetMetadata<IAllowAnonymous>() == null;
+
+            if (
+                context.User?.Identity?.IsAuthenticated != true
+                && context.Request.Path.StartsWithSegments("/api")
+                && requiresAuthorization
+            )
             {
                 throw new UnauthorizedException();
             }
