@@ -33,7 +33,9 @@ public class UsersController : CustomBase
         }
     }
 
-    [ProducesResponseType(StatusCodes.Status201Created | StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [AllowAnonymous]
     [Tags("Create", "Users")]
     [HttpPost("SignUp", Name = "SignUp")]
@@ -55,11 +57,6 @@ public class UsersController : CustomBase
 
         var user = await service.CreateUser(model.Name, model.Password);
 
-        if (user is null)
-        {
-            throw new NotFoundException("Could not find your account.");
-        }
-
         await HttpContext.SignInHelper(user.Id);
         return Created();
     }
@@ -72,9 +69,9 @@ public class UsersController : CustomBase
         public required DateTime CreatedAt { get; set; }
     }
 
-    [ProducesResponseType(
-        StatusCodes.Status200OK | StatusCodes.Status404NotFound | StatusCodes.Status401Unauthorized
-    )]
+    [ProducesResponseType(typeof(SelfModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [Tags("Users", "Get")]
     [HttpGet("Self", Name = "GetSelf")]
     public async Task<IActionResult> GetSelf(UserService service)
@@ -104,9 +101,8 @@ public class UsersController : CustomBase
         );
     }
 
-    [ProducesResponseType(
-        StatusCodes.Status200OK | StatusCodes.Status404NotFound | StatusCodes.Status401Unauthorized
-    )]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [Tags("Users")]
     [HttpPost("SignOut", Name = "SignOut")]
     public async Task<IActionResult> SignOut()
