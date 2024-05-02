@@ -57,6 +57,13 @@ void AddServices()
             Status = StatusCodes.Status400BadRequest,
         });
 
+        options.Map<BadRequestException>(ex => new ProblemDetails()
+        {
+            Title = "Bad Request",
+            Detail = ex.Message,
+            Status = StatusCodes.Status400BadRequest,
+        });
+
         options.Map<UnauthorizedException>(ex => new ProblemDetails()
         {
             Title = "Unauthorized",

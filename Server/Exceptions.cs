@@ -13,3 +13,5 @@ public class ValidationException(ValidationResult res)
 public class UnauthorizedException(string message = "Please login.") : CustomException(message) { }
 
 public class NotFoundException(string message) : CustomException(message) { }
+
+public class BadRequestException(string message) : CustomException(message) { }
