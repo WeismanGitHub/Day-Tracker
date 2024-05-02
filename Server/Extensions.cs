@@ -1,4 +1,9 @@
-﻿namespace Server;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Server.Database.Models;
+
+namespace Server;
 
 public static class Extensions
 {
@@ -35,7 +40,28 @@ public static class Extensions
     {
         var value = context.User.Claims.FirstOrDefault()?.Value;
         var isValidGuid = Guid.TryParse(value, out var guid);
-
         return isValidGuid ? guid : null;
+    }
+
+    public static async Task SignInHelper(this HttpContext context, Guid id)
+    {
+        var claims = new List<Claim>() { new(ClaimTypes.NameIdentifier, id.ToString()) };
+
+        var claimsIdentity = new ClaimsIdentity(
+            claims,
+            CookieAuthenticationDefaults.AuthenticationScheme
+        );
+
+        var authProperties = new AuthenticationProperties
+        {
+            IsPersistent = true,
+            ExpiresUtc = DateTimeOffset.UtcNow.AddDays(30)
+        };
+
+        await context.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            new ClaimsPrincipal(claimsIdentity),
+            authProperties
+        );
     }
 }

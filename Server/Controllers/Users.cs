@@ -57,21 +57,12 @@ public class UsersController : CustomBase
 
         var user = await service.CreateUser(model.Name, model.Password);
 
-        var claims = new List<Claim>() { new(ClaimTypes.NameIdentifier, user.Id.ToString()) };
+        if (user is null)
+        {
+            throw new NotFoundException("Could not find your account.");
+        }
 
-        var claimsIdentity = new ClaimsIdentity(
-            claims,
-            CookieAuthenticationDefaults.AuthenticationScheme
-        );
-
-        var authProperties = new AuthenticationProperties { };
-
-        await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            new ClaimsPrincipal(claimsIdentity),
-            authProperties
-        );
-
+        await HttpContext.SignInHelper(user.Id);
         return Created();
     }
 
