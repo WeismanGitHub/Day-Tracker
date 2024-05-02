@@ -138,4 +138,40 @@ public class UsersController : CustomBase
         await HttpContext.SignOutAsync();
         return Ok();
     }
+
+    public class DeleteCredentials
+    {
+        public required string Password { get; set; }
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [Tags("Users", "Delete")]
+    [HttpDelete("Account", Name = "DeleteAccount")]
+    public async Task<IActionResult> DeleteAccount(
+        [FromBody] DeleteCredentials credentials,
+        UserService service
+    )
+    {
+        var id = HttpContext.GetUserId();
+        var account = await service.GetUser(id);
+
+        if (account is null)
+        {
+            throw new NotFoundException("Could not find your account.");
+        }
+
+        var passwordsMatch = Verify(credentials.Password, account.PasswordHash);
+
+        if (!passwordsMatch)
+        {
+            throw new BadRequestException("Invalid Password");
+        }
+
+        await service.DeleteUser(account);
+
+        return Ok();
+    }
 }
