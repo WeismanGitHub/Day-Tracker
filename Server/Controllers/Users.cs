@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using FluentValidation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -68,13 +67,13 @@ public class UsersController : CustomBase
     {
         public required Guid Id { get; set; }
         public required string Name { get; set; }
+        public required int ChatCount { get; set; }
         public required DateTime CreatedAt { get; set; }
     }
 
     [ProducesResponseType(
         StatusCodes.Status200OK | StatusCodes.Status404NotFound | StatusCodes.Status401Unauthorized
     )]
-    [AllowAnonymous]
     [Tags("Users", "Get")]
     [HttpGet("Self", Name = "GetSelf")]
     public async Task<IActionResult> GetSelf(UserService service)
@@ -99,6 +98,7 @@ public class UsersController : CustomBase
                 Id = user.Id,
                 Name = user.Name,
                 CreatedAt = user.CreatedAt,
+                ChatCount = user.Charts.Count
             }
         );
     }
