@@ -35,11 +35,17 @@ public static class Extensions
             && hasDecimalDigit;
     }
 
-    public static Guid? GetUserId(this HttpContext context)
+    public static Guid GetUserId(this HttpContext context)
     {
         var value = context.User.Claims.FirstOrDefault()?.Value;
         var isValidGuid = Guid.TryParse(value, out var guid);
-        return isValidGuid ? guid : null;
+
+        if (!isValidGuid)
+        {
+            throw new UnauthorizedException();
+        }
+
+        return guid;
     }
 
     public static async Task SignInHelper(this HttpContext context, Guid id)
