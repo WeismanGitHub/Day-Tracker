@@ -1,7 +1,6 @@
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Server.Database.Services;
 
@@ -9,13 +8,13 @@ namespace Server.Controllers;
 
 public class UsersController : CustomBase
 {
-    public class UserModel
+    public class Credentials
     {
         public required string Name { get; set; }
         public required string Password { get; set; }
     }
 
-    private class Validator : AbstractValidator<UserModel>
+    private class Validator : AbstractValidator<Credentials>
     {
         public Validator()
         {
@@ -40,23 +39,23 @@ public class UsersController : CustomBase
     [AllowAnonymous]
     [Tags("Create", "Users")]
     [HttpPost("SignUp", Name = "SignUp")]
-    public async Task<IActionResult> SignUp([FromBody] UserModel model, UserService service)
+    public async Task<IActionResult> SignUp([FromBody] Credentials credentials, UserService service)
     {
-        var validationResult = new Validator().Validate(model);
+        var result = new Validator().Validate(credentials);
 
-        if (!validationResult.IsValid)
+        if (!result.IsValid)
         {
-            throw new ValidationException(validationResult);
+            throw new ValidationException(result);
         }
 
-        var exists = await service.UserExists(model.Name);
+        var exists = await service.UserExists(credentials.Name);
 
         if (exists)
         {
             throw new UsernameTakenException();
         }
 
-        var user = await service.CreateUser(model.Name, model.Password);
+        var user = await service.CreateUser(credentials.Name, credentials.Password);
 
         await HttpContext.SignInHelper(user.Id);
         return Created();
@@ -67,13 +66,13 @@ public class UsersController : CustomBase
     [AllowAnonymous]
     [Tags("Users")]
     [HttpPost("SignIn", Name = "SignIn")]
-    public async Task<IActionResult> SignIn([FromBody] UserModel model, UserService service)
+    public async Task<IActionResult> SignIn([FromBody] Credentials credentials, UserService service)
     {
-        var validationResult = new Validator().Validate(model);
+        var result = new Validator().Validate(credentials);
 
-        if (!validationResult.IsValid)
+        if (!result.IsValid)
         {
-            throw new ValidationException(validationResult);
+            throw new ValidationException(result);
         }
 
         var id = HttpContext.GetUserId();
@@ -84,7 +83,7 @@ public class UsersController : CustomBase
             throw new BadRequestException("Invalid Credentials");
         }
 
-        var passwordsMatch = Verify(model.Password, user.PasswordHash);
+        var passwordsMatch = Verify(credentials.Password, user.PasswordHash);
 
         if (!passwordsMatch)
         {
@@ -95,7 +94,7 @@ public class UsersController : CustomBase
         return Ok();
     }
 
-    public class SelfModel
+    public class Account
     {
         public required Guid Id { get; set; }
         public required string Name { get; set; }
@@ -103,12 +102,12 @@ public class UsersController : CustomBase
         public required DateTime CreatedAt { get; set; }
     }
 
-    [ProducesResponseType(typeof(SelfModel), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [Tags("Users", "Get")]
-    [HttpGet("Self", Name = "GetSelf")]
-    public async Task<IActionResult> GetSelf(UserService service)
+    [Tags("Users", "Read")]
+    [HttpGet("Account", Name = "GetAccount")]
+    public async Task<IActionResult> GetAccount(UserService service)
     {
         var id = HttpContext.GetUserId();
         var user = await service.GetUser(id);
@@ -119,7 +118,7 @@ public class UsersController : CustomBase
         }
 
         return Ok(
-            new SelfModel()
+            new Account()
             {
                 Id = user.Id,
                 Name = user.Name,
