@@ -27,4 +27,10 @@ public class UserService
 
         return user.Entity;
     }
+
+    public async Task DeleteUser(User user)
+    {
+        _context.Remove(user);
+        await _context.SaveChangesAsync();
+    }
 }
