@@ -28,6 +28,7 @@ void AddServices()
 
     services.AddSingleton(config);
     services.AddScoped<UserService>();
+    services.AddScoped<ChartService>();
 
     services.AddControllers();
     services.AddAuthorization();
