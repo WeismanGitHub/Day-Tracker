@@ -14,9 +14,9 @@ public class UsersController : CustomBase
         public required string Password { get; set; }
     }
 
-    private class Validator : AbstractValidator<Credentials>
+    private class CredentialsValidator : AbstractValidator<Credentials>
     {
-        public Validator()
+        public CredentialsValidator()
         {
             RuleFor(u => u.Name)
                 .NotEmpty()
@@ -41,7 +41,7 @@ public class UsersController : CustomBase
     [HttpPost("SignUp", Name = "SignUp")]
     public async Task<IActionResult> SignUp([FromBody] Credentials credentials, UserService service)
     {
-        var result = new Validator().Validate(credentials);
+        var result = new CredentialsValidator().Validate(credentials);
 
         if (!result.IsValid)
         {
@@ -68,7 +68,7 @@ public class UsersController : CustomBase
     [HttpPost("SignIn", Name = "SignIn")]
     public async Task<IActionResult> SignIn([FromBody] Credentials credentials, UserService service)
     {
-        var result = new Validator().Validate(credentials);
+        var result = new CredentialsValidator().Validate(credentials);
 
         if (!result.IsValid)
         {
@@ -138,7 +138,7 @@ public class UsersController : CustomBase
         return Ok();
     }
 
-    public class DeleteCredentials
+    public class DeletionCredentials
     {
         public required string Password { get; set; }
     }
@@ -150,7 +150,7 @@ public class UsersController : CustomBase
     [Tags("Users", "Delete")]
     [HttpDelete("Account", Name = "DeleteAccount")]
     public async Task<IActionResult> DeleteAccount(
-        [FromBody] DeleteCredentials credentials,
+        [FromBody] DeletionCredentials credentials,
         UserService service
     )
     {
@@ -171,6 +171,102 @@ public class UsersController : CustomBase
 
         await service.DeleteUser(account);
         await HttpContext.SignOutAsync();
+
+        return Ok();
+    }
+
+    public class NewData
+    {
+        public string? Name { get; set; }
+        public string? Password { get; set; }
+    }
+
+    public class UpdateModel
+    {
+        public required NewData NewData { get; set; }
+        public required string CurrentPassword { get; set; }
+    }
+
+    private class UpdateValidator : AbstractValidator<UpdateModel>
+    {
+        public UpdateValidator()
+        {
+            RuleFor(u => u.CurrentPassword)
+                .NotEmpty()
+                .NotNull()
+                .MaximumLength(50)
+                .Must(p => p.IsValidPassword())
+                .WithMessage("Current Password doesn't meet the criteria for a valid password.");
+
+            RuleFor(u => u.NewData.Name)
+                .NotEmpty()
+                .NotNull()
+                .MaximumLength(50)
+                .WithMessage("Username must be between 1 and 50 characters.");
+
+            RuleFor(u => u.NewData.Password)
+                .NotEmpty()
+                .MaximumLength(72)
+                .Must(p => p.IsValidPassword())
+                .WithMessage("Password is invalid.");
+
+            RuleFor(u => u)
+                .Must(u => !(u.NewData.Password is null && u.NewData.Name is null))
+                .WithMessage("Must update at least one thing.");
+        }
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [Tags("Users", "UpdateModel")]
+    [HttpPatch("Account", Name = "UpdateAccount")]
+    public async Task<IActionResult> UpdateAccount(
+        [FromBody] UpdateModel updateModel,
+        UserService service
+    )
+    {
+        var result = new UpdateValidator().Validate(updateModel);
+
+        if (!result.IsValid)
+        {
+            throw new ValidationException(result);
+        }
+
+        var id = HttpContext.GetUserId();
+        var account = await service.GetUser(id);
+
+        if (account is null)
+        {
+            throw new NotFoundException("Could not find your account.");
+        }
+
+        var newName = updateModel.NewData.Name;
+        var newPassword = updateModel.NewData.Password;
+
+        if (newName is not null && await service.UserExists(newName))
+        {
+            throw new UsernameTakenException();
+        }
+
+        var passwordsMatch = Verify(updateModel.CurrentPassword, account.PasswordHash);
+
+        if (!passwordsMatch)
+        {
+            throw new BadRequestException("Invalid Password");
+        }
+
+        if (newName is not null)
+        {
+            account.Name = newName;
+        }
+
+        if (newPassword is not null)
+        {
+            account.PasswordHash = HashPassword(newPassword);
+        }
+
+        await service.UpdateUser(account);
 
         return Ok();
     }
