@@ -219,7 +219,7 @@ public class UsersController : CustomBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [Tags("Users", "UpdateModel")]
+    [Tags("Users", "Update")]
     [HttpPatch("Account", Name = "UpdateAccount")]
     public async Task<IActionResult> UpdateAccount(
         [FromBody] UpdateModel updateModel,
