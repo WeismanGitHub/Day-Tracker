@@ -27,6 +27,7 @@ public class ChartsController : CustomBase
 
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [Tags("Create", "Charts")]
     [HttpPost(Name = "CreateChart")]
     public async Task<IActionResult> CreateChart(
@@ -51,6 +52,26 @@ public class ChartsController : CustomBase
 
         await service.CreateChart(chart);
 
-        return Created("", new { Id = chart.Id });
+        return Created("", new { chart.Id });
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [Tags("Delete", "Charts")]
+    [HttpPost("/{ChartId:Guid}", Name = "DeleteChart")]
+    public async Task<IActionResult> DeleteChart(Guid chartId, ChartService service)
+    {
+        var accountId = HttpContext.GetUserId();
+        var chart = await service.GetChart(chartId, accountId);
+
+        if (chart == null)
+        {
+            throw new NotFoundException("Could not find chart.");
+        }
+
+        await service.DeleteChart(chart);
+
+        return Ok();
     }
 }
