@@ -42,34 +42,13 @@ void AddServices()
 
     services.AddProblemDetails(options =>
     {
-        options.IncludeExceptionDetails = (ctx, ex) => builder.Environment.IsDevelopment();
+        options.IncludeExceptionDetails = (ctx, ex) => false;
 
-        options.Map<UsernameTakenException>(ex => new ProblemDetails()
+        options.Map<CustomException>(ex => new ProblemDetails()
         {
-            Title = "Conflict",
+            Title = ex.Title,
             Detail = ex.Message,
-            Status = StatusCodes.Status409Conflict,
-        });
-
-        options.Map<ValidationException>(ex => new ProblemDetails()
-        {
-            Title = "Validation Error",
-            Detail = ex.Message,
-            Status = StatusCodes.Status400BadRequest,
-        });
-
-        options.Map<BadRequestException>(ex => new ProblemDetails()
-        {
-            Title = "Bad Request",
-            Detail = ex.Message,
-            Status = StatusCodes.Status400BadRequest,
-        });
-
-        options.Map<UnauthorizedException>(ex => new ProblemDetails()
-        {
-            Title = "Unauthorized",
-            Detail = ex.Message,
-            Status = StatusCodes.Status401Unauthorized,
+            Status = ex.Status,
         });
 
         options.Map<Exception>(ex => new ProblemDetails()
@@ -89,7 +68,8 @@ void AddServices()
             new OpenApiInfo()
             {
                 Title = "Day Tracker Api",
-                Description = "placeholder",
+                Description =
+                    "Track your life and visualize it with heatmaps like the GitHub commit calendar.",
                 Version = "1.0"
             }
         );
@@ -130,7 +110,7 @@ void SetMiddleware()
                     {
                         Title = "Forbidden",
                         Status = 403,
-                        Detail = "Invalid fetch metadata"
+                        Detail = "Invalid fetch metadata",
                     }
                 );
 
@@ -211,7 +191,7 @@ void SetMiddleware()
         }
     );
     app.UseAuthorization();
+    app.MapControllers();
     app.MapFallbackToFile("/index.html");
     app.UseStaticFiles();
-    app.MapControllers();
 }
