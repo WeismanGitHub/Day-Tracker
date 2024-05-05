@@ -86,7 +86,7 @@ public class ChartsController : CustomBase
         return Ok();
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ChartDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [Tags("Charts")]
@@ -101,7 +101,15 @@ public class ChartsController : CustomBase
             throw new NotFoundException("Could not find chart.");
         }
 
-        return Ok(chart);
+        return Ok(
+            new ChartDTO()
+            {
+                Id = chartId,
+                Name = chart.Name,
+                Type = chart.Type,
+                CreatedAt = chart.CreatedAt
+            }
+        );
     }
 
     public class ChartDTO
