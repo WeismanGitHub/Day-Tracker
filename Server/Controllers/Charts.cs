@@ -70,11 +70,11 @@ public class ChartsController : CustomBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [Tags("Charts")]
-    [HttpDelete("{ChartId:Guid}", Name = "DeleteChart")]
-    public async Task<IActionResult> DeleteChart(Guid ChartId, ChartService service)
+    [HttpDelete("{chartId:Guid}", Name = "DeleteChart")]
+    public async Task<IActionResult> DeleteChart(Guid chartId, ChartService service)
     {
         var accountId = HttpContext.GetUserId();
-        var chart = await service.GetChart(ChartId, accountId);
+        var chart = await service.GetChart(chartId, accountId);
 
         if (chart == null)
         {
@@ -90,11 +90,11 @@ public class ChartsController : CustomBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [Tags("Charts")]
-    [HttpGet("{ChartId:guid}", Name = "GetChart")]
-    public async Task<IActionResult> GetChart([FromRoute] Guid ChartId, ChartService service)
+    [HttpGet("{chartId:guid}", Name = "GetChart")]
+    public async Task<IActionResult> GetChart([FromRoute] Guid chartId, ChartService service)
     {
         var accountId = HttpContext.GetUserId();
-        var chart = await service.GetChart(ChartId, accountId);
+        var chart = await service.GetChart(chartId, accountId);
 
         if (chart == null)
         {
@@ -104,7 +104,7 @@ public class ChartsController : CustomBase
         return Ok(
             new ChartDTO()
             {
-                Id = ChartId,
+                Id = chartId,
                 Name = chart.Name,
                 Type = chart.Type,
                 CreatedAt = chart.CreatedAt
@@ -136,5 +136,55 @@ public class ChartsController : CustomBase
         }
 
         return Ok(charts);
+    }
+
+    public class UpdateChartBody
+    {
+        public required string Name { get; set; }
+    }
+
+    private class UpdateChartRequestValidator : AbstractValidator<UpdateChartBody>
+    {
+        public UpdateChartRequestValidator()
+        {
+            RuleFor(c => c.Name)
+                .NotEmpty()
+                .NotNull()
+                .MaximumLength(50)
+                .WithMessage("Name must be between 1 and 50 characters.");
+        }
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [Tags("Charts")]
+    [HttpPatch("{chartId:guid}", Name = "UpdateChart")]
+    public async Task<IActionResult> UpdateChart(
+        [FromRoute] Guid chartId,
+        [FromBody] UpdateChartBody body,
+        ChartService service
+    )
+    {
+        var result = new UpdateChartRequestValidator().Validate(body);
+
+        if (!result.IsValid)
+        {
+            throw new ValidationException(result);
+        }
+
+        var accountId = HttpContext.GetUserId();
+        var chart = await service.GetChart(chartId, accountId);
+
+        if (chart is null)
+        {
+            throw new NotFoundException("Could not find chart.");
+        }
+
+        chart.Name = body.Name;
+
+        await service.UpdateChart(chart);
+
+        return Ok();
     }
 }

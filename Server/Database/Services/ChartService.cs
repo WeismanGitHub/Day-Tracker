@@ -40,4 +40,10 @@ public class ChartService
             })
             .ToListAsync();
     }
+
+    public async Task UpdateChart(Chart chart)
+    {
+        _context.Charts.Update(chart);
+        await _context.SaveChangesAsync();
+    }
 }
