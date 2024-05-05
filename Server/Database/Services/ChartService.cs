@@ -35,7 +35,8 @@ public class ChartService
             {
                 Name = c.Name,
                 Type = c.Type,
-                Id = c.Id
+                Id = c.Id,
+                CreatedAt = c.CreatedAt,
             })
             .ToListAsync();
     }
