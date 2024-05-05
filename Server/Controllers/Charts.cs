@@ -59,7 +59,7 @@ public class ChartsController : CustomBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [Tags("Delete", "Charts")]
-    [HttpPost("/{ChartId:Guid}", Name = "DeleteChart")]
+    [HttpDelete("{ChartId:Guid}", Name = "DeleteChart")]
     public async Task<IActionResult> DeleteChart(Guid chartId, ChartService service)
     {
         var accountId = HttpContext.GetUserId();
@@ -73,5 +73,41 @@ public class ChartsController : CustomBase
         await service.DeleteChart(chart);
 
         return Ok();
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [Tags("Read", "Charts")]
+    [HttpGet("{ChartId:Guid}", Name = "GetChart")]
+    public async Task<IActionResult> GetChart(Guid chartId, ChartService service)
+    {
+        var accountId = HttpContext.GetUserId();
+        var chart = await service.GetChart(chartId, accountId);
+
+        if (chart == null)
+        {
+            throw new NotFoundException("Could not find chart.");
+        }
+
+        return Ok(chart);
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [Tags("Read", "Charts")]
+    [HttpGet(Name = "GetCharts")]
+    public async Task<IActionResult> GetCharts(ChartService service)
+    {
+        var accountId = HttpContext.GetUserId();
+        var charts = await service.GetUserCharts(accountId);
+
+        if (charts == null)
+        {
+            throw new NotFoundException("Could not find your charts.");
+        }
+
+        return Ok(charts);
     }
 }
