@@ -28,7 +28,7 @@ public class ChartsController : CustomBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [Tags("Create", "Charts")]
+    [Tags("Charts")]
     [HttpPost(Name = "CreateChart")]
     public async Task<IActionResult> CreateChart(
         [FromBody] ChartModel chartModel,
@@ -58,7 +58,7 @@ public class ChartsController : CustomBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [Tags("Delete", "Charts")]
+    [Tags("Charts")]
     [HttpDelete("{ChartId:Guid}", Name = "DeleteChart")]
     public async Task<IActionResult> DeleteChart(Guid chartId, ChartService service)
     {
@@ -78,7 +78,7 @@ public class ChartsController : CustomBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [Tags("Read", "Charts")]
+    [Tags("Charts")]
     [HttpGet("{ChartId:Guid}", Name = "GetChart")]
     public async Task<IActionResult> GetChart(Guid chartId, ChartService service)
     {
@@ -96,7 +96,7 @@ public class ChartsController : CustomBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [Tags("Read", "Charts")]
+    [Tags("Charts")]
     [HttpGet(Name = "GetCharts")]
     public async Task<IActionResult> GetCharts(ChartService service)
     {

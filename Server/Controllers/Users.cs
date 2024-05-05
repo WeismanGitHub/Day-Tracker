@@ -37,7 +37,7 @@ public class UsersController : CustomBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [AllowAnonymous]
-    [Tags("Create", "Users")]
+    [Tags("Users")]
     [HttpPost("SignUp", Name = "SignUp")]
     public async Task<IActionResult> SignUp([FromBody] Credentials credentials, UserService service)
     {
@@ -105,7 +105,7 @@ public class UsersController : CustomBase
     [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [Tags("Users", "Read")]
+    [Tags("Users")]
     [HttpGet("Account", Name = "GetAccount")]
     public async Task<IActionResult> GetAccount(UserService service)
     {
@@ -147,7 +147,7 @@ public class UsersController : CustomBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [Tags("Users", "Delete")]
+    [Tags("Users")]
     [HttpDelete("Account", Name = "DeleteAccount")]
     public async Task<IActionResult> DeleteAccount(
         [FromBody] DeletionCredentials credentials,
@@ -219,7 +219,7 @@ public class UsersController : CustomBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [Tags("Users", "Update")]
+    [Tags("Users")]
     [HttpPatch("Account", Name = "UpdateAccount")]
     public async Task<IActionResult> UpdateAccount(
         [FromBody] UpdateModel updateModel,
