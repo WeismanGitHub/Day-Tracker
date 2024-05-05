@@ -1,6 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Server.Database.Models;
+using static Server.Controllers.ChartsController;
 
 namespace Server.Database.Services;
 
@@ -25,14 +25,6 @@ public class ChartService
     {
         _context.Remove(chart);
         await _context.SaveChangesAsync();
-    }
-
-    public class ChartDTO
-    {
-        public required Guid Id { get; set; }
-        public required string Name { get; set; }
-        public required ChartType Type { get; set; }
-        public required DateTime CreatedAt { get; set; }
     }
 
     public async Task<List<ChartDTO>> GetUserCharts(Guid userId)
