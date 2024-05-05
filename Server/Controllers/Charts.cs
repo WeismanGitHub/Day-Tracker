@@ -71,10 +71,10 @@ public class ChartsController : CustomBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [Tags("Charts")]
     [HttpDelete("{ChartId:Guid}", Name = "DeleteChart")]
-    public async Task<IActionResult> DeleteChart(Guid chartId, ChartService service)
+    public async Task<IActionResult> DeleteChart(Guid ChartId, ChartService service)
     {
         var accountId = HttpContext.GetUserId();
-        var chart = await service.GetChart(chartId, accountId);
+        var chart = await service.GetChart(ChartId, accountId);
 
         if (chart == null)
         {
@@ -90,11 +90,11 @@ public class ChartsController : CustomBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [Tags("Charts")]
-    [HttpGet("{ChartId:Guid}", Name = "GetChart")]
-    public async Task<IActionResult> GetChart(Guid chartId, ChartService service)
+    [HttpGet("{ChartId:guid}", Name = "GetChart")]
+    public async Task<IActionResult> GetChart([FromRoute] Guid ChartId, ChartService service)
     {
         var accountId = HttpContext.GetUserId();
-        var chart = await service.GetChart(chartId, accountId);
+        var chart = await service.GetChart(ChartId, accountId);
 
         if (chart == null)
         {
@@ -104,7 +104,7 @@ public class ChartsController : CustomBase
         return Ok(
             new ChartDTO()
             {
-                Id = chartId,
+                Id = ChartId,
                 Name = chart.Name,
                 Type = chart.Type,
                 CreatedAt = chart.CreatedAt
