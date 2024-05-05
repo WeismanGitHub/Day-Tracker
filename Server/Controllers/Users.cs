@@ -8,15 +8,15 @@ namespace Server.Controllers;
 
 public class UsersController : CustomBase
 {
-    public class Credentials
+    public class AuthCredentials
     {
         public required string Name { get; set; }
         public required string Password { get; set; }
     }
 
-    private class CredentialsValidator : AbstractValidator<Credentials>
+    private class AuthCredentialsValidator : AbstractValidator<AuthCredentials>
     {
-        public CredentialsValidator()
+        public AuthCredentialsValidator()
         {
             RuleFor(u => u.Name)
                 .NotEmpty()
@@ -38,10 +38,13 @@ public class UsersController : CustomBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [AllowAnonymous]
     [Tags("Users")]
-    [HttpPost("SignUp", Name = "SignUp")]
-    public async Task<IActionResult> SignUp([FromBody] Credentials credentials, UserService service)
+    [HttpPost("Account/SignUp", Name = "SignUp")]
+    public async Task<IActionResult> SignUp(
+        [FromBody] AuthCredentials credentials,
+        UserService service
+    )
     {
-        var result = new CredentialsValidator().Validate(credentials);
+        var result = new AuthCredentialsValidator().Validate(credentials);
 
         if (!result.IsValid)
         {
@@ -65,10 +68,13 @@ public class UsersController : CustomBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [AllowAnonymous]
     [Tags("Users")]
-    [HttpPost("SignIn", Name = "SignIn")]
-    public async Task<IActionResult> SignIn([FromBody] Credentials credentials, UserService service)
+    [HttpPost("Account/SignIn", Name = "SignIn")]
+    public async Task<IActionResult> SignIn(
+        [FromBody] AuthCredentials credentials,
+        UserService service
+    )
     {
-        var result = new CredentialsValidator().Validate(credentials);
+        var result = new AuthCredentialsValidator().Validate(credentials);
 
         if (!result.IsValid)
         {
@@ -80,21 +86,21 @@ public class UsersController : CustomBase
 
         if (user is null)
         {
-            throw new BadRequestException("Invalid Credentials");
+            throw new BadRequestException("Invalid AuthCredentials");
         }
 
         var passwordsMatch = Verify(credentials.Password, user.PasswordHash);
 
         if (!passwordsMatch)
         {
-            throw new BadRequestException("Invalid Credentials");
+            throw new BadRequestException("Invalid AuthCredentials");
         }
 
         await HttpContext.SignInHelper(user.Id);
         return Ok();
     }
 
-    public class Account
+    public class AccountDTO
     {
         public required Guid Id { get; set; }
         public required string Name { get; set; }
@@ -102,7 +108,7 @@ public class UsersController : CustomBase
         public required DateTime CreatedAt { get; set; }
     }
 
-    [ProducesResponseType(typeof(Account), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(AccountDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [Tags("Users")]
@@ -118,7 +124,7 @@ public class UsersController : CustomBase
         }
 
         return Ok(
-            new Account()
+            new AccountDTO()
             {
                 Id = user.Id,
                 Name = user.Name,
@@ -131,7 +137,7 @@ public class UsersController : CustomBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [Tags("Users")]
-    [HttpPost("SignOut", Name = "SignOut")]
+    [HttpPost("Account/SignOut", Name = "SignOut")]
     public async Task<IActionResult> SignOut()
     {
         await HttpContext.SignOutAsync();
@@ -175,21 +181,21 @@ public class UsersController : CustomBase
         return Ok();
     }
 
-    public class NewData
+    public class NewCredentials
     {
         public string? Name { get; set; }
         public string? Password { get; set; }
     }
 
-    public class UpdateModel
+    public class UpdateAccountBody
     {
-        public required NewData NewData { get; set; }
+        public required NewCredentials NewData { get; set; }
         public required string CurrentPassword { get; set; }
     }
 
-    private class UpdateValidator : AbstractValidator<UpdateModel>
+    private class UpdateAccountValidator : AbstractValidator<UpdateAccountBody>
     {
-        public UpdateValidator()
+        public UpdateAccountValidator()
         {
             RuleFor(u => u.CurrentPassword)
                 .NotEmpty()
@@ -222,11 +228,11 @@ public class UsersController : CustomBase
     [Tags("Users")]
     [HttpPatch("Account", Name = "UpdateAccount")]
     public async Task<IActionResult> UpdateAccount(
-        [FromBody] UpdateModel updateModel,
+        [FromBody] UpdateAccountBody body,
         UserService service
     )
     {
-        var result = new UpdateValidator().Validate(updateModel);
+        var result = new UpdateAccountValidator().Validate(body);
 
         if (!result.IsValid)
         {
@@ -241,19 +247,19 @@ public class UsersController : CustomBase
             throw new NotFoundException("Could not find your account.");
         }
 
-        var newName = updateModel.NewData.Name;
-        var newPassword = updateModel.NewData.Password;
-
-        if (newName is not null && await service.UserExists(newName))
-        {
-            throw new UsernameTakenException();
-        }
-
-        var passwordsMatch = Verify(updateModel.CurrentPassword, account.PasswordHash);
+        var passwordsMatch = Verify(body.CurrentPassword, account.PasswordHash);
 
         if (!passwordsMatch)
         {
             throw new BadRequestException("Invalid Password");
+        }
+
+        var newName = body.NewData.Name;
+        var newPassword = body.NewData.Password;
+
+        if (newName is not null && await service.UserExists(newName))
+        {
+            throw new UsernameTakenException();
         }
 
         if (newName is not null)

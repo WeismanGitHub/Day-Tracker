@@ -7,35 +7,46 @@ namespace Server.Controllers;
 
 public class ChartsController : CustomBase
 {
-    public class ChartModel
+    public class CreateChartBody
     {
         public required string Name { get; set; }
         public required ChartType Type { get; set; }
     }
 
-    private class ChartValidator : AbstractValidator<ChartModel>
+    private class CreateChartRequestValidator : AbstractValidator<CreateChartBody>
     {
-        public ChartValidator()
+        public CreateChartRequestValidator()
         {
-            RuleFor(u => u.Name)
+            RuleFor(c => c.Name)
                 .NotEmpty()
                 .NotNull()
                 .MaximumLength(50)
                 .WithMessage("Name must be between 1 and 50 characters.");
+
+            RuleFor(c => c.Type)
+                .NotEmpty()
+                .NotNull()
+                .Must(t => Enum.IsDefined(typeof(ChartType), t))
+                .WithMessage("Invalid chart type.");
         }
     }
 
-    [ProducesResponseType(StatusCodes.Status201Created)]
+    public class ChartIdDTO
+    {
+        public required Guid Id { get; set; }
+    }
+
+    [ProducesResponseType(typeof(ChartIdDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [Tags("Charts")]
     [HttpPost(Name = "CreateChart")]
     public async Task<IActionResult> CreateChart(
-        [FromBody] ChartModel chartModel,
+        [FromBody] CreateChartBody body,
         ChartService service
     )
     {
-        var result = new ChartValidator().Validate(chartModel);
+        var result = new CreateChartRequestValidator().Validate(body);
 
         if (!result.IsValid)
         {
@@ -45,14 +56,14 @@ public class ChartsController : CustomBase
         var id = HttpContext.GetUserId();
         var chart = new Chart()
         {
-            Name = chartModel.Name,
-            Type = chartModel.Type,
+            Name = body.Name,
+            Type = body.Type,
             UserId = id,
         };
 
         await service.CreateChart(chart);
 
-        return Created("", new { chart.Id });
+        return Created("", new ChartIdDTO() { Id = chart.Id });
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -93,7 +104,14 @@ public class ChartsController : CustomBase
         return Ok(chart);
     }
 
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    public class ChartDTO
+    {
+        public required Guid Id { get; set; }
+        public required string Name { get; set; }
+        public required ChartType Type { get; set; }
+    }
+
+    [ProducesResponseType(typeof(List<ChartDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [Tags("Charts")]
