@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 using Server.Database.Models;
 
 namespace Server.Database.Services;
@@ -16,13 +17,35 @@ public class ChartService
     public async Task<Chart?> GetChart(Guid chartId, Guid userId)
     {
         return await _context
-            .Charts.Where(chart => chart.UserId == userId && chart.Id == chartId)
-            .FirstAsync();
+            .Charts.Where(c => c.UserId == userId && c.Id == chartId)
+            .FirstOrDefaultAsync();
     }
 
     public async Task DeleteChart(Chart chart)
     {
         _context.Remove(chart);
         await _context.SaveChangesAsync();
+    }
+
+    public class ChartDTO
+    {
+        public required Guid Id { get; set; }
+        public required string Name { get; set; }
+        public required ChartType Type { get; set; }
+        public required DateTime CreatedAt { get; set; }
+    }
+
+    public async Task<List<ChartDTO>> GetUserCharts(Guid userId)
+    {
+        return await _context
+            .Charts.Where(c => c.UserId == userId)
+            .Select(c => new ChartDTO()
+            {
+                Name = c.Name,
+                Type = c.Type,
+                CreatedAt = c.CreatedAt,
+                Id = c.Id
+            })
+            .ToListAsync();
     }
 }
