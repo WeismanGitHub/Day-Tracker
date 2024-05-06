@@ -72,38 +72,6 @@ public static class AppUtilities
 
         app.UseHttpsRedirection();
         app.UseHsts();
-        app.Use(
-            async (context, next) =>
-            {
-                List<string> fetchSites = ["same-origin", "same-site", "none"];
-                List<string> disallowedDestinations = ["object", "embed"];
-                List<string> modes = ["navigate", "same-origin", "cors", "no-cors"];
-
-                var headers = context.Request.Headers;
-
-                if (
-                    !fetchSites.Contains(headers["Sec-Fetch-Site"])
-                    || disallowedDestinations.Contains(headers["Sec-Fetch-Dest"])
-                    || !modes.Contains(headers["Sec-Fetch-Mode"])
-                )
-                {
-                    context.Response.StatusCode = 403;
-
-                    await context.Response.WriteAsJsonAsync(
-                        new ProblemDetails()
-                        {
-                            Title = "Forbidden",
-                            Status = 403,
-                            Detail = "Invalid fetch metadata",
-                        }
-                    );
-
-                    return;
-                }
-
-                await next(context);
-            }
-        );
         app.UseSecurityHeaders(
             new HeaderPolicyCollection()
                 .AddFrameOptionsDeny()
