@@ -13,9 +13,9 @@ public class ChartsController : CustomBase
         public required ChartType Type { get; set; }
     }
 
-    private class CreateChartRequestValidator : AbstractValidator<CreateChartBody>
+    private class CreateChartValidator : AbstractValidator<CreateChartBody>
     {
-        public CreateChartRequestValidator()
+        public CreateChartValidator()
         {
             RuleFor(c => c.Name)
                 .NotEmpty()
@@ -46,7 +46,7 @@ public class ChartsController : CustomBase
         ChartService service
     )
     {
-        var result = new CreateChartRequestValidator().Validate(body);
+        var result = new CreateChartValidator().Validate(body);
 
         if (!result.IsValid)
         {
@@ -143,9 +143,9 @@ public class ChartsController : CustomBase
         public required string Name { get; set; }
     }
 
-    private class UpdateChartRequestValidator : AbstractValidator<UpdateChartBody>
+    private class UpdateChartValidator : AbstractValidator<UpdateChartBody>
     {
-        public UpdateChartRequestValidator()
+        public UpdateChartValidator()
         {
             RuleFor(c => c.Name)
                 .NotEmpty()
@@ -158,6 +158,7 @@ public class ChartsController : CustomBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [Tags("Charts")]
     [HttpPatch("{chartId:guid}", Name = "UpdateChart")]
     public async Task<IActionResult> UpdateChart(
@@ -166,7 +167,7 @@ public class ChartsController : CustomBase
         ChartService service
     )
     {
-        var result = new UpdateChartRequestValidator().Validate(body);
+        var result = new UpdateChartValidator().Validate(body);
 
         if (!result.IsValid)
         {
