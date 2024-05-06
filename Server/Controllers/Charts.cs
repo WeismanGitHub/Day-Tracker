@@ -188,4 +188,50 @@ public class ChartsController : CustomBase
 
         return Ok();
     }
+
+    public class AddEntryBodyRequest { }
+
+    private class AddEntryBodyValidator : AbstractValidator<AddEntryBodyRequest>
+    {
+        public AddEntryBodyValidator()
+        {
+            //RuleFor(e => e.Name)
+            //    .NotEmpty()
+            //    .NotNull()
+            //    .MaximumLength(50)
+            //    .WithMessage("Name must be between 1 and 50 characters.");
+        }
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [Tags("Charts")]
+    [HttpPost("{chartId:guid}", Name = "AddEntry")]
+    public async Task<IActionResult> AddEntry(
+        [FromRoute] Guid chartId,
+        [FromBody] AddEntryBodyRequest body,
+        ChartService service
+    )
+    {
+        var result = new AddEntryBodyValidator().Validate(body);
+
+        if (!result.IsValid)
+        {
+            throw new ValidationException(result);
+        }
+
+        var accountId = HttpContext.GetUserId();
+        var chart = await service.GetChart(chartId, accountId);
+
+        if (chart is null)
+        {
+            throw new NotFoundException("Could not find chart.");
+        }
+
+        throw new NotImplementedException();
+
+        return Ok();
+    }
 }
