@@ -18,7 +18,7 @@ public abstract class Entry
 public class CounterEntry : Entry
 {
     [Required]
-    public required uint Counter { get; set; }
+    public required uint Count { get; set; }
 }
 
 public class ScaleEntry : Entry
