@@ -16,7 +16,7 @@ public class User
     public required string PasswordHash { get; set; }
 
     [Required]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTime.UtcNow;
 
     public IList<Chart> Charts { get; set; } = [];
 }

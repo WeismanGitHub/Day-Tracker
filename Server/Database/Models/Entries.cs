@@ -11,7 +11,7 @@ public abstract class Entry
     public required Guid ChartId { get; set; }
 
     [Required]
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTimeOffset CreatedAt { get; set; } = DateTime.UtcNow;
     public Chart Chart { get; set; }
 }
 
