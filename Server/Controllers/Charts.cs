@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Database.Models;
 using Server.Database.Services;
@@ -188,49 +189,53 @@ public class ChartsController : CustomBase
 
         return Ok();
     }
+}
 
-    public class AddEntryBodyRequest { }
-
-    private class AddEntryBodyValidator : AbstractValidator<AddEntryBodyRequest>
+[ApiController]
+[Authorize]
+[Route("Api/Charts/Counters")]
+public class CounterChartsController : ControllerBase
+{
+    public class CreateEntryBodyRequest
     {
-        public AddEntryBodyValidator()
-        {
-            //RuleFor(e => e.Name)
-            //    .NotEmpty()
-            //    .NotNull()
-            //    .MaximumLength(50)
-            //    .WithMessage("Name must be between 1 and 50 characters.");
-        }
+        public uint Count { get; set; }
+        public DateTimeOffset Date { get; set; }
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [Tags("Charts")]
-    [HttpPost("{chartId:guid}", Name = "AddEntry")]
-    public async Task<IActionResult> AddEntry(
+    [Tags("CounterCharts", "Charts")]
+    [HttpPost("{chartId:guid}", Name = "CreateCounterEntry")]
+    public async Task<IActionResult> CreateCounterEntry(
         [FromRoute] Guid chartId,
-        [FromBody] AddEntryBodyRequest body,
-        ChartService service
+        [FromBody] CreateEntryBodyRequest body,
+        ChartService chartService,
+        EntryService entryService
     )
     {
-        var result = new AddEntryBodyValidator().Validate(body);
-
-        if (!result.IsValid)
-        {
-            throw new ValidationException(result);
-        }
-
         var accountId = HttpContext.GetUserId();
-        var chart = await service.GetChart(chartId, accountId);
+        var chart = await chartService.GetChart(chartId, accountId);
 
         if (chart is null)
         {
             throw new NotFoundException("Could not find chart.");
         }
 
-        throw new NotImplementedException();
+        if (chart.Type is not ChartType.Counter)
+        {
+            throw new BadRequestException("Invalid chart type.");
+        }
+
+        var entry = new CounterEntry()
+        {
+            ChartId = chartId,
+            Count = body.Count,
+            CreatedAt = body.Date
+        };
+
+        await entryService.CreateCounterEntry(chart, entry);
 
         return Ok();
     }
