@@ -7,7 +7,7 @@ public class EntryService
 {
     public DayTrackerContext _context { get; set; } = new();
 
-    public async Task AddCounterEntry(Chart chart, CounterEntry entry)
+    public async Task CreateCounterEntry(Chart chart, CounterEntry entry)
     {
         var existingEntry = await _context
             .Entries.Where(e => (e.ChartId == chart.Id) && e.CreatedAt.Date == entry.CreatedAt.Date)
