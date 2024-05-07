@@ -117,7 +117,7 @@ public class ChartsController : CustomBase
         public required Guid Id { get; set; }
         public required string Name { get; set; }
         public required ChartType Type { get; set; }
-        public required DateTime CreatedAt { get; set; }
+        public required DateTimeOffset CreatedAt { get; set; }
     }
 
     [ProducesResponseType(typeof(List<ChartDTO>), StatusCodes.Status200OK)]
