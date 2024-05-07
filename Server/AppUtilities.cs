@@ -15,6 +15,7 @@ public static class AppUtilities
     {
         services.AddSingleton(config);
         services.AddScoped<UserService>();
+        services.AddScoped<EntryService>();
         services.AddScoped<ChartService>();
 
         services.AddControllers();
