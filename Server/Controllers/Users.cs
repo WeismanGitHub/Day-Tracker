@@ -6,6 +6,7 @@ using Server.Database.Services;
 
 namespace Server.Controllers;
 
+[Tags("Users")]
 public class UsersController : CustomBase
 {
     public class AuthCredentials
@@ -37,7 +38,6 @@ public class UsersController : CustomBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [AllowAnonymous]
-    [Tags("Users")]
     [HttpPost("Account/SignUp", Name = "SignUp")]
     public async Task<IActionResult> SignUp(
         [FromBody] AuthCredentials credentials,
@@ -67,7 +67,6 @@ public class UsersController : CustomBase
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [AllowAnonymous]
-    [Tags("Users")]
     [HttpPost("Account/SignIn", Name = "SignIn")]
     public async Task<IActionResult> SignIn(
         [FromBody] AuthCredentials credentials,
@@ -111,7 +110,6 @@ public class UsersController : CustomBase
     [ProducesResponseType(typeof(AccountDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [Tags("Users")]
     [HttpGet("Account", Name = "GetAccount")]
     public async Task<IActionResult> GetAccount(UserService service)
     {
@@ -153,7 +151,6 @@ public class UsersController : CustomBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [Tags("Users")]
     [HttpDelete("Account", Name = "DeleteAccount")]
     public async Task<IActionResult> DeleteAccount(
         [FromBody] DeletionCredentials credentials,
@@ -225,7 +222,6 @@ public class UsersController : CustomBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [Tags("Users")]
     [HttpPatch("Account", Name = "UpdateAccount")]
     public async Task<IActionResult> UpdateAccount(
         [FromBody] UpdateAccountBody body,

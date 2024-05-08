@@ -5,6 +5,7 @@ using Server.Database.Services;
 
 namespace Server.Controllers;
 
+[Tags("Charts")]
 public class ChartsController : CustomBase
 {
     public class CreateChartBody
@@ -39,7 +40,6 @@ public class ChartsController : CustomBase
     [ProducesResponseType(typeof(ChartIdDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [Tags("Charts")]
     [HttpPost(Name = "CreateChart")]
     public async Task<IActionResult> CreateChart(
         [FromBody] CreateChartBody body,
@@ -69,7 +69,6 @@ public class ChartsController : CustomBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [Tags("Charts")]
     [HttpDelete("{chartId:Guid}", Name = "DeleteChart")]
     public async Task<IActionResult> DeleteChart(Guid chartId, ChartService service)
     {
@@ -89,7 +88,6 @@ public class ChartsController : CustomBase
     [ProducesResponseType(typeof(ChartDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [Tags("Charts")]
     [HttpGet("{chartId:guid}", Name = "GetChart")]
     public async Task<IActionResult> GetChart([FromRoute] Guid chartId, ChartService service)
     {
@@ -123,7 +121,6 @@ public class ChartsController : CustomBase
     [ProducesResponseType(typeof(List<ChartDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [Tags("Charts")]
     [HttpGet(Name = "GetCharts")]
     public async Task<IActionResult> GetCharts(ChartService service)
     {
@@ -159,7 +156,6 @@ public class ChartsController : CustomBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [Tags("Charts")]
     [HttpPatch("{chartId:guid}", Name = "UpdateChart")]
     public async Task<IActionResult> UpdateChart(
         [FromRoute] Guid chartId,
