@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Server.Database.Models;
 using Server.Database.Services;
@@ -186,56 +185,6 @@ public class ChartsController : CustomBase
         chart.Name = body.Name;
 
         await service.UpdateChart(chart);
-
-        return Ok();
-    }
-}
-
-[ApiController]
-[Authorize]
-[Route("Api/Charts/Counters")]
-public class CounterChartsController : ControllerBase
-{
-    public class CreateEntryBodyRequest
-    {
-        public uint Count { get; set; }
-        public DateTimeOffset Date { get; set; }
-    }
-
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [Tags("CounterCharts", "Charts")]
-    [HttpPost("{chartId:guid}", Name = "CreateCounterEntry")]
-    public async Task<IActionResult> CreateCounterEntry(
-        [FromRoute] Guid chartId,
-        [FromBody] CreateEntryBodyRequest body,
-        ChartService chartService,
-        EntryService entryService
-    )
-    {
-        var accountId = HttpContext.GetUserId();
-        var chart = await chartService.GetUserChart(chartId, accountId);
-
-        if (chart is null)
-        {
-            throw new NotFoundException("Could not find chart.");
-        }
-
-        if (chart.Type is not ChartType.Counter)
-        {
-            throw new BadRequestException("Invalid chart type.");
-        }
-
-        var entry = new CounterEntry()
-        {
-            ChartId = chartId,
-            Count = body.Count,
-            CreatedAt = body.Date
-        };
-
-        await entryService.CreateCounterEntry(chart, entry);
 
         return Ok();
     }
