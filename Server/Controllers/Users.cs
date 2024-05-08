@@ -38,7 +38,7 @@ public class UsersController : CustomBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [AllowAnonymous]
-    [HttpPost("Account/SignUp", Name = "SignUp")]
+    [HttpPost(Name = "SignUp")]
     public async Task<IActionResult> SignUp(
         [FromBody] AuthCredentials credentials,
         UserService service
