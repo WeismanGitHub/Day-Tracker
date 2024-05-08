@@ -14,7 +14,7 @@ public class ChartService
         await _context.SaveChangesAsync();
     }
 
-    public async Task<Chart?> GetChart(Guid chartId, Guid userId)
+    public async Task<Chart?> GetUserChart(Guid chartId, Guid userId)
     {
         return await _context
             .Charts.Where(c => c.UserId == userId && c.Id == chartId)

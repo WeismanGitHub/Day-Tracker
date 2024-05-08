@@ -75,7 +75,7 @@ public class ChartsController : CustomBase
     public async Task<IActionResult> DeleteChart(Guid chartId, ChartService service)
     {
         var accountId = HttpContext.GetUserId();
-        var chart = await service.GetChart(chartId, accountId);
+        var chart = await service.GetUserChart(chartId, accountId);
 
         if (chart == null)
         {
@@ -95,7 +95,7 @@ public class ChartsController : CustomBase
     public async Task<IActionResult> GetChart([FromRoute] Guid chartId, ChartService service)
     {
         var accountId = HttpContext.GetUserId();
-        var chart = await service.GetChart(chartId, accountId);
+        var chart = await service.GetUserChart(chartId, accountId);
 
         if (chart == null)
         {
@@ -176,7 +176,7 @@ public class ChartsController : CustomBase
         }
 
         var accountId = HttpContext.GetUserId();
-        var chart = await service.GetChart(chartId, accountId);
+        var chart = await service.GetUserChart(chartId, accountId);
 
         if (chart is null)
         {
@@ -216,7 +216,7 @@ public class CounterChartsController : ControllerBase
     )
     {
         var accountId = HttpContext.GetUserId();
-        var chart = await chartService.GetChart(chartId, accountId);
+        var chart = await chartService.GetUserChart(chartId, accountId);
 
         if (chart is null)
         {
