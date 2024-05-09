@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 
 namespace Server.Database.Models;
 
+[Index(nameof(ChartId))]
 public abstract class Entry
 {
     [Key, Required]
