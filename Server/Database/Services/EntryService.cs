@@ -21,4 +21,17 @@ public class EntryService
         _context.Entries.Add(entry);
         await _context.SaveChangesAsync();
     }
+
+    public async Task<Entry?> GetEntry(Guid chartId, Guid entryId)
+    {
+        return await _context
+            .Entries.Where(e => (e.ChartId == chartId) && (e.Id == entryId))
+            .SingleOrDefaultAsync();
+    }
+
+    public async Task DeleteEntry(Entry entry)
+    {
+        _context.Remove(entry);
+        await _context.SaveChangesAsync();
+    }
 }
