@@ -109,4 +109,36 @@ public class EntriesController : CustomBase
                 throw new BadRequestException("Invalid Type");
         }
     }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [HttpPost("{entryId:guid}", Name = "DeleteEntry")]
+    public async Task<IActionResult> DeleteEntry(
+        [FromRoute] Guid chartId,
+        [FromRoute] Guid entryId,
+        ChartService chartService,
+        EntryService entryService
+    )
+    {
+        var accountId = HttpContext.GetUserId();
+        var chart = await chartService.GetUserChart(chartId, accountId);
+
+        // If the chart belongs to the user then the entry also belongs to the user.
+        if (chart is null)
+        {
+            throw new NotFoundException("Could not find chart.");
+        }
+
+        var entry = await entryService.GetEntry(chartId, entryId);
+
+        if (entry is null)
+        {
+            throw new NotFoundException("Could not find entry.");
+        }
+
+        await entryService.DeleteEntry(entry);
+
+        return Ok();
+    }
 }
