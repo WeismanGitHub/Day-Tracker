@@ -28,10 +28,10 @@ export default function Auth() {
                     <div className="col-sm-8 col-md-6 col-lg-4 bg-white rounded shadow">
                         {showSignin ? <Signin /> : <Signup />}
                         <Button
-                            className="btn-secondary mt-1 mb-1 bg-bg-secondary-subtle"
+                            className="btn-secondary mt-1 mb-1 bg-bg-secondary-subtle btn-sm"
                             onClick={() => setShowSignin(!showSignin)}
                         >
-                            Click here to {showSignin ? 'signup' : 'signin'}.
+                            {showSignin ? 'Sign In' : 'Sign Up'}
                         </Button>
                     </div>
                 </div>
