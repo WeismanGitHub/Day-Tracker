@@ -6,6 +6,7 @@ using Server.Database.Services;
 namespace Server.Controllers;
 
 [Route("Api/Charts/{chartId:guid}/Entries")]
+[ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
 [Tags("Entries")]
 public class EntriesController : CustomBase
 {
@@ -41,7 +42,6 @@ public class EntriesController : CustomBase
 
     [ProducesResponseType(typeof(EntryIdDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [HttpPost(Name = "CreateEntry")]
     public async Task<IActionResult> CreateEntry(
@@ -111,7 +111,6 @@ public class EntriesController : CustomBase
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [HttpPost("{entryId:guid}", Name = "DeleteEntry")]
     public async Task<IActionResult> DeleteEntry(
