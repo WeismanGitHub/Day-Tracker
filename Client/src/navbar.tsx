@@ -7,9 +7,9 @@ import { useNavigate } from 'react-router-dom';
 export default function NavBar() {
     const [authenticated, setAuthenticated] = useState(Boolean(localStorage.getItem('authenticated')));
     const [error, setError] = useState<CustomError | null>(null);
-    const [success, setSuccess] = useState(false)
+    const [success, setSuccess] = useState(false);
     const [isNavOpen, setIsNavOpen] = useState(false);
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     async function signout() {
         if (!window.confirm('Are you sure you want to sign out?')) {
@@ -116,8 +116,12 @@ export default function NavBar() {
                                 </a>
                             </li>
                             <li className={`m-1 w-75 ${isNavOpen ? ' mb-2' : ''}`}>
-                                <a className="nav-item active w-100" onClick={() => authenticated ? signout() : navigate("/Auth")} style={{ color: 'white' }}>
-                                    {authenticated ? "Sign Out" : "Sign In"}
+                                <a
+                                    className="nav-item active w-100"
+                                    onClick={() => (authenticated ? signout() : navigate('/Auth'))}
+                                    style={{ color: 'white' }}
+                                >
+                                    {authenticated ? 'Sign Out' : 'Sign In'}
                                 </a>
                             </li>
                         </ul>
