@@ -1,25 +1,24 @@
-import { ToastContainer, Toast } from 'react-bootstrap';
 import { problemDetailsSchema } from './schemas';
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { ToastContainer, Toast, Modal, Button } from 'react-bootstrap';
 
 export default function NavBar() {
     const [authenticated, setAuthenticated] = useState(Boolean(localStorage.getItem('authenticated')));
-    const [error, setError] = useState<CustomError | null>(null);
-    const [success, setSuccess] = useState(false);
     const [isNavOpen, setIsNavOpen] = useState(false);
     const navigate = useNavigate();
 
-    async function signout() {
-        if (!window.confirm('Are you sure you want to sign out?')) {
-            return;
-        }
+    const [error, setError] = useState<CustomError | null>(null);
+    const [success, setSuccess] = useState(false);
+    const [showModal, setShowModal] = useState(false);
 
+    async function signout() {
         try {
             await axios.post('Api/Users/Account/SignOut');
             localStorage.removeItem('authenticated');
             setAuthenticated(false);
+            setShowModal(false);
             setSuccess(true);
         } catch (err) {
             if (
@@ -67,6 +66,25 @@ export default function NavBar() {
                     <Toast.Body>Signed out</Toast.Body>
                 </Toast>
             </ToastContainer>
+
+            <Modal
+                show={showModal}
+                centered
+                keyboard={true}
+                onHide={() => setShowModal(false)}
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title>Are you sure you want to sign out?</Modal.Title>
+                </Modal.Header>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={signout}>
+                        Sign Out
+                    </Button>
+                </Modal.Footer>
+            </Modal>
 
             <nav
                 className="navbar navbar-expand-md py-1 ps-2 pe-2"
@@ -118,7 +136,7 @@ export default function NavBar() {
                             <li className={`m-1 w-75 ${isNavOpen ? ' mb-2' : ''}`}>
                                 <a
                                     className="nav-item active w-100"
-                                    onClick={() => (authenticated ? signout() : navigate('/Auth'))}
+                                    onClick={() => (authenticated ? setShowModal(true) : navigate('/Auth'))}
                                     style={{ color: 'white' }}
                                 >
                                     {authenticated ? 'Sign Out' : 'Sign In'}
