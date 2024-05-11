@@ -48,7 +48,11 @@ export default function Auth() {
             <div className="container">
                 <div className="row vh-100 align-items-center justify-content-center m-1 text-center">
                     <div className="col-sm-8 col-md-6 col-lg-4 bg-white rounded shadow">
-                        {showSignin ? <Signin setError={setError} navigate={navigate} /> : <Signup setError={setError} navigate={navigate}  />}
+                        {showSignin ? (
+                            <Signin setError={setError} navigate={navigate} />
+                        ) : (
+                            <Signup setError={setError} navigate={navigate} />
+                        )}
                         <Button
                             className="btn-secondary mt-1 mb-1 bg-bg-secondary-subtle btn-sm"
                             onClick={() => setShowSignin(!showSignin)}
@@ -141,7 +145,7 @@ function Signup({ setError, navigate }: { setError: setError; navigate: Navigate
                             setError(err.response.data);
                         } else {
                             setError({
-                                title: 'Unknown',
+                                title: 'Unknown Error',
                                 detail: 'Something went wrong!',
                                 status: 500,
                             });
@@ -232,7 +236,7 @@ function Signin({ setError, navigate }: { setError: setError; navigate: Navigate
                             setError(err.response.data);
                         } else {
                             setError({
-                                title: 'Unknown',
+                                title: 'Unknown Error',
                                 detail: 'Something went wrong!',
                                 status: 500,
                             });
