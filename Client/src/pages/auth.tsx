@@ -5,7 +5,7 @@ import { useState } from 'react';
 import NavBar from '../navbar';
 import { Form } from 'formik';
 import axios from 'axios';
-import * as yup from 'yup'
+import * as yup from 'yup';
 import {
     ToastContainer,
     FormControl,
@@ -48,12 +48,12 @@ export default function Auth() {
             <div className="container">
                 <div className="row vh-100 align-items-center justify-content-center m-1 text-center">
                     <div className="col-sm-8 col-md-6 col-lg-4 bg-white rounded shadow">
-                        {showSignin ? <Signin setError={setError} navigate={navigate} /> : <Signup />}
+                        {showSignin ? <Signin setError={setError} navigate={navigate} /> : <Signup setError={setError} navigate={navigate}  />}
                         <Button
                             className="btn-secondary mt-1 mb-1 bg-bg-secondary-subtle btn-sm"
                             onClick={() => setShowSignin(!showSignin)}
                         >
-                            {showSignin ? 'Sign In' : 'Sign Up'}
+                            {showSignin ? 'Sign Up' : 'Sign In'}
                         </Button>
                     </div>
                 </div>
@@ -77,7 +77,7 @@ export default function Auth() {
     );
 }
 
-function Signin({ setError, navigate }: { setError: setError; navigate: NavigateFunction }) {
+function Signup({ setError, navigate }: { setError: setError; navigate: NavigateFunction }) {
     return (
         <>
             <Formik
@@ -126,7 +126,7 @@ function Signin({ setError, navigate }: { setError: setError; navigate: Navigate
                 validateOnChange
                 onSubmit={async (values) => {
                     try {
-                        await axios.post('/Api/Users/Account/SignUp', {
+                        await axios.post('/Api/Users/SignUp', {
                             name: values.name,
                             password: values.password,
                         });
@@ -209,7 +209,82 @@ function Signin({ setError, navigate }: { setError: setError; navigate: Navigate
     );
 }
 
-function Signup() {
-    return <>
-    </>;
+function Signin({ setError, navigate }: { setError: setError; navigate: NavigateFunction }) {
+    return (
+        <>
+            <Formik
+                validationSchema={signinSchema}
+                validateOnChange
+                onSubmit={async (values) => {
+                    try {
+                        await axios.post('/Api/Users/Account/SignIn', {
+                            name: values.name,
+                            password: values.password,
+                        });
+
+                        localStorage.setItem('loggedIn', 'true');
+                        navigate('/');
+                    } catch (err) {
+                        if (
+                            axios.isAxiosError<CustomError>(err) &&
+                            problemDetailsSchema.isValidSync(err.response?.data)
+                        ) {
+                            setError(err.response.data);
+                        } else {
+                            setError({
+                                title: 'Unknown',
+                                detail: 'Something went wrong!',
+                                status: 500,
+                            });
+                        }
+                    }
+                }}
+                initialValues={{
+                    name: '',
+                    password: '',
+                }}
+            >
+                {({ handleSubmit, handleChange, values, errors }) => (
+                    <Form noValidate onSubmit={handleSubmit}>
+                        <Row className="mb-3">
+                            <FormGroup as={Col} controlId="nameId">
+                                <FormLabel>Name</FormLabel>
+                                <InputGroup hasValidation>
+                                    <FormControl
+                                        type="name"
+                                        aria-describedby="inputGroupPrepend"
+                                        placeholder="name"
+                                        name="name"
+                                        value={values.name}
+                                        onChange={handleChange}
+                                        isInvalid={!!errors.name}
+                                    />
+                                    <FormControl.Feedback type="invalid">{errors.name}</FormControl.Feedback>
+                                </InputGroup>
+                            </FormGroup>
+                        </Row>
+                        <Row className="mb-3">
+                            <FormGroup as={Col} controlId="PasswordID">
+                                <FormLabel>Password</FormLabel>
+                                <InputGroup hasValidation>
+                                    <FormControl
+                                        type="password"
+                                        aria-describedby="inputGroupPrepend"
+                                        name="password"
+                                        value={values.password}
+                                        onChange={handleChange}
+                                        isInvalid={!!errors.password}
+                                    />
+                                    <FormControl.Feedback type="invalid">
+                                        {errors.password}
+                                    </FormControl.Feedback>
+                                </InputGroup>
+                            </FormGroup>
+                        </Row>
+                        <Button type="submit">Sign In</Button>
+                    </Form>
+                )}
+            </Formik>
+        </>
+    );
 }
