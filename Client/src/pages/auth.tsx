@@ -161,7 +161,6 @@ function Signup({ setError, navigate }: { setError: setError; navigate: Navigate
                                 <InputGroup hasValidation>
                                     <FormControl
                                         type="text"
-                                        placeholder="Name"
                                         aria-describedby="inputGroupPrepend"
                                         name="name"
                                         value={values.name}
@@ -257,7 +256,6 @@ function Signin({ setError, navigate }: { setError: setError; navigate: Navigate
                                     <FormControl
                                         type="name"
                                         aria-describedby="inputGroupPrepend"
-                                        placeholder="name"
                                         name="name"
                                         value={values.name}
                                         onChange={handleChange}
