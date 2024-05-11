@@ -131,7 +131,7 @@ function Signup({ setError, navigate }: { setError: setError; navigate: Navigate
                             password: values.password,
                         });
 
-                        localStorage.setItem('loggedIn', 'true');
+                        localStorage.setItem('authenticated', 'true');
                         navigate('/');
                     } catch (err) {
                         if (
@@ -222,7 +222,7 @@ function Signin({ setError, navigate }: { setError: setError; navigate: Navigate
                             password: values.password,
                         });
 
-                        localStorage.setItem('loggedIn', 'true');
+                        localStorage.setItem('authenticated', 'true');
                         navigate('/');
                     } catch (err) {
                         if (
