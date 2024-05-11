@@ -67,12 +67,7 @@ export default function NavBar() {
                 </Toast>
             </ToastContainer>
 
-            <Modal
-                show={showModal}
-                centered
-                keyboard={true}
-                onHide={() => setShowModal(false)}
-            >
+            <Modal show={showModal} centered keyboard={true} onHide={() => setShowModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Are you sure you want to sign out?</Modal.Title>
                 </Modal.Header>
