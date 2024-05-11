@@ -1,6 +1,7 @@
-interface ProblemDetails {
+interface CustomError {
     title: string;
-    status: number;
     detail: string;
-    traceId: string;
+    status: number;
 }
+
+type setError = React.Dispatch<SetStateAction<CustomError | null>>;
