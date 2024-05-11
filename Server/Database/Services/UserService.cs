@@ -12,6 +12,11 @@ public class UserService
         return await _context.Users.FindAsync(userId);
     }
 
+    public async Task<User?> GetUser(string name)
+    {
+        return await _context.Users.Where(u => u.Name == name).SingleOrDefaultAsync();
+    }
+
     public async Task<bool> UserExists(string name)
     {
         return await _context.Users.AnyAsync(u => u.Name == name);
