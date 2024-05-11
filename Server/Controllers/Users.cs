@@ -80,22 +80,21 @@ public class UsersController : CustomBase
             throw new ValidationException(result);
         }
 
-        var id = HttpContext.GetUserId();
-        var user = await service.GetUser(id);
+        var account = await service.GetUser(credentials.Name);
 
-        if (user is null)
+        if (account is null)
         {
             throw new BadRequestException("Invalid Credentials");
         }
 
-        var passwordsMatch = Verify(credentials.Password, user.PasswordHash);
+        var passwordsMatch = Verify(credentials.Password, account.PasswordHash);
 
         if (!passwordsMatch)
         {
             throw new BadRequestException("Invalid Credentials");
         }
 
-        await HttpContext.SignInHelper(user.Id);
+        await HttpContext.SignInHelper(account.Id);
         return Ok();
     }
 
