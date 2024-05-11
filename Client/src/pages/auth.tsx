@@ -1,10 +1,11 @@
-import { useNavigate } from 'react-router-dom';
+import { NavigateFunction, useNavigate } from 'react-router-dom';
+import { problemDetailsSchema } from '../schemas';
 import * as formik from 'formik';
 import { useState } from 'react';
 import NavBar from '../navbar';
 import { Form } from 'formik';
-import * as yup from 'yup';
 import axios from 'axios';
+import * as yup from 'yup'
 import {
     ToastContainer,
     FormControl,
@@ -17,8 +18,29 @@ import {
     Col,
 } from 'react-bootstrap';
 
+const { Formik } = formik;
+
+const signinSchema = yup.object().shape({
+    name: yup
+        .string()
+        .required('Name is a required field.')
+        .min(1, 'Must be at least 1 character.')
+        .max(50, 'Cannot be more than 50 characters.'),
+    password: yup
+        .string()
+        .required('Password is a required field.')
+        .min(10, 'Must be at least 10 characters.')
+        .max(70, 'Cannot be more than 70 characters.'),
+});
+
+const signupSchema = signinSchema.shape({
+    confirmPassword: yup.string().required('Please confirm your password.'),
+});
+
 export default function Auth() {
     const [showSignin, setShowSignin] = useState<boolean>(true);
+    const [error, setError] = useState<CustomError | null>(null);
+    const navigate = useNavigate();
 
     return (
         <>
@@ -26,7 +48,7 @@ export default function Auth() {
             <div className="container">
                 <div className="row vh-100 align-items-center justify-content-center m-1 text-center">
                     <div className="col-sm-8 col-md-6 col-lg-4 bg-white rounded shadow">
-                        {showSignin ? <Signin /> : <Signup />}
+                        {showSignin ? <Signin setError={setError} navigate={navigate} /> : <Signup />}
                         <Button
                             className="btn-secondary mt-1 mb-1 bg-bg-secondary-subtle btn-sm"
                             onClick={() => setShowSignin(!showSignin)}
@@ -36,38 +58,11 @@ export default function Auth() {
                     </div>
                 </div>
             </div>
-        </>
-    );
-}
 
-function Signin() {
-    const navigate = useNavigate();
-    const { Formik } = formik;
-
-    const schema = yup.object().shape({
-        name: yup
-            .string()
-            .required('Name is a required field.')
-            .min(1, 'Must be at least 1 character.')
-            .max(50, 'Cannot be more than 50 characters.'),
-        password: yup
-            .string()
-            .required('Password is a required field.')
-            .min(10, 'Must be at least 10 characters.')
-            .max(70, 'Cannot be more than 70 characters.'),
-        confirmPassword: yup.string().required('Please confirm your password.'),
-    });
-
-    const [showError, setShowError] = useState(false);
-    const [error, setError] = useState<ProblemDetails | null>(null);
-    const toggleError = () => setShowError(!showError);
-
-    return (
-        <>
             <ToastContainer position="top-end">
                 <Toast
-                    onClose={toggleError}
-                    show={showError}
+                    onClose={() => setError(null)}
+                    show={error !== null}
                     autohide={true}
                     className="d-inline-block m-1"
                     bg={'danger'}
@@ -78,14 +73,20 @@ function Signin() {
                     <Toast.Body>{error?.detail ?? 'Something went wrong.'}</Toast.Body>
                 </Toast>
             </ToastContainer>
+        </>
+    );
+}
 
+function Signin({ setError, navigate }: { setError: setError; navigate: NavigateFunction }) {
+    return (
+        <>
             <Formik
                 initialValues={{
                     name: '',
                     password: '',
                     confirmPassword: '',
                 }}
-                validationSchema={schema}
+                validationSchema={signupSchema}
                 validate={(values) => {
                     const errors: {
                         password?: string;
@@ -129,12 +130,22 @@ function Signin() {
                             name: values.name,
                             password: values.password,
                         });
+
                         localStorage.setItem('loggedIn', 'true');
                         navigate('/');
                     } catch (err) {
-                        console.log(typeof err, err);
-                        setError(err);
-                        setShowError(true);
+                        if (
+                            axios.isAxiosError<CustomError>(err) &&
+                            problemDetailsSchema.isValidSync(err.response?.data)
+                        ) {
+                            setError(err.response.data);
+                        } else {
+                            setError({
+                                title: 'Unknown',
+                                detail: 'Something went wrong!',
+                                status: 500,
+                            });
+                        }
                     }
                 }}
             >
@@ -199,5 +210,6 @@ function Signin() {
 }
 
 function Signup() {
-    return <></>;
+    return <>
+    </>;
 }
