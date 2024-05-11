@@ -85,14 +85,14 @@ public class UsersController : CustomBase
 
         if (user is null)
         {
-            throw new BadRequestException("Invalid AuthCredentials");
+            throw new BadRequestException("Invalid Credentials");
         }
 
         var passwordsMatch = Verify(credentials.Password, user.PasswordHash);
 
         if (!passwordsMatch)
         {
-            throw new BadRequestException("Invalid AuthCredentials");
+            throw new BadRequestException("Invalid Credentials");
         }
 
         await HttpContext.SignInHelper(user.Id);
