@@ -110,6 +110,17 @@ export default function NavBar() {
                                     About
                                 </a>
                             </li>
+                            {authenticated && (
+                                <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
+                                    <a
+                                        className="nav-item active w-100"
+                                        href="/account"
+                                        style={{ color: 'white' }}
+                                    >
+                                        Account
+                                    </a>
+                                </li>
+                            )}
                             <li className={`m-1 w-75 ${isNavOpen ? ' mb-2' : ''}`}>
                                 <a
                                     className="nav-item active w-100"
