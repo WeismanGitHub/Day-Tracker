@@ -110,24 +110,6 @@ export default function NavBar() {
                                     About
                                 </a>
                             </li>
-                            <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
-                                <a
-                                    className="nav-item active w-100"
-                                    href="/swagger/index.html"
-                                    style={{ color: 'white' }}
-                                >
-                                    Swagger
-                                </a>
-                            </li>
-                            <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
-                                <a
-                                    className="nav-item active w-100"
-                                    href="https://github.com/WeismanGitHub/Day-Tracker"
-                                    style={{ color: 'white' }}
-                                >
-                                    GitHub
-                                </a>
-                            </li>
                             <li className={`m-1 w-75 ${isNavOpen ? ' mb-2' : ''}`}>
                                 <a
                                     className="nav-item active w-100"
