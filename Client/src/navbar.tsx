@@ -72,11 +72,11 @@ export default function NavBar() {
                     <Modal.Title>Are you sure you want to sign out?</Modal.Title>
                 </Modal.Header>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={() => setShowModal(false)}>
-                        Close
-                    </Button>
                     <Button variant="primary" onClick={signout}>
                         Sign Out
+                    </Button>
+                    <Button variant="secondary" onClick={() => setShowModal(false)}>
+                        Close
                     </Button>
                 </Modal.Footer>
             </Modal>
