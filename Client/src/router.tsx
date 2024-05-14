@@ -8,7 +8,7 @@ import Account from './pages/account.tsx';
 const router = createBrowserRouter([
     { path: '/', element: <Home /> },
     { path: '/auth', element: <Auth /> },
-    { path: '/account', element: <RequireAuthentication element={<Account />}/> },
+    { path: '/account', element: <RequireAuthentication element={<Account />} /> },
 ]);
 
 export default router;
