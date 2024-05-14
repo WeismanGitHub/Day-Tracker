@@ -1,9 +1,11 @@
 import { Form, NavigateFunction, useNavigate } from 'react-router-dom';
 import { problemDetailsSchema } from '../schemas';
 import { useEffect, useState } from 'react';
+import { Formik } from 'formik';
 import NavBar from '../navbar';
 import axios from 'axios';
 import * as yup from 'yup';
+import axios from 'axios';
 import {
     Button,
     Col,
@@ -75,7 +77,8 @@ export default function Account() {
             {account?.name}
 
             <Row>
-                <DeleteAccountElement setError={setError} navigate={navigate} />
+                <EditAccount setError={setError} navigate={navigate} />
+                <DeleteAccount setError={setError} navigate={navigate} />
             </Row>
 
             <ToastContainer position="top-end">
@@ -96,10 +99,10 @@ export default function Account() {
     );
 }
 
-function DeleteAccountElement({ setError, navigate }: { setError: setError; navigate: NavigateFunction }) {
+function DeleteAccount({ setError, navigate }: { setError: setError; navigate: NavigateFunction }) {
     const [show, setShow] = useState(false);
 
-    async function deleteAccount(password: string) {
+    async function handleSubmit(password: string) {
         try {
             await axios.delete('/Api/Users/Account', {
                 data: {
@@ -141,7 +144,7 @@ function DeleteAccountElement({ setError, navigate }: { setError: setError; navi
                 initialValues={{
                     password: '',
                 }}
-                onSubmit={(values) => deleteAccount(values.password)}
+                onSubmit={(values) => handleSubmit(values.password)}
             >
                 {({ handleSubmit, handleChange, values, errors }) => (
                     <Modal show={show} centered keyboard={true} onHide={() => setShow(false)}>
