@@ -140,4 +140,38 @@ public class EntriesController : CustomBase
 
         return Ok();
     }
+
+    public class EntryDTO
+    {
+        public required Guid Id { get; set; }
+        public required DateTimeOffset CreatedAt { get; set; }
+    }
+
+    [ProducesResponseType(typeof(List<EntryDTO>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [HttpGet(Name = "GetEntries")]
+    public async Task<IActionResult> DeleteEntry(
+        [FromRoute] Guid chartId,
+        [FromQuery] DateTimeOffset? end,
+        ChartService chartService,
+        EntryService entryService
+    )
+    {
+        var accountId = HttpContext.GetUserId();
+        var chart = await chartService.GetUserChart(chartId, accountId);
+
+        if (chart is null)
+        {
+            throw new NotFoundException("Could not find chart.");
+        }
+
+        var entries = await entryService.GetEntries(chartId, end);
+
+        if (entries is null)
+        {
+            throw new NotFoundException("Could not retrieve entries.");
+        }
+
+        return Ok(entries);
+    }
 }
