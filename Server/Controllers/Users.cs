@@ -102,7 +102,7 @@ public class UsersController : CustomBase
     {
         public required Guid Id { get; set; }
         public required string Name { get; set; }
-        public required int ChatCount { get; set; }
+        public required int ChartCount { get; set; }
         public required DateTimeOffset CreatedAt { get; set; }
     }
 
@@ -126,7 +126,7 @@ public class UsersController : CustomBase
                 Id = user.Id,
                 Name = user.Name,
                 CreatedAt = user.CreatedAt,
-                ChatCount = user.Charts.Count
+                ChartCount = user.Charts.Count
             }
         );
     }
