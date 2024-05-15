@@ -208,12 +208,10 @@ function EditAccount({
     async function handleSubmit(values: { currentPassword: string; newName: string; newPassword: string }) {
         try {
             await axios.patch('/Api/Users/Account', {
-                data: {
-                    currentPassword: values.currentPassword,
-                    newData: {
-                        name: values.newName,
-                        password: values.newPassword,
-                    },
+                currentPassword: values.currentPassword,
+                newData: {
+                    ...(values.newName ? { name: values.newName } : {}),
+                    ...(values.newPassword ? { password: values.newPassword } : {}),
                 },
             });
 
@@ -276,7 +274,7 @@ function EditAccount({
                 })}
                 validate={(values) => {
                     const errors: {
-                        confirmPassword?: string;
+                        currentPassword?: string;
                         newPassword?: string;
                         newName?: string;
                     } = {};
@@ -287,7 +285,7 @@ function EditAccount({
                     }
 
                     if (values.newPassword == values.currentPassword) {
-                        errors.confirmPassword = 'Passwords cannot match.';
+                        errors.currentPassword = 'Passwords cannot match.';
                     }
 
                     return errors;
@@ -344,7 +342,7 @@ function EditAccount({
                                 </Row>
                                 <Row className="mb-3">
                                     <FormGroup as={Col} controlId="CurrentPasswordId">
-                                        <FormLabel>Current Passowrd</FormLabel>
+                                        <FormLabel>Current Password</FormLabel>
                                         <InputGroup hasValidation>
                                             <FormControl
                                                 type="password"
