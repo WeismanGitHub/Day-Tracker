@@ -200,17 +200,26 @@ public class UsersController : CustomBase
                 .Must(p => p.IsValidPassword())
                 .WithMessage("Current Password doesn't meet the criteria for a valid password.");
 
-            RuleFor(u => u.NewData.Name)
-                .NotEmpty()
-                .NotNull()
-                .MaximumLength(50)
-                .WithMessage("Username must be between 1 and 50 characters.");
+            When(
+                u => u.NewData.Name is not null,
+                () =>
+                    RuleFor(u => u.NewData.Name)
+                        .NotEmpty()
+                        .MinimumLength(1)
+                        .MaximumLength(50)
+                        .WithMessage("Username must be between 1 and 50 characters.")
+            );
 
-            RuleFor(u => u.NewData.Password)
-                .NotEmpty()
-                .MaximumLength(72)
-                .Must(p => p.IsValidPassword())
-                .WithMessage("Password is invalid.");
+            When(
+                u => u.NewData.Password is not null,
+                () =>
+                    RuleFor(u => u.NewData.Password)
+                        .NotEmpty()
+                        .MinimumLength(1)
+                        .MaximumLength(72)
+                        .Must(p => p.IsValidPassword())
+                        .WithMessage("Password is invalid.")
+            );
 
             RuleFor(u => u)
                 .Must(u => !(u.NewData.Password is null && u.NewData.Name is null))
