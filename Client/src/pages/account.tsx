@@ -7,6 +7,7 @@ import * as yup from 'yup';
 import axios from 'axios';
 import {
     Button,
+    Card,
     Col,
     FormControl,
     FormGroup,
@@ -72,17 +73,43 @@ export default function Account() {
     return (
         <>
             <NavBar />
-            {account?.name}
-
-            <Row className='w-25'>
-                <EditAccount
-                    setError={setError}
-                    navigate={navigate}
-                    setAccount={setAccount}
-                    account={account}
-                />
-                <DeleteAccount setError={setError} navigate={navigate} />
-            </Row>
+            <div className="d-flex justify-content-center align-items-center full-height-minus-navbar">
+                <div className="container">
+                    {account ? (
+                        <Card style={{ maxWidth: '800px' }} className="mx-auto">
+                            <Card.Header>
+                                <h2>{account.name}</h2>
+                            </Card.Header>
+                            <Card.Body>
+                                <Row>
+                                    <Col>
+                                        <Card.Text>
+                                            <strong>Charts:</strong> {account.chartCount}
+                                        </Card.Text>
+                                        <Card.Text>
+                                            <strong>Created:</strong>{' '}
+                                            {new Date(account.createdAt).toLocaleString()}
+                                        </Card.Text>
+                                    </Col>
+                                </Row>
+                                <Row className="mt-3">
+                                    <Col className="d-flex justify-content-end">
+                                        <EditAccount
+                                            setError={setError}
+                                            navigate={navigate}
+                                            setAccount={setAccount}
+                                            account={account}
+                                        />
+                                        <DeleteAccount setError={setError} navigate={navigate} />
+                                    </Col>
+                                </Row>
+                            </Card.Body>
+                        </Card>
+                    ) : (
+                        <div>Loading...</div>
+                    )}
+                </div>
+            </div>
 
             <ToastContainer position="top-end">
                 <Toast
@@ -136,7 +163,7 @@ function DeleteAccount({ setError, navigate }: { setError: setError; navigate: N
 
     return (
         <>
-            <Button variant="danger" onClick={() => setShow(true)} className='w-25'>
+            <Button variant="danger" onClick={() => setShow(true)}>
                 Delete
             </Button>
 
@@ -247,8 +274,8 @@ function EditAccount({
 
     return (
         <>
-            <Button variant="warning" onClick={() => setShow(true)} className='w-25'>
-                Update
+            <Button variant="warning" onClick={() => setShow(true)} className='me-2'>
+                Edit
             </Button>
 
             <ToastContainer position="top-end">
