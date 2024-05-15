@@ -1,5 +1,5 @@
-import { Form, NavigateFunction, useNavigate } from 'react-router-dom';
 import { nameSchema, passwordSchema, problemDetailsSchema } from '../schemas';
+import { Form, NavigateFunction, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import NavBar from '../navbar';
@@ -36,6 +36,7 @@ const accountSchema = yup.object().shape({
 export default function Account() {
     const [account, setAccount] = useState<Account | null>(null);
     const [error, setError] = useState<CustomError | null>(null);
+    const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -95,6 +96,7 @@ export default function Account() {
                                 <Row className="mt-3">
                                     <Col className="d-flex justify-content-end">
                                         <EditAccount
+                                            setSuccess={setSuccess}
                                             setError={setError}
                                             navigate={navigate}
                                             setAccount={setAccount}
@@ -123,6 +125,21 @@ export default function Account() {
                         <strong className="me-auto">{error?.title}</strong>
                     </Toast.Header>
                     <Toast.Body>{error?.detail ?? 'Something went wrong.'}</Toast.Body>
+                </Toast>
+            </ToastContainer>
+
+            <ToastContainer position="top-end">
+                <Toast
+                    onClose={() => setSuccess(false)}
+                    show={success}
+                    autohide={true}
+                    className="d-inline-block m-1"
+                    bg={'success'}
+                >
+                    <Toast.Header>
+                        <strong className="me-auto">{'Success!'}</strong>
+                    </Toast.Header>
+                    <Toast.Body>{'You updated your account.'}</Toast.Body>
                 </Toast>
             </ToastContainer>
         </>
@@ -179,7 +196,13 @@ function DeleteAccount({ setError, navigate }: { setError: setError; navigate: N
                 onSubmit={(values) => handleSubmit(values.password)}
             >
                 {({ handleSubmit, handleChange, values, errors }) => (
-                    <Modal show={show} centered keyboard={true} onHide={() => setShow(false)}>
+                    <Modal
+                        show={show}
+                        centered
+                        keyboard={true}
+                        onHide={() => setShow(false)}
+                        animation={false}
+                    >
                         <Form noValidate onSubmit={handleSubmit}>
                             <Modal.Header closeButton>
                                 <Modal.Title>Delete your account?</Modal.Title>
@@ -223,14 +246,15 @@ function EditAccount({
     navigate,
     setAccount,
     account,
+    setSuccess,
 }: {
     setError: setError;
     navigate: NavigateFunction;
     setAccount: React.Dispatch<React.SetStateAction<Account | null>>;
     account: Account | null;
+    setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
     const [show, setShow] = useState(false);
-    const [success, setSuccess] = useState(false);
 
     async function handleSubmit(values: { currentPassword: string; newName: string; newPassword: string }) {
         try {
@@ -274,24 +298,9 @@ function EditAccount({
 
     return (
         <>
-            <Button variant="warning" onClick={() => setShow(true)} className='me-2'>
+            <Button variant="warning" onClick={() => setShow(true)} className="me-2">
                 Edit
             </Button>
-
-            <ToastContainer position="top-end">
-                <Toast
-                    onClose={() => setSuccess(false)}
-                    show={success}
-                    autohide={true}
-                    className="d-inline-block m-1"
-                    bg={'success'}
-                >
-                    <Toast.Header>
-                        <strong className="me-auto">{'Success!'}</strong>
-                    </Toast.Header>
-                    <Toast.Body>{'You updated your account.'}</Toast.Body>
-                </Toast>
-            </ToastContainer>
 
             <Formik
                 validationSchema={yup.object().shape({
@@ -326,7 +335,13 @@ function EditAccount({
                 onSubmit={handleSubmit}
             >
                 {({ handleSubmit, handleChange, values, errors }) => (
-                    <Modal show={show} centered keyboard={true} onHide={() => setShow(false)}>
+                    <Modal
+                        show={show}
+                        centered
+                        keyboard={true}
+                        onHide={() => setShow(false)}
+                        animation={false}
+                    >
                         <Form noValidate onSubmit={handleSubmit}>
                             <Modal.Header closeButton>
                                 <Modal.Title>Update your account?</Modal.Title>
