@@ -60,3 +60,7 @@ body {
 .navbar-toggler {
     color: black;
 }
+
+.full-height-minus-navbar {
+    height: calc(100vh - 68px);
+}
