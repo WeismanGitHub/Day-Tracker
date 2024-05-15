@@ -112,7 +112,7 @@ public class EntriesController : CustomBase
 
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [HttpPost("{entryId:guid}", Name = "DeleteEntry")]
+    [HttpDelete("{entryId:guid}", Name = "DeleteEntry")]
     public async Task<IActionResult> DeleteEntry(
         [FromRoute] Guid chartId,
         [FromRoute] Guid entryId,
@@ -150,9 +150,9 @@ public class EntriesController : CustomBase
     [ProducesResponseType(typeof(List<EntryDTO>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [HttpGet(Name = "GetEntries")]
-    public async Task<IActionResult> DeleteEntry(
+    public async Task<IActionResult> GetEntries(
         [FromRoute] Guid chartId,
-        [FromQuery] DateTimeOffset? end,
+        [FromQuery] DateTimeOffset end,
         ChartService chartService,
         EntryService entryService
     )
