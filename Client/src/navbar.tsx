@@ -114,7 +114,10 @@ export default function NavBar() {
                                     </a>
                                 </li>
                             )}
-                            <li className={`m-1 w-75 ${isNavOpen ? ' mb-2' : ''}`}>
+                            <li
+                                className={`m-1 w-100 ${isNavOpen ? ' mb-2' : ''}`}
+                                style={{ maxWidth: isNavOpen ? '50%' : '75%' }}
+                            >
                                 <a
                                     className="nav-item active w-100"
                                     onClick={() => (authenticated ? setShowModal(true) : navigate('/Auth'))}
