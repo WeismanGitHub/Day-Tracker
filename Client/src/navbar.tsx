@@ -10,7 +10,6 @@ export default function NavBar() {
     const navigate = useNavigate();
 
     const [error, setError] = useState<CustomError | null>(null);
-    const [success, setSuccess] = useState(false);
     const [showModal, setShowModal] = useState(false);
 
     async function signout() {
@@ -19,7 +18,9 @@ export default function NavBar() {
             localStorage.removeItem('authenticated');
             setAuthenticated(false);
             setShowModal(false);
-            setSuccess(true);
+            setTimeout(() => {
+                navigate('/auth')
+            }, 500);
         } catch (err) {
             if (
                 axios.isAxiosError<CustomError>(err) &&
@@ -52,22 +53,8 @@ export default function NavBar() {
                     <Toast.Body>{error?.detail}</Toast.Body>
                 </Toast>
             </ToastContainer>
-            <ToastContainer position="top-end">
-                <Toast
-                    onClose={() => setSuccess(false)}
-                    show={success}
-                    autohide={true}
-                    className="d-inline-block m-1"
-                    bg={'success'}
-                >
-                    <Toast.Header>
-                        <strong className="me-auto">Success!</strong>
-                    </Toast.Header>
-                    <Toast.Body>Signed out</Toast.Body>
-                </Toast>
-            </ToastContainer>
 
-            <Modal show={showModal} centered keyboard={true} onHide={() => setShowModal(false)}>
+            <Modal show={showModal} centered keyboard={true} onHide={() => setShowModal(false)} animation={false}>
                 <Modal.Header closeButton>
                     <Modal.Title>Are you sure you want to sign out?</Modal.Title>
                 </Modal.Header>
