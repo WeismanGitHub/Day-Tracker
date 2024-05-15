@@ -1,11 +1,11 @@
+import { nameSchema, passwordSchema, problemDetailsSchema } from '../schemas';
 import { NavigateFunction, useNavigate } from 'react-router-dom';
-import { problemDetailsSchema } from '../schemas';
 import * as formik from 'formik';
 import { useState } from 'react';
 import NavBar from '../navbar';
 import { Form } from 'formik';
-import axios from 'axios';
 import * as yup from 'yup';
+import axios from 'axios';
 import {
     ToastContainer,
     FormControl,
@@ -21,16 +21,8 @@ import {
 const { Formik } = formik;
 
 const signinSchema = yup.object().shape({
-    name: yup
-        .string()
-        .required('Name is a required field.')
-        .min(1, 'Must be at least 1 character.')
-        .max(50, 'Cannot be more than 50 characters.'),
-    password: yup
-        .string()
-        .required('Password is a required field.')
-        .min(10, 'Must be at least 10 characters.')
-        .max(70, 'Cannot be more than 70 characters.'),
+    name: nameSchema,
+    password: passwordSchema,
 });
 
 const signupSchema = signinSchema.shape({
@@ -99,30 +91,6 @@ function Signup({ setError, navigate }: { setError: setError; navigate: Navigate
 
                     if (values.password !== values.confirmPassword) {
                         errors.confirmPassword = 'Passwords do not match.';
-                    }
-
-                    let hasUpperCase = false;
-                    let hasLowerCase = false;
-                    let hasDigit = false;
-
-                    values.password.split('').forEach((char) => {
-                        if (char.toLocaleLowerCase() === char) {
-                            hasLowerCase = true;
-                        }
-                        if (char.toLocaleUpperCase() === char) {
-                            hasUpperCase = true;
-                        }
-                        if (!isNaN(Number(char))) {
-                            hasDigit = true;
-                        }
-                    });
-
-                    if (!hasLowerCase) {
-                        errors.password = 'Missing a lower case letter.';
-                    } else if (!hasUpperCase) {
-                        errors.password = 'Missing an upper case letter.';
-                    } else if (!hasDigit) {
-                        errors.password = 'Missing a digit.';
                     }
 
                     return errors;
