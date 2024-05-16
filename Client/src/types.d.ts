@@ -4,4 +4,5 @@ interface CustomError {
     status: number;
 }
 
-type setError = React.Dispatch<SetStateAction<CustomError | null>>;
+type setState<T> = React.Dispatch<SetStateAction<T>>;
+type setError = setState<CustomError | null>;

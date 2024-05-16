@@ -250,9 +250,9 @@ function EditAccount({
 }: {
     setError: setError;
     navigate: NavigateFunction;
-    setAccount: React.Dispatch<React.SetStateAction<Account | null>>;
+    setAccount: setState<Account | null>;
     account: Account | null;
-    setSuccess: React.Dispatch<React.SetStateAction<boolean>>;
+    setSuccess: setState<boolean>;
 }) {
     const [show, setShow] = useState(false);
 
