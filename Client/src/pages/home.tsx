@@ -91,7 +91,7 @@ export default function Home() {
             <NavBar />
             <div className="full-height-minus-navbar d-flex">
                 <div className="container mt-3">
-                    <Card style={{ maxWidth: '500px' }} className="mx-auto">
+                    <Card style={{ maxWidth: '500px' }} className="mx-auto shadow">
                         <Card.Header className='bg-primary text-white'>
                             <h2>Charts</h2>
                         </Card.Header>

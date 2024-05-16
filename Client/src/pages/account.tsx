@@ -77,7 +77,7 @@ export default function Account() {
             <div className="d-flex justify-content-center align-items-center full-height-minus-navbar">
                 <div className="container">
                     {account ? (
-                        <Card style={{ maxWidth: '800px' }} className="mx-auto">
+                        <Card style={{ maxWidth: '800px' }} className="mx-auto shadow">
                             <Card.Header className='bg-primary text-white'>
                                 <h2>{account.name}</h2>
                             </Card.Header>
