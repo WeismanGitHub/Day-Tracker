@@ -275,6 +275,7 @@ function EditAccount({
                 });
             }
 
+            setShow(false);
             setSuccess(true);
         } catch (err) {
             if (

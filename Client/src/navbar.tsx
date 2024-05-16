@@ -5,7 +5,7 @@ import axios from 'axios';
 import { ToastContainer, Toast, Modal, Button } from 'react-bootstrap';
 
 export default function NavBar() {
-    const [authenticated, setAuthenticated] = useState(Boolean(localStorage.getItem('authenticated')));
+    const [authenticated] = useState(Boolean(localStorage.getItem('authenticated')));
     const [isNavOpen, setIsNavOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -16,7 +16,6 @@ export default function NavBar() {
         try {
             await axios.post('Api/Users/Account/SignOut');
             localStorage.removeItem('authenticated');
-            setAuthenticated(false);
             setShowModal(false);
             setTimeout(() => {
                 navigate('/auth');
