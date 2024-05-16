@@ -163,26 +163,27 @@ function Charts({
     return (
         <div className="d-flex gap-2 flex-wrap justify-content-center w-100">
             {charts?.map((chart) => (
-                <Card
-                    style={{ width: '18rem', backgroundColor: ChartColorMap[chart.type] }}
-                    className="shadow-sm"
-                >
-                    <Card.Body>
-                        <Card.Title
-                            style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}
-                        >
-                            {chart.name}
-                        </Card.Title>
-                        <Card.Text>
-                            {/* This displays the actual enum name.*/}
-                            <strong>Type:</strong> {ChartType[ChartType[chart.type] as unknown as ChartType]}
-                        </Card.Text>
-                        <Card.Text>
-                            <strong>Created:</strong>{' '}
-                            {new Date(chart.createdAt).toLocaleString([], { dateStyle: 'short' })}
-                        </Card.Text>
-                    </Card.Body>
-                </Card>
+                <a href={`/charts/${chart.id}`}>
+                    <Card
+                        key={chart.id}
+                        style={{ width: '18rem', backgroundColor: ChartColorMap[chart.type], cursor: 'pointer' }}
+                        className="shadow-sm chart"
+                    >
+                        <Card.Body>
+                            <Card.Title>
+                                <h4 style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}><strong>{chart.name}</strong></h4>
+                            </Card.Title>
+                            <Card.Text>
+                                {/* This displays the actual enum name.*/}
+                                <strong>Type:</strong> {ChartType[ChartType[chart.type] as unknown as ChartType]}
+                            </Card.Text>
+                            <Card.Text>
+                                <strong>Created:</strong>{' '}
+                                {new Date(chart.createdAt).toLocaleString([], { dateStyle: 'short' })}
+                            </Card.Text>
+                        </Card.Body>
+                    </Card>
+                </a>
             ))}
         </div>
     );

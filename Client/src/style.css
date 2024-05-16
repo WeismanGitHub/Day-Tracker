@@ -1,3 +1,7 @@
+a {
+    text-decoration: none;
+}
+
 .brightness-effect:hover {
     filter: brightness(1.2);
 }
@@ -63,4 +67,12 @@ body {
 
 .full-height-minus-navbar {
     height: calc(100vh - 68px);
+}
+
+.chart:hover {
+    transform: scale(1.025);
+}
+
+.chart:active {
+    transform: scale(1.035);
 }
