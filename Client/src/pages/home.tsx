@@ -90,9 +90,9 @@ export default function Home() {
         <>
             <NavBar />
             <div className="full-height-minus-navbar d-flex">
-                <div className="container mt-3">
-                    <Card style={{ maxWidth: '500px' }} className="mx-auto shadow">
-                        <Card.Header className='bg-primary text-white'>
+                <div className="container mt-3 mb-3">
+                    <Card style={{ maxWidth: '500px' }} className="mx-auto shadow mb-2">
+                        <Card.Header className="bg-primary text-white">
                             <h2>Charts</h2>
                         </Card.Header>
                         <Card.Body>
@@ -161,15 +161,25 @@ function Charts({
     setCharts: setState<Chart[] | null>;
 }) {
     return (
-        <div className="d-flex gap-1 flex-column">
+        <div className="d-flex gap-2 flex-wrap justify-content-center w-100">
             {charts?.map((chart) => (
-                <Card key={chart.id} className="mb-3" style={{ backgroundColor: ChartColorMap[chart.type] }}>
+                <Card
+                    style={{ width: '18rem', backgroundColor: ChartColorMap[chart.type] }}
+                    className="shadow-sm"
+                >
                     <Card.Body>
-                        <Card.Title>{chart.name}</Card.Title>
+                        <Card.Title
+                            style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}
+                        >
+                            {chart.name}
+                        </Card.Title>
                         <Card.Text>
-                            <strong>Type:</strong> {chart.type}
-                            <br />
-                            <strong>Created At:</strong> {new Date(chart.createdAt).toLocaleString()}
+                            {/* This displays the actual enum name.*/}
+                            <strong>Type:</strong> {ChartType[ChartType[chart.type] as unknown as ChartType]}
+                        </Card.Text>
+                        <Card.Text>
+                            <strong>Created:</strong>{' '}
+                            {new Date(chart.createdAt).toLocaleString([], { dateStyle: 'short' })}
                         </Card.Text>
                     </Card.Body>
                 </Card>
@@ -204,9 +214,10 @@ function CreateChartButton({
                     type: values.type,
                     createdAt: new Date(),
                 },
-                ...charts
+                ...charts,
             ]);
 
+            setShow(false);
             setSuccess('Created a chart.');
         } catch (err) {
             if (
