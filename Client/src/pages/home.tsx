@@ -17,6 +17,7 @@ import {
     FormControl,
     FormLabel,
     InputGroup,
+    ListGroup,
 } from 'react-bootstrap';
 
 enum ChartType {
@@ -91,7 +92,7 @@ export default function Home() {
             <NavBar />
             <div className="full-height-minus-navbar d-flex">
                 <div className="container mt-3 mb-3">
-                    <Card style={{ maxWidth: '500px' }} className="mx-auto shadow mb-2">
+                    <Card style={{ maxWidth: '500px' }} className="mx-auto mb-2">
                         <Card.Header className="bg-primary text-white">
                             <h2>Charts</h2>
                         </Card.Header>
@@ -230,6 +231,7 @@ function CreateChartButton({
                 ...charts,
             ]);
 
+            values.name = ''
             setShow(false);
             setSuccess('Created a chart.');
         } catch (err) {
@@ -274,7 +276,7 @@ function CreateChartButton({
                 }}
                 onSubmit={handleSubmit}
             >
-                {({ handleSubmit, handleChange, values, errors }) => (
+                {({ handleSubmit, handleChange, values, errors, setFieldValue }) => (
                     <Modal
                         show={show}
                         centered
@@ -304,24 +306,58 @@ function CreateChartButton({
                                         </InputGroup>
                                     </FormGroup>
                                 </Row>
-                                {/* <Row className="mb-3">
-                                    <FormGroup as={Col} controlId="NewPasswordId">
-                                        <FormLabel>New Password</FormLabel>
-                                        <InputGroup hasValidation>
-                                            <FormControl
-                                                type="password"
-                                                aria-describedby="inputGroupPrepend"
-                                                name="newPassword"
-                                                value={values.newPassword}
-                                                onChange={handleChange}
-                                                isInvalid={!!errors.newPassword}
-                                            />
-                                            <FormControl.Feedback type="invalid">
-                                                {errors.newPassword}
-                                            </FormControl.Feedback>
-                                        </InputGroup>
+                                <Row className="mb-3">
+                                    <FormGroup as={Col}>
+                                        <FormLabel>Chart Type</FormLabel>
+                                        <br />
+                                        <ListGroup horizontal={true}>
+                                            <ListGroup.Item
+                                                action
+                                                active={values.type == ChartType.Counter}
+                                                className="text-black"
+                                                style={{
+                                                    backgroundColor: ChartColorMap[0],
+                                                    fontWeight:
+                                                        values.type === ChartType.Counter ? 'bold' : 'normal',
+                                                }}
+                                                onClick={() => setFieldValue('type', ChartType.Counter)}
+                                            >
+                                                Counter
+                                            </ListGroup.Item>
+                                            <ListGroup.Item
+                                                action
+                                                active={values.type == ChartType.CheckMark}
+                                                className="text-black"
+                                                style={{
+                                                    backgroundColor: ChartColorMap[1],
+                                                    fontWeight:
+                                                        values.type === ChartType.CheckMark
+                                                            ? 'bold'
+                                                            : 'normal',
+                                                }}
+                                                onClick={() => setFieldValue('type', ChartType.CheckMark)}
+                                            >
+                                                Checkmark
+                                            </ListGroup.Item>
+                                            <ListGroup.Item
+                                                action
+                                                active={values.type == ChartType.Scale}
+                                                className="text-black"
+                                                style={{
+                                                    backgroundColor: ChartColorMap[2],
+                                                    fontWeight:
+                                                        values.type === ChartType.Scale ? 'bold' : 'normal',
+                                                }}
+                                                onClick={() => setFieldValue('type', ChartType.Scale)}
+                                            >
+                                                Scale
+                                            </ListGroup.Item>
+                                        </ListGroup>
+                                        <FormControl.Feedback type="invalid">
+                                            {errors.type}
+                                        </FormControl.Feedback>
                                     </FormGroup>
-                                </Row> */}
+                                </Row>
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button type="submit">Create</Button>
