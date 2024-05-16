@@ -26,7 +26,6 @@ public class ChartsController : CustomBase
                 .WithMessage("Name must be between 1 and 50 characters.");
 
             RuleFor(c => c.Type)
-                .NotEmpty()
                 .NotNull()
                 .Must(t => Enum.IsDefined(typeof(ChartType), t))
                 .WithMessage("Invalid chart type.");
