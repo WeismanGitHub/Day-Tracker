@@ -43,7 +43,7 @@ const chartSchema = yup.array(
 interface Chart {
     id: string;
     name: string;
-    type: ChartType;
+    type: number;
     createdAt: string;
 }
 
@@ -166,16 +166,28 @@ function Charts({
                 <a href={`/charts/${chart.id}`}>
                     <Card
                         key={chart.id}
-                        style={{ width: '18rem', backgroundColor: ChartColorMap[chart.type], cursor: 'pointer' }}
+                        style={{
+                            width: '18rem',
+                            backgroundColor: ChartColorMap[chart.type as ChartType],
+                            cursor: 'pointer',
+                        }}
                         className="shadow-sm chart"
                     >
                         <Card.Body>
                             <Card.Title>
-                                <h4 style={{ textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap' }}><strong>{chart.name}</strong></h4>
+                                <h4
+                                    style={{
+                                        textOverflow: 'ellipsis',
+                                        overflow: 'hidden',
+                                        whiteSpace: 'nowrap',
+                                    }}
+                                >
+                                    <strong>{chart.name}</strong>
+                                </h4>
                             </Card.Title>
                             <Card.Text>
                                 {/* This displays the actual enum name.*/}
-                                <strong>Type:</strong> {ChartType[ChartType[chart.type] as unknown as ChartType]}
+                                <strong>Type:</strong> {ChartType[chart.type]}
                             </Card.Text>
                             <Card.Text>
                                 <strong>Created:</strong>{' '}
