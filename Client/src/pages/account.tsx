@@ -78,7 +78,7 @@ export default function Account() {
                 <div className="container">
                     {account ? (
                         <Card style={{ maxWidth: '800px' }} className="mx-auto shadow">
-                            <Card.Header className='bg-primary text-white'>
+                            <Card.Header className="bg-primary text-white">
                                 <h2>{account.name}</h2>
                             </Card.Header>
                             <Card.Body>
