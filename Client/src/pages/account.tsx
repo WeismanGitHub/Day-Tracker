@@ -228,7 +228,9 @@ function DeleteAccount({ setError, navigate }: { setError: setError; navigate: N
                                 </Row>
                             </Modal.Body>
                             <Modal.Footer>
-                                <Button type="submit">Delete</Button>
+                                <Button type="submit" variant="danger">
+                                    Delete
+                                </Button>
                                 <Button variant="secondary" onClick={() => setShow(false)}>
                                     Close
                                 </Button>
@@ -403,7 +405,9 @@ function EditAccount({
                                 </Row>
                             </Modal.Body>
                             <Modal.Footer>
-                                <Button type="submit">Update</Button>
+                                <Button type="submit" variant="warning">
+                                    Update
+                                </Button>
                                 <Button variant="secondary" onClick={() => setShow(false)}>
                                     Close
                                 </Button>
