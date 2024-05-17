@@ -33,6 +33,8 @@ const ChartColorMap = {
     [ChartType.Scale]: '#F09EA7',
 };
 
+const chartsSchema = yup.array(chartSchema);
+
 const chartNameSchema = yup
     .string()
     .min(1, 'Must be at least 1 character.')
@@ -58,7 +60,7 @@ export default function Home() {
             try {
                 const res = await axios.get<Chart[]>('/Api/Charts');
 
-                if (!chartSchema.validateSync(res.data)) {
+                if (!chartsSchema.validateSync(res.data)) {
                     throw new Error();
                 }
 

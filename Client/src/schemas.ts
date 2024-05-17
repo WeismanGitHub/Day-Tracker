@@ -22,12 +22,11 @@ const nameSchema = yup
     .min(1, 'Must be at least 1 character.')
     .max(50, 'Cannot be more than 50 characters.');
 
-const chartSchema = yup.array(
-    yup.object().shape({
-        id: yup.string().required(),
-        name: yup.string().required(),
-        type: yup.number().required(),
-        createdAt: yup.string().required(),
-    })
-);
+const chartSchema = yup.object().shape({
+    id: yup.string().required(),
+    name: yup.string().required(),
+    type: yup.number().required(),
+    createdAt: yup.string().required(),
+})
+
 export { problemDetailsSchema, passwordSchema, nameSchema, chartSchema };
