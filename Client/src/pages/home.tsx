@@ -547,7 +547,10 @@ function CreateChartButton({
                                                     fontWeight:
                                                         values.type === ChartType.Counter ? 'bold' : 'normal',
                                                 }}
-                                                onClick={() => setFieldValue('type', ChartType.Counter)}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setFieldValue('type', ChartType.Counter);
+                                                }}
                                             >
                                                 Counter
                                             </ListGroup.Item>
@@ -562,7 +565,10 @@ function CreateChartButton({
                                                             ? 'bold'
                                                             : 'normal',
                                                 }}
-                                                onClick={() => setFieldValue('type', ChartType.Checkmark)}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setFieldValue('type', ChartType.Checkmark);
+                                                }}
                                             >
                                                 Checkmark
                                             </ListGroup.Item>
@@ -575,7 +581,10 @@ function CreateChartButton({
                                                     fontWeight:
                                                         values.type === ChartType.Scale ? 'bold' : 'normal',
                                                 }}
-                                                onClick={() => setFieldValue('type', ChartType.Scale)}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setFieldValue('type', ChartType.Scale);
+                                                }}
                                             >
                                                 Scale
                                             </ListGroup.Item>
