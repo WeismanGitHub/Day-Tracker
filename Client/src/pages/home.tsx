@@ -18,6 +18,7 @@ import {
     FormLabel,
     InputGroup,
     ListGroup,
+    Dropdown,
 } from 'react-bootstrap';
 
 enum ChartType {
@@ -175,19 +176,45 @@ function Charts({
                         className="shadow-sm chart"
                     >
                         <Card.Body>
-                            <Card.Title>
+                            <Card.Title style={{ display: 'flex', alignItems: 'center' }}>
                                 <h4
                                     style={{
+                                        paddingBottom: '3px',
                                         textOverflow: 'ellipsis',
                                         overflow: 'hidden',
                                         whiteSpace: 'nowrap',
+                                        flexGrow: 1,
                                     }}
                                 >
                                     <strong>{chart.name}</strong>
                                 </h4>
+                                <a
+                                    href="#."
+                                    style={{
+                                        float: 'right',
+                                        display: 'inline-block',
+                                        paddingBottom: '15px',
+                                    }}
+                                >
+                                    <div className="dropdown dropdown-menu-end">
+                                        <div data-bs-toggle="dropdown" className="ms-auto">
+                                            <img
+                                                src="three-dots-vertical.svg"
+                                                width="22.5"
+                                                height="22.5"
+                                                alt="options"
+                                            />
+                                        </div>
+
+                                        <div className="dropdown-menu">
+                                            <Dropdown.Item href={`/charts/${chart.id}`}>View</Dropdown.Item>
+                                            <Dropdown.Item>Edit</Dropdown.Item>
+                                            <Dropdown.Item>Delete</Dropdown.Item>
+                                        </div>
+                                    </div>
+                                </a>
                             </Card.Title>
                             <Card.Text>
-                                {/* This displays the actual enum name.*/}
                                 <strong>Type:</strong> {ChartType[chart.type]}
                             </Card.Text>
                             <Card.Text>
@@ -231,7 +258,7 @@ function CreateChartButton({
                 ...charts,
             ]);
 
-            values.name = ''
+            values.name = '';
             setShow(false);
             setSuccess('Created a chart.');
         } catch (err) {
