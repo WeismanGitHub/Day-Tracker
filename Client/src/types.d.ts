@@ -6,3 +6,10 @@ interface CustomError {
 
 type setState<T> = React.Dispatch<SetStateAction<T>>;
 type setError = setState<CustomError | null>;
+
+interface Chart {
+    id: string;
+    name: string;
+    type: number;
+    createdAt: string;
+}

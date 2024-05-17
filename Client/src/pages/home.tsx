@@ -1,6 +1,7 @@
 import { Form, NavigateFunction, useNavigate } from 'react-router-dom';
 import { problemDetailsSchema, chartSchema } from '../schemas';
 import { useEffect, useState } from 'react';
+import ChartType from '../chart-type';
 import { Formik } from 'formik';
 import NavBar from '../navbar';
 import * as yup from 'yup';
@@ -21,12 +22,6 @@ import {
     Dropdown,
 } from 'react-bootstrap';
 
-enum ChartType {
-    Counter = 0,
-    Checkmark = 1,
-    Scale = 2,
-}
-
 const ChartColorMap = {
     [ChartType.Counter]: '#CDABEB',
     [ChartType.Checkmark]: '#C1EBC0',
@@ -40,13 +35,6 @@ const chartNameSchema = yup
     .min(1, 'Must be at least 1 character.')
     .max(50, 'Cannot be more than 50 characters.')
     .required('Name is required');
-
-interface Chart {
-    id: string;
-    name: string;
-    type: number;
-    createdAt: string;
-}
 
 export default function Home() {
     const [error, setError] = useState<CustomError | null>(null);
