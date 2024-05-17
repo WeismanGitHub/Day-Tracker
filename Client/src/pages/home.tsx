@@ -23,13 +23,13 @@ import {
 
 enum ChartType {
     Counter = 0,
-    CheckMark = 1,
+    Checkmark = 1,
     Scale = 2,
 }
 
 const ChartColorMap = {
     [ChartType.Counter]: '#CDABEB',
-    [ChartType.CheckMark]: '#C1EBC0',
+    [ChartType.Checkmark]: '#C1EBC0',
     [ChartType.Scale]: '#F09EA7',
 };
 
@@ -41,6 +41,12 @@ const chartSchema = yup.array(
         createdAt: yup.string().required(),
     })
 );
+
+const chartNameSchema = yup
+    .string()
+    .min(1, 'Must be at least 1 character.')
+    .max(50, 'Cannot be more than 50 characters.')
+    .required('Name is required');
 
 interface Chart {
     id: string;
@@ -118,7 +124,12 @@ export default function Home() {
                             </Row>
                         </Card.Body>
                     </Card>
-                    <Charts charts={charts} setCharts={setCharts} />
+                    <Charts
+                        charts={charts}
+                        setCharts={setCharts}
+                        setError={setError}
+                        setSuccess={setSuccess}
+                    />
                 </div>
             </div>
 
@@ -157,10 +168,14 @@ export default function Home() {
 
 function Charts({
     charts,
-    // setCharts,
+    setCharts,
+    setError,
+    setSuccess,
 }: {
     charts: Chart[] | null;
     setCharts: setState<Chart[] | null>;
+    setSuccess: setState<string>;
+    setError: setError;
 }) {
     return (
         <div className="d-flex gap-2 flex-wrap justify-content-center w-100">
@@ -208,8 +223,21 @@ function Charts({
 
                                         <div className="dropdown-menu">
                                             <Dropdown.Item href={`/charts/${chart.id}`}>View</Dropdown.Item>
-                                            <Dropdown.Item>Edit</Dropdown.Item>
-                                            <Dropdown.Item>Delete</Dropdown.Item>
+                                            <EditChartItem
+                                                chartId={chart.id}
+                                                charts={charts}
+                                                setCharts={setCharts}
+                                                setError={setError}
+                                                setSuccess={setSuccess}
+                                            />
+
+                                            <DeleteChartItem
+                                                chartId={chart.id}
+                                                charts={charts}
+                                                setCharts={setCharts}
+                                                setError={setError}
+                                                setSuccess={setSuccess}
+                                            />
                                         </div>
                                     </div>
                                 </a>
@@ -229,6 +257,182 @@ function Charts({
     );
 }
 
+function EditChartItem({
+    chartId,
+    setError,
+    setSuccess,
+    charts,
+    setCharts,
+}: {
+    chartId: string;
+    setSuccess: setState<string>;
+    setError: setError;
+    setCharts: setState<Chart[]>;
+    charts: Chart[];
+}) {
+    const [show, setShow] = useState(false);
+    const navigate = useNavigate();
+
+    async function updateChart(name: string) {
+        try {
+            await axios.patch(`/Api/Charts/${chartId}`, { name });
+            setCharts(
+                charts.map((chart) => {
+                    if (chart.id === chartId) {
+                        chart.name = name;
+                    }
+
+                    return chart;
+                })
+            );
+
+            setShow(false);
+            setSuccess('Updated this chart.');
+        } catch (err) {
+            if (
+                axios.isAxiosError<CustomError>(err) &&
+                problemDetailsSchema.isValidSync(err.response?.data)
+            ) {
+                if (err.response.status == 401) {
+                    return navigate('/auth');
+                }
+
+                setError(err.response.data);
+            } else {
+                setError({
+                    title: 'Unknown Error',
+                    detail: 'Something went wrong!',
+                    status: 500,
+                });
+            }
+        }
+    }
+
+    return (
+        <>
+            <Dropdown.Item onClick={() => setShow(true)}>Edit</Dropdown.Item>
+
+            <Formik
+                validationSchema={yup.object().shape({
+                    name: chartNameSchema,
+                })}
+                validateOnMount
+                validateOnChange
+                initialValues={{
+                    name: '',
+                }}
+                onSubmit={(values) => updateChart(values.name)}
+            >
+                {({ handleSubmit, handleChange, values, errors }) => (
+                    <Modal
+                        show={show}
+                        centered
+                        keyboard={true}
+                        onHide={() => setShow(false)}
+                        animation={false}
+                    >
+                        <Form noValidate onSubmit={handleSubmit}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Update this chart?</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <Row className="mb-3">
+                                    <FormGroup as={Col} controlId="NameId">
+                                        <FormLabel>New Name</FormLabel>
+                                        <InputGroup hasValidation>
+                                            <FormControl
+                                                aria-describedby="inputGroupPrepend"
+                                                name="name"
+                                                value={values.name}
+                                                onChange={handleChange}
+                                                isInvalid={!!errors.name}
+                                            />
+                                            <FormControl.Feedback type="invalid">
+                                                {errors.name}
+                                            </FormControl.Feedback>
+                                        </InputGroup>
+                                    </FormGroup>
+                                </Row>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button type="submit" variant="warning">
+                                    Update
+                                </Button>
+                                <Button variant="secondary" onClick={() => setShow(false)}>
+                                    Close
+                                </Button>
+                            </Modal.Footer>
+                        </Form>
+                    </Modal>
+                )}
+            </Formik>
+        </>
+    );
+}
+
+function DeleteChartItem({
+    chartId,
+    setError,
+    setSuccess,
+    charts,
+    setCharts,
+}: {
+    chartId: string;
+    setSuccess: setState<string>;
+    setError: setError;
+    setCharts: setState<Chart[]>;
+    charts: Chart[];
+}) {
+    const [show, setShow] = useState(false);
+    const navigate = useNavigate();
+
+    async function deleteChart() {
+        try {
+            await axios.delete(`/Api/Charts/${chartId}`);
+            setCharts(charts.filter((chart) => chart.id !== chartId));
+
+            setShow(false);
+            setSuccess('Deleted this chart.');
+        } catch (err) {
+            if (
+                axios.isAxiosError<CustomError>(err) &&
+                problemDetailsSchema.isValidSync(err.response?.data)
+            ) {
+                if (err.response.status == 401) {
+                    return navigate('/auth');
+                }
+
+                setError(err.response.data);
+            } else {
+                setError({
+                    title: 'Unknown Error',
+                    detail: 'Something went wrong!',
+                    status: 500,
+                });
+            }
+        }
+    }
+
+    return (
+        <>
+            <Dropdown.Item onClick={() => setShow(true)}>Delete</Dropdown.Item>
+
+            <Modal show={show} centered keyboard={true} onHide={() => setShow(false)} animation={false}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Delete this chart?</Modal.Title>
+                </Modal.Header>
+                <Modal.Footer>
+                    <Button variant="danger" onClick={deleteChart}>
+                        Delete
+                    </Button>
+                    <Button variant="secondary" onClick={() => setShow(false)}>
+                        Close
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        </>
+    );
+}
 function CreateChartButton({
     setError,
     setCharts,
@@ -289,11 +493,7 @@ function CreateChartButton({
 
             <Formik
                 validationSchema={yup.object().shape({
-                    name: yup
-                        .string()
-                        .min(1, 'Must be at least 1 character.')
-                        .max(50, 'Cannot be more than 50 characters.')
-                        .required('Name is required'),
+                    name: chartNameSchema,
                     type: yup.string().oneOf(Object.keys(ChartType)).required('Type is required.'),
                 })}
                 validateOnChange
@@ -353,16 +553,16 @@ function CreateChartButton({
                                             </ListGroup.Item>
                                             <ListGroup.Item
                                                 action
-                                                active={values.type == ChartType.CheckMark}
+                                                active={values.type == ChartType.Checkmark}
                                                 className="text-black"
                                                 style={{
                                                     backgroundColor: ChartColorMap[1],
                                                     fontWeight:
-                                                        values.type === ChartType.CheckMark
+                                                        values.type === ChartType.Checkmark
                                                             ? 'bold'
                                                             : 'normal',
                                                 }}
-                                                onClick={() => setFieldValue('type', ChartType.CheckMark)}
+                                                onClick={() => setFieldValue('type', ChartType.Checkmark)}
                                             >
                                                 Checkmark
                                             </ListGroup.Item>
