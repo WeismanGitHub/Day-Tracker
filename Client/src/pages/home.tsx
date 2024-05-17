@@ -1,5 +1,5 @@
 import { Form, NavigateFunction, useNavigate } from 'react-router-dom';
-import { problemDetailsSchema } from '../schemas';
+import { problemDetailsSchema, chartSchema } from '../schemas';
 import { useEffect, useState } from 'react';
 import { Formik } from 'formik';
 import NavBar from '../navbar';
@@ -32,15 +32,6 @@ const ChartColorMap = {
     [ChartType.Checkmark]: '#C1EBC0',
     [ChartType.Scale]: '#F09EA7',
 };
-
-const chartSchema = yup.array(
-    yup.object().shape({
-        id: yup.string().required(),
-        name: yup.string().required(),
-        type: yup.number().required(),
-        createdAt: yup.string().required(),
-    })
-);
 
 const chartNameSchema = yup
     .string()
