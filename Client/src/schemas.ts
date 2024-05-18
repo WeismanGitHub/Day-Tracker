@@ -27,6 +27,6 @@ const chartSchema = yup.object().shape({
     name: yup.string().required(),
     type: yup.number().required(),
     createdAt: yup.string().required(),
-})
+});
 
 export { problemDetailsSchema, passwordSchema, nameSchema, chartSchema };

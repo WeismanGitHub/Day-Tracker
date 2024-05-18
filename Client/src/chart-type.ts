@@ -4,4 +4,4 @@ enum ChartType {
     Scale = 2,
 }
 
-export default ChartType
+export default ChartType;
