@@ -159,9 +159,9 @@ function Charts({
     setError: setError;
 }) {
     return (
-        <div className="d-flex gap-2 flex-wrap justify-content-center w-100">
+        <div className="d-flex gap-2 flex-wrap justify-content-center w-100 pb-3">
             {charts?.map((chart) => (
-                <a href={`/charts/${chart.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                <a href={`/charts/${chart.id}`} style={{ color: 'inherit', textDecoration: 'none'}}>
                     <Card
                         key={chart.id}
                         style={{
