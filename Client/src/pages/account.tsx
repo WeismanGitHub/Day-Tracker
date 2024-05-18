@@ -74,37 +74,31 @@ export default function Account() {
             <NavBar />
             <div className="d-flex justify-content-center align-items-center full-height-minus-navbar">
                 <div className="container">
-                    {account ? (
-                        <Card style={{ maxWidth: '800px' }} className="mx-auto shadow">
-                            <Card.Header className="bg-primary text-white">
-                                <h2>{account.name}</h2>
-                            </Card.Header>
-                            <Card.Body>
-                                <Row>
-                                    <Col>
-                                        <Card.Text>
-                                            <strong>Created:</strong>{' '}
-                                            {new Date(account.createdAt).toLocaleString()}
-                                        </Card.Text>
-                                    </Col>
-                                </Row>
-                                <Row className="mt-3">
-                                    <Col className="d-flex justify-content-end">
-                                        <EditAccount
-                                            setSuccess={setSuccess}
-                                            setError={setError}
-                                            navigate={navigate}
-                                            setAccount={setAccount}
-                                            account={account}
-                                        />
-                                        <DeleteAccount setError={setError} navigate={navigate} />
-                                    </Col>
-                                </Row>
-                            </Card.Body>
-                        </Card>
-                    ) : (
-                        <div>Loading...</div>
-                    )}
+                    <Card style={{ maxWidth: '800px' }} className="mx-auto shadow">
+                        <Card.Header className="bg-primary text-white">
+                            <h2>{account?.name}</h2>
+                        </Card.Header>
+                        <Card.Body>
+                            <Row>
+                                <Card.Text>
+                                    <strong>Created:</strong>{' '}
+                                    {account && new Date(account.createdAt).toLocaleString()}
+                                </Card.Text>
+                            </Row>
+                            <Row>
+                                <Col className="d-flex justify-content-end">
+                                    <EditAccount
+                                        setSuccess={setSuccess}
+                                        setError={setError}
+                                        navigate={navigate}
+                                        setAccount={setAccount}
+                                        account={account}
+                                    />
+                                    <DeleteAccount setError={setError} navigate={navigate} />
+                                </Col>
+                            </Row>
+                        </Card.Body>
+                    </Card>
                 </div>
             </div>
 
