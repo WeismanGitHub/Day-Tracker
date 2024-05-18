@@ -125,7 +125,7 @@ export default function Home() {
                     <Toast.Header>
                         <strong className="me-auto">{error?.title}</strong>
                     </Toast.Header>
-                    <Toast.Body>{error?.detail ?? 'Something went wrong.'}</Toast.Body>
+                    <Toast.Body className='text-white'><strong>{error?.detail ?? 'Something went wrong.'}</strong></Toast.Body>
                 </Toast>
             </ToastContainer>
 
@@ -140,7 +140,7 @@ export default function Home() {
                     <Toast.Header>
                         <strong className="me-auto">{'Success!'}</strong>
                     </Toast.Header>
-                    <Toast.Body>{success}</Toast.Body>
+                    <Toast.Body className='text-white'><strong>{success}</strong></Toast.Body>
                 </Toast>
             </ToastContainer>
         </>
@@ -205,6 +205,7 @@ function Charts({
                                         <div className="dropdown-menu">
                                             <Dropdown.Item href={`/charts/${chart.id}`}>View</Dropdown.Item>
                                             <EditChartItem
+                                                chart={chart}
                                                 chartId={chart.id}
                                                 charts={charts}
                                                 setCharts={setCharts}
@@ -239,12 +240,14 @@ function Charts({
 }
 
 function EditChartItem({
+    chart,
     chartId,
     setError,
     setSuccess,
     charts,
     setCharts,
 }: {
+    chart: Chart;
     chartId: string;
     setSuccess: setState<string>;
     setError: setError;
@@ -300,7 +303,7 @@ function EditChartItem({
                 validateOnMount
                 validateOnChange
                 initialValues={{
-                    name: '',
+                    name: chart.id,
                 }}
                 onSubmit={(values) => updateChart(values.name)}
             >

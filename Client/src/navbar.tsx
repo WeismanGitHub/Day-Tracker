@@ -49,7 +49,7 @@ export default function NavBar() {
                     <Toast.Header>
                         <strong className="me-auto">{error?.title}</strong>
                     </Toast.Header>
-                    <Toast.Body>{error?.detail}</Toast.Body>
+                    <Toast.Body className='text-white'><strong>{error?.detail}</strong></Toast.Body>
                 </Toast>
             </ToastContainer>
 
