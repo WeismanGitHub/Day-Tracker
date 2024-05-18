@@ -72,3 +72,18 @@ body {
 .chart:active {
     transform: scale(1.035);
 }
+
+.btn-custom-white {
+    background-color: white !important; /* Ensure it overrides other styles */
+    color: black !important; /* Text color, you can adjust as needed */
+    border: 1px solid #ccc; /* Optional: Add a light gray border */
+}
+
+.btn-custom-white:hover {
+    background-color: #f8f9fae6 !important; /* Optional: Lighten background on hover */
+}
+
+.btn-custom-white:active {
+    color: white !important;
+    background-color: var(--bs-primary) !important;
+}

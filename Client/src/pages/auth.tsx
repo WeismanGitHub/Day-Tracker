@@ -37,20 +37,22 @@ export default function Auth() {
     return (
         <>
             <NavBar />
-            <div className="container">
-                <div className="row vh-100 align-items-center justify-content-center m-1 text-center">
-                    <div className="col-sm-8 col-md-6 col-lg-4 bg-white rounded shadow">
-                        {showSignin ? (
-                            <Signin setError={setError} navigate={navigate} />
-                        ) : (
-                            <Signup setError={setError} navigate={navigate} />
-                        )}
-                        <Button
-                            className="btn-secondary mt-1 mb-1 bg-bg-secondary-subtle btn-sm"
-                            onClick={() => setShowSignin(!showSignin)}
-                        >
-                            {showSignin ? 'Sign Up' : 'Sign In'}
-                        </Button>
+            <div className="d-flex justify-content-center align-items-center full-height-minus-navbar">
+                <div className="container">
+                    <div className="row align-items-center justify-content-center m-1 text-center">
+                        <div className="col-sm-8 col-md-6 col-lg-4 bg-white rounded shadow">
+                            {showSignin ? (
+                                <Signin setError={setError} navigate={navigate} />
+                            ) : (
+                                <Signup setError={setError} navigate={navigate} />
+                            )}
+                            <Button
+                                className="mt-1 mb-1 btn-custom-white btn-sm"
+                                onClick={() => setShowSignin(!showSignin)}
+                            >
+                                {showSignin ? 'Sign Up' : 'Sign In'}
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
