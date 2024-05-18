@@ -22,14 +22,12 @@ import {
 interface Account {
     id: string;
     name: string;
-    chartCount: number;
     createdAt: string;
 }
 
 const accountSchema = yup.object().shape({
     id: yup.string().required(),
     name: yup.string().required(),
-    chartCount: yup.number().required(),
     createdAt: yup.string().required(),
 });
 
@@ -84,9 +82,6 @@ export default function Account() {
                             <Card.Body>
                                 <Row>
                                     <Col>
-                                        <Card.Text>
-                                            <strong>Charts:</strong> {account.chartCount}
-                                        </Card.Text>
                                         <Card.Text>
                                             <strong>Created:</strong>{' '}
                                             {new Date(account.createdAt).toLocaleString()}
@@ -271,7 +266,6 @@ function EditAccount({
             if (values.newName && account) {
                 setAccount({
                     name: values.newName,
-                    chartCount: account.chartCount,
                     createdAt: account.createdAt,
                     id: account.id,
                 });
