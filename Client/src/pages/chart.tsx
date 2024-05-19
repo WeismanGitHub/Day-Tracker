@@ -69,7 +69,9 @@ export default function Chart() {
                     <Toast.Header>
                         <strong className="me-auto">{error?.title}</strong>
                     </Toast.Header>
-                    <Toast.Body className='text-white'><strong>{error?.detail ?? 'Something went wrong.'}</strong></Toast.Body>
+                    <Toast.Body className="text-white">
+                        <strong>{error?.detail ?? 'Something went wrong.'}</strong>
+                    </Toast.Body>
                 </Toast>
             </ToastContainer>
 
@@ -84,7 +86,9 @@ export default function Chart() {
                     <Toast.Header>
                         <strong className="me-auto">{'Success!'}</strong>
                     </Toast.Header>
-                    <Toast.Body className='text-white'><strong>{success}</strong></Toast.Body>
+                    <Toast.Body className="text-white">
+                        <strong>{success}</strong>
+                    </Toast.Body>
                 </Toast>
             </ToastContainer>
         </>

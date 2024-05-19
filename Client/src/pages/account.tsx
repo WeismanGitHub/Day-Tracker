@@ -113,7 +113,9 @@ export default function Account() {
                     <Toast.Header>
                         <strong className="me-auto">{error?.title}</strong>
                     </Toast.Header>
-                    <Toast.Body className='text-white'><strong>{error?.detail ?? 'Something went wrong.'}</strong></Toast.Body>
+                    <Toast.Body className="text-white">
+                        <strong>{error?.detail ?? 'Something went wrong.'}</strong>
+                    </Toast.Body>
                 </Toast>
             </ToastContainer>
 
@@ -128,7 +130,9 @@ export default function Account() {
                     <Toast.Header>
                         <strong className="me-auto">{'Success!'}</strong>
                     </Toast.Header>
-                    <Toast.Body className='text-white'><strong>{'You updated your account.'}</strong></Toast.Body>
+                    <Toast.Body className="text-white">
+                        <strong>{'You updated your account.'}</strong>
+                    </Toast.Body>
                 </Toast>
             </ToastContainer>
         </>
@@ -311,7 +315,7 @@ function EditAccount({
                         errors.newName = 'Must update something.';
                     }
 
-                    if ((values.newPassword == values.currentPassword) && (values.currentPassword !== '')) {
+                    if (values.newPassword == values.currentPassword && values.currentPassword !== '') {
                         errors.currentPassword = 'Passwords cannot match.';
                     }
 
