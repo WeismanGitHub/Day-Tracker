@@ -311,7 +311,7 @@ function EditAccount({
                         errors.newName = 'Must update something.';
                     }
 
-                    if (values.newPassword == values.currentPassword) {
+                    if ((values.newPassword == values.currentPassword) && (values.currentPassword !== '')) {
                         errors.currentPassword = 'Passwords cannot match.';
                     }
 
