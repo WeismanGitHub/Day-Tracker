@@ -38,7 +38,7 @@ public class UsersController : CustomBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status409Conflict)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [AllowAnonymous]
-    [HttpPost(Name = "SignUp")]
+    [HttpPost("SignUp", Name = "SignUp")]
     public async Task<IActionResult> SignUp(
         [FromBody] AuthCredentials credentials,
         UserService service
@@ -80,22 +80,21 @@ public class UsersController : CustomBase
             throw new ValidationException(result);
         }
 
-        var id = HttpContext.GetUserId();
-        var user = await service.GetUser(id);
+        var account = await service.GetUser(credentials.Name);
 
-        if (user is null)
+        if (account is null)
         {
-            throw new BadRequestException("Invalid AuthCredentials");
+            throw new BadRequestException("Invalid Credentials");
         }
 
-        var passwordsMatch = Verify(credentials.Password, user.PasswordHash);
+        var passwordsMatch = Verify(credentials.Password, account.PasswordHash);
 
         if (!passwordsMatch)
         {
-            throw new BadRequestException("Invalid AuthCredentials");
+            throw new BadRequestException("Invalid Credentials");
         }
 
-        await HttpContext.SignInHelper(user.Id);
+        await HttpContext.SignInHelper(account.Id);
         return Ok();
     }
 
@@ -103,7 +102,6 @@ public class UsersController : CustomBase
     {
         public required Guid Id { get; set; }
         public required string Name { get; set; }
-        public required int ChatCount { get; set; }
         public required DateTimeOffset CreatedAt { get; set; }
     }
 
@@ -127,7 +125,6 @@ public class UsersController : CustomBase
                 Id = user.Id,
                 Name = user.Name,
                 CreatedAt = user.CreatedAt,
-                ChatCount = user.Charts.Count
             }
         );
     }
@@ -201,17 +198,26 @@ public class UsersController : CustomBase
                 .Must(p => p.IsValidPassword())
                 .WithMessage("Current Password doesn't meet the criteria for a valid password.");
 
-            RuleFor(u => u.NewData.Name)
-                .NotEmpty()
-                .NotNull()
-                .MaximumLength(50)
-                .WithMessage("Username must be between 1 and 50 characters.");
+            When(
+                u => u.NewData.Name is not null,
+                () =>
+                    RuleFor(u => u.NewData.Name)
+                        .NotEmpty()
+                        .MinimumLength(1)
+                        .MaximumLength(50)
+                        .WithMessage("Username must be between 1 and 50 characters.")
+            );
 
-            RuleFor(u => u.NewData.Password)
-                .NotEmpty()
-                .MaximumLength(72)
-                .Must(p => p.IsValidPassword())
-                .WithMessage("Password is invalid.");
+            When(
+                u => u.NewData.Password is not null,
+                () =>
+                    RuleFor(u => u.NewData.Password)
+                        .NotEmpty()
+                        .MinimumLength(1)
+                        .MaximumLength(72)
+                        .Must(p => p.IsValidPassword())
+                        .WithMessage("Password is invalid.")
+            );
 
             RuleFor(u => u)
                 .Must(u => !(u.NewData.Password is null && u.NewData.Name is null))

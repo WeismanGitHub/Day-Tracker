@@ -1,6 +1,15 @@
-interface ProblemDetails {
+interface CustomError {
     title: string;
-    status: number;
     detail: string;
-    traceId: string;
+    status: number;
+}
+
+type setState<T> = React.Dispatch<SetStateAction<T>>;
+type setError = setState<CustomError | null>;
+
+interface Chart {
+    id: string;
+    name: string;
+    type: number;
+    createdAt: string;
 }
