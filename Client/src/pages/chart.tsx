@@ -1,11 +1,12 @@
 import { chartSchema, problemDetailsSchema } from '../schemas';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import NavBar from '../navbar';
 import axios from 'axios';
-import { Breadcrumb, Navbar, Toast, ToastContainer } from 'react-bootstrap';
+import { Breadcrumb, Toast, ToastContainer } from 'react-bootstrap';
 
 export default function Chart() {
-    const [chart, setChart] = useState<Chart | null>()
+    const [chart, setChart] = useState<Chart | null>();
     const { chartId } = useParams();
     const navigate = useNavigate();
 
@@ -46,12 +47,15 @@ export default function Chart() {
 
     return (
         <>
-            <Navbar />
+            <NavBar />
             <div className="full-height-minus-navbar">
-                <Breadcrumb>
-                    <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
-                    <Breadcrumb.Item href={`/charts/${chartId}`}>{chart?.name}</Breadcrumb.Item>
-                </Breadcrumb>
+                <h4 className="ps-4 pt-2">
+                    <Breadcrumb>
+                        <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
+                        <Breadcrumb.Item href={`/charts/${chartId}`}>{chart?.name}</Breadcrumb.Item>
+                    </Breadcrumb>
+                </h4>
+                <div className="d-flex justify-content-center align-items-center"></div>
             </div>
 
             <ToastContainer position="top-end">
@@ -65,7 +69,7 @@ export default function Chart() {
                     <Toast.Header>
                         <strong className="me-auto">{error?.title}</strong>
                     </Toast.Header>
-                    <Toast.Body>{error?.detail ?? 'Something went wrong.'}</Toast.Body>
+                    <Toast.Body className='text-white'><strong>{error?.detail ?? 'Something went wrong.'}</strong></Toast.Body>
                 </Toast>
             </ToastContainer>
 
@@ -80,7 +84,7 @@ export default function Chart() {
                     <Toast.Header>
                         <strong className="me-auto">{'Success!'}</strong>
                     </Toast.Header>
-                    <Toast.Body>{success}</Toast.Body>
+                    <Toast.Body className='text-white'><strong>{success}</strong></Toast.Body>
                 </Toast>
             </ToastContainer>
         </>
