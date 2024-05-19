@@ -163,7 +163,7 @@ function Signup({ setError, navigate }: { setError: setError; navigate: Navigate
                         </Row>
                         <Row className="mb-3">
                             <FormGroup as={Col} controlId="ConfirmPasswordID">
-                                <FormLabel>Confirm</FormLabel>
+                                <FormLabel>Confirm Password</FormLabel>
                                 <FormControl
                                     type="password"
                                     name="confirmPassword"
