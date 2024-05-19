@@ -307,7 +307,7 @@ function EditChartItem({
                 validateOnMount
                 validateOnChange
                 initialValues={{
-                    name: chart.id,
+                    name: chart.name,
                 }}
                 onSubmit={(values) => updateChart(values.name)}
             >
@@ -329,6 +329,7 @@ function EditChartItem({
                                         <FormLabel>New Name</FormLabel>
                                         <InputGroup hasValidation>
                                             <FormControl
+                                                autoFocus
                                                 aria-describedby="inputGroupPrepend"
                                                 name="name"
                                                 value={values.name}
@@ -509,6 +510,7 @@ function CreateChartButton({
                                         <FormLabel>Name</FormLabel>
                                         <InputGroup hasValidation>
                                             <FormControl
+                                                autoFocus
                                                 aria-describedby="inputGroupPrepend"
                                                 name="name"
                                                 value={values.name}

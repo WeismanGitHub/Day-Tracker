@@ -49,7 +49,9 @@ export default function NavBar() {
                     <Toast.Header>
                         <strong className="me-auto">{error?.title}</strong>
                     </Toast.Header>
-                    <Toast.Body className='text-white'><strong>{error?.detail}</strong></Toast.Body>
+                    <Toast.Body className="text-white">
+                        <strong>{error?.detail}</strong>
+                    </Toast.Body>
                 </Toast>
             </ToastContainer>
 
@@ -64,7 +66,7 @@ export default function NavBar() {
                     <Modal.Title>Are you sure you want to sign out?</Modal.Title>
                 </Modal.Header>
                 <Modal.Footer>
-                    <Button variant="danger" onClick={signout}>
+                    <Button variant="danger" onClick={signout} autoFocus>
                         Sign Out
                     </Button>
                     <Button variant="secondary" onClick={() => setShowModal(false)}>

@@ -132,6 +132,7 @@ function Signup({ setError, navigate }: { setError: setError; navigate: Navigate
                                 <FormLabel>Name</FormLabel>
                                 <InputGroup hasValidation>
                                     <FormControl
+                                        autoFocus
                                         type="text"
                                         aria-describedby="inputGroupPrepend"
                                         name="name"
@@ -226,6 +227,7 @@ function Signin({ setError, navigate }: { setError: setError; navigate: Navigate
                                 <FormLabel>Name</FormLabel>
                                 <InputGroup hasValidation>
                                     <FormControl
+                                        autoFocus
                                         type="name"
                                         aria-describedby="inputGroupPrepend"
                                         name="name"

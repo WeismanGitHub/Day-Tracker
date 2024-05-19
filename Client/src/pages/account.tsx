@@ -87,13 +87,15 @@ export default function Account() {
                             </Row>
                             <Row>
                                 <Col className="d-flex justify-content-end">
-                                    <EditAccount
-                                        setSuccess={setSuccess}
-                                        setError={setError}
-                                        navigate={navigate}
-                                        setAccount={setAccount}
-                                        account={account}
-                                    />
+                                    {account && (
+                                        <EditAccount
+                                            setSuccess={setSuccess}
+                                            setError={setError}
+                                            navigate={navigate}
+                                            setAccount={setAccount}
+                                            account={account}
+                                        />
+                                    )}
                                     <DeleteAccount setError={setError} navigate={navigate} />
                                 </Col>
                             </Row>
@@ -246,7 +248,7 @@ function EditAccount({
     setError: setError;
     navigate: NavigateFunction;
     setAccount: setState<Account | null>;
-    account: Account | null;
+    account: Account;
     setSuccess: setState<boolean>;
 }) {
     const [show, setShow] = useState(false);
@@ -325,7 +327,7 @@ function EditAccount({
                 initialValues={{
                     newPassword: '',
                     currentPassword: '',
-                    newName: account?.name ?? '',
+                    newName: account.name,
                 }}
                 onSubmit={handleSubmit}
             >
@@ -347,6 +349,7 @@ function EditAccount({
                                         <FormLabel>New Name</FormLabel>
                                         <InputGroup hasValidation>
                                             <FormControl
+                                                autoFocus
                                                 aria-describedby="inputGroupPrepend"
                                                 name="newName"
                                                 value={values.newName}
