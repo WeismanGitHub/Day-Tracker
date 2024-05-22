@@ -1,8 +1,7 @@
 import { Form, NavigateFunction, useNavigate } from 'react-router-dom';
+import { ChartType, handleErrors } from '../helpers';
 import { useEffect, useState } from 'react';
-import { handleErrors } from '../helpers';
 import { chartSchema } from '../schemas';
-import ChartType from '../chart-type';
 import { Formik } from 'formik';
 import NavBar from '../navbar';
 import * as yup from 'yup';

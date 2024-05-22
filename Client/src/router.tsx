@@ -1,5 +1,5 @@
 import { createBrowserRouter } from 'react-router-dom';
-import RequireAuthentication from './require-auth.tsx';
+import { RequireAuthentication } from './helpers.ts';
 
 import Account from './pages/account.tsx';
 import Chart from './pages/chart.tsx';
