@@ -36,15 +36,19 @@ public class EntryService
         await _context.SaveChangesAsync();
     }
 
-    public async Task<List<EntryDTO>> GetEntries(Guid chartId, DateTimeOffset end)
+    public async Task<List<EntryDTO>> GetEntries(Guid chartId, int year)
     {
-        var startOfPreviousYear = new DateTimeOffset(end.Year - 1, 1, 1, 0, 0, 0, end.Offset);
-        var endOfPreviousYear = new DateTimeOffset(end.Year - 1, 12, 31, 23, 59, 59, end.Offset);
-
         return await _context
             .Entries.Where(e => e.ChartId == chartId)
-            .Where(e => e.CreatedAt >= startOfPreviousYear && e.CreatedAt <= endOfPreviousYear)
-            .Select(e => new EntryDTO() { Id = e.Id, CreatedAt = e.CreatedAt, })
+            .Where(e => e.CreatedAt.Year == year)
+            .Select(e => new EntryDTO
+            {
+                Id = e.Id,
+                CreatedAt = e.CreatedAt,
+                Checked = e is CheckmarkEntry ? ((CheckmarkEntry)e).Checked : null,
+                Count = e is CounterEntry ? ((CounterEntry)e).Count : null,
+                Rating = e is ScaleEntry ? ((ScaleEntry)e).Rating : null,
+            })
             .ToListAsync();
     }
 }
