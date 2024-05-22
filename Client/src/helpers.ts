@@ -32,6 +32,7 @@ function RequireAuthentication({ element }: { element: JSX.Element }): JSX.Eleme
         if (!authenticated) {
             navigate('/auth');
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return element;

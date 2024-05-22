@@ -44,16 +44,19 @@ export default function Home() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        handleErrors(async () => {
-            const res = await axios.get<Chart[]>('/Api/Charts');
+        handleErrors(
+            async () => {
+                const res = await axios.get<Chart[]>('/Api/Charts');
 
-            if (!chartsSchema.validateSync(res.data)) {
-                throw new Error();
-            }
+                if (!chartsSchema.validateSync(res.data)) {
+                    throw new Error();
+                }
 
-            setCharts(res.data);
-
-        }, setError, navigate)
+                setCharts(res.data);
+            },
+            setError,
+            navigate
+        );
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -244,21 +247,25 @@ function EditChartItem({
     const navigate = useNavigate();
 
     async function updateChart(name: string) {
-        await handleErrors(async () => {
-            await axios.patch(`/Api/Charts/${chartId}`, { name });
-            setCharts(
-                charts.map((chart) => {
-                    if (chart.id === chartId) {
-                        chart.name = name;
-                    }
+        await handleErrors(
+            async () => {
+                await axios.patch(`/Api/Charts/${chartId}`, { name });
+                setCharts(
+                    charts.map((chart) => {
+                        if (chart.id === chartId) {
+                            chart.name = name;
+                        }
 
-                    return chart;
-                })
-            );
+                        return chart;
+                    })
+                );
 
-            setShow(false);
-            setSuccess('Updated this chart.');
-        }, setError, navigate)
+                setShow(false);
+                setSuccess('Updated this chart.');
+            },
+            setError,
+            navigate
+        );
     }
 
     return (
@@ -341,13 +348,17 @@ function DeleteChartItem({
     const navigate = useNavigate();
 
     async function deleteChart() {
-        await handleErrors(async () => {
-            await axios.delete(`/Api/Charts/${chartId}`);
-            setCharts(charts.filter((chart) => chart.id !== chartId));
+        await handleErrors(
+            async () => {
+                await axios.delete(`/Api/Charts/${chartId}`);
+                setCharts(charts.filter((chart) => chart.id !== chartId));
 
-            setShow(false);
-            setSuccess('Deleted this chart.');
-        }, setError, navigate)
+                setShow(false);
+                setSuccess('Deleted this chart.');
+            },
+            setError,
+            navigate
+        );
     }
 
     return (

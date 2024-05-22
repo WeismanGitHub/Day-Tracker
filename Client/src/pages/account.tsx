@@ -1,6 +1,7 @@
-import { nameSchema, passwordSchema, problemDetailsSchema } from '../schemas';
 import { Form, NavigateFunction, useNavigate } from 'react-router-dom';
+import { nameSchema, passwordSchema } from '../schemas';
 import { useEffect, useState } from 'react';
+import { handleErrors } from '../helpers';
 import { Formik } from 'formik';
 import NavBar from '../navbar';
 import * as yup from 'yup';
@@ -38,8 +39,8 @@ export default function Account() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        (async function () {
-            try {
+        handleErrors(
+            async () => {
                 const res = await axios.get<Account>('/Api/Users/Account');
 
                 if (!accountSchema.validateSync(res.data)) {
@@ -47,26 +48,10 @@ export default function Account() {
                 }
 
                 setAccount(res.data);
-            } catch (err) {
-                if (
-                    axios.isAxiosError<CustomError>(err) &&
-                    problemDetailsSchema.isValidSync(err.response?.data)
-                ) {
-                    if (err.response.status == 401) {
-                        localStorage.removeItem('authenticated');
-                        return navigate('/auth');
-                    }
-
-                    setError(err.response.data);
-                } else {
-                    setError({
-                        title: 'Unknown Error',
-                        detail: 'Something went wrong!',
-                        status: 500,
-                    });
-                }
-            }
-        })();
+            },
+            setError,
+            navigate
+        );
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -146,34 +131,20 @@ function DeleteAccount({ setError, navigate }: { setError: setError; navigate: N
     const [show, setShow] = useState(false);
 
     async function handleSubmit(password: string) {
-        try {
-            await axios.delete('/Api/Users/Account', {
-                data: {
-                    password,
-                },
-            });
-
-            localStorage.removeItem('authenticated');
-            navigate('/auth');
-        } catch (err) {
-            if (
-                axios.isAxiosError<CustomError>(err) &&
-                problemDetailsSchema.isValidSync(err.response?.data)
-            ) {
-                if (err.response.status == 401) {
-                    localStorage.removeItem('authenticated');
-                    return navigate('/auth');
-                }
-
-                setError(err.response.data);
-            } else {
-                setError({
-                    title: 'Unknown Error',
-                    detail: 'Something went wrong!',
-                    status: 500,
+        handleErrors(
+            async () => {
+                await axios.delete('/Api/Users/Account', {
+                    data: {
+                        password,
+                    },
                 });
-            }
-        }
+
+                localStorage.removeItem('authenticated');
+                navigate('/auth');
+            },
+            setError,
+            navigate
+        );
     }
 
     return (
@@ -257,44 +228,30 @@ function EditAccount({
     const [show, setShow] = useState(false);
 
     async function handleSubmit(values: { currentPassword: string; newName: string; newPassword: string }) {
-        try {
-            await axios.patch('/Api/Users/Account', {
-                currentPassword: values.currentPassword,
-                newData: {
-                    ...(values.newName ? { name: values.newName } : {}),
-                    ...(values.newPassword ? { password: values.newPassword } : {}),
-                },
-            });
-
-            if (values.newName && account) {
-                setAccount({
-                    name: values.newName,
-                    createdAt: account.createdAt,
-                    id: account.id,
+        handleErrors(
+            async () => {
+                await axios.patch('/Api/Users/Account', {
+                    currentPassword: values.currentPassword,
+                    newData: {
+                        ...(values.newName ? { name: values.newName } : {}),
+                        ...(values.newPassword ? { password: values.newPassword } : {}),
+                    },
                 });
-            }
 
-            setShow(false);
-            setSuccess(true);
-        } catch (err) {
-            if (
-                axios.isAxiosError<CustomError>(err) &&
-                problemDetailsSchema.isValidSync(err.response?.data)
-            ) {
-                if (err.response.status == 401) {
-                    localStorage.removeItem('authenticated');
-                    return navigate('/auth');
+                if (values.newName && account) {
+                    setAccount({
+                        name: values.newName,
+                        createdAt: account.createdAt,
+                        id: account.id,
+                    });
                 }
 
-                setError(err.response.data);
-            } else {
-                setError({
-                    title: 'Unknown Error',
-                    detail: 'Something went wrong!',
-                    status: 500,
-                });
-            }
-        }
+                setShow(false);
+                setSuccess(true);
+            },
+            setError,
+            navigate
+        );
     }
 
     return (

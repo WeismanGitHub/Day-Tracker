@@ -1,6 +1,8 @@
-import { chartSchema, problemDetailsSchema } from '../schemas';
 import { useNavigate, useParams } from 'react-router-dom';
+import { ResponsiveCalendar } from '@nivo/calendar';
 import { useEffect, useState } from 'react';
+import { handleErrors } from '../helpers';
+import { chartSchema } from '../schemas';
 import NavBar from '../navbar';
 import axios from 'axios';
 import { Breadcrumb, Toast, ToastContainer } from 'react-bootstrap';
@@ -14,8 +16,8 @@ export default function Chart() {
     const [success, setSuccess] = useState<string | null>(null);
 
     useEffect(() => {
-        (async function () {
-            try {
+        handleErrors(
+            async () => {
                 const res = await axios.get<Chart>(`/Api/Charts/${chartId}`);
 
                 if (!chartSchema.validateSync(res.data)) {
@@ -23,26 +25,10 @@ export default function Chart() {
                 }
 
                 setChart(res.data);
-            } catch (err) {
-                if (
-                    axios.isAxiosError<CustomError>(err) &&
-                    problemDetailsSchema.isValidSync(err.response?.data)
-                ) {
-                    if (err.response.status == 401) {
-                        localStorage.removeItem('authenticated');
-                        return navigate('/auth');
-                    }
-
-                    setError(err.response.data);
-                } else {
-                    setError({
-                        title: 'Unknown Error',
-                        detail: 'Something went wrong!',
-                        status: 500,
-                    });
-                }
-            }
-        })();
+            },
+            setError,
+            navigate
+        );
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -56,7 +42,9 @@ export default function Chart() {
                         <Breadcrumb.Item href={`/charts/${chartId}`}>{chart?.name}</Breadcrumb.Item>
                     </Breadcrumb>
                 </h4>
-                <div className="d-flex justify-content-center align-items-center"></div>
+                <div className="d-flex justify-content-center align-items-center">
+                    <MyCalendar />
+                </div>
             </div>
 
             <ToastContainer position="top-end">
@@ -93,5 +81,36 @@ export default function Chart() {
                 </Toast>
             </ToastContainer>
         </>
+    );
+}
+
+function MyCalendar() {
+    return (
+        <div style={{ textAlign: 'center', width: '600px', height: '400px' }}>
+            <ResponsiveCalendar
+                data={[]}
+                from="2023-05-20"
+                to="2024-05-20"
+                emptyColor="#eeeeee"
+                colors={['#61cdbb', '#97e3d5', '#e8c1a0', '#f47560']}
+                margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
+                yearSpacing={40}
+                monthBorderColor="#ffffff"
+                dayBorderWidth={2}
+                dayBorderColor="#ffffff"
+                legends={[
+                    {
+                        anchor: 'bottom-right',
+                        direction: 'row',
+                        translateY: 36,
+                        itemCount: 4,
+                        itemWidth: 42,
+                        itemHeight: 36,
+                        itemsSpacing: 14,
+                        itemDirection: 'right-to-left',
+                    },
+                ]}
+            />
+        </div>
     );
 }
