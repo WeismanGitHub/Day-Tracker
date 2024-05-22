@@ -1,6 +1,7 @@
 import { Form, NavigateFunction, useNavigate } from 'react-router-dom';
-import { problemDetailsSchema, chartSchema } from '../schemas';
 import { useEffect, useState } from 'react';
+import { handleErrors } from '../helpers';
+import { chartSchema } from '../schemas';
 import ChartType from '../chart-type';
 import { Formik } from 'formik';
 import NavBar from '../navbar';
@@ -44,35 +45,16 @@ export default function Home() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        (async function () {
-            try {
-                const res = await axios.get<Chart[]>('/Api/Charts');
+        handleErrors(async () => {
+            const res = await axios.get<Chart[]>('/Api/Charts');
 
-                if (!chartsSchema.validateSync(res.data)) {
-                    throw new Error();
-                }
-
-                setCharts(res.data);
-            } catch (err) {
-                if (
-                    axios.isAxiosError<CustomError>(err) &&
-                    problemDetailsSchema.isValidSync(err.response?.data)
-                ) {
-                    if (err.response.status == 401) {
-                        localStorage.removeItem('authenticated');
-                        return navigate('/auth');
-                    }
-
-                    setError(err.response.data);
-                } else {
-                    setError({
-                        title: 'Unknown Error',
-                        detail: 'Something went wrong!',
-                        status: 500,
-                    });
-                }
+            if (!chartsSchema.validateSync(res.data)) {
+                throw new Error();
             }
-        })();
+
+            setCharts(res.data);
+
+        }, setError, navigate)
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -263,7 +245,7 @@ function EditChartItem({
     const navigate = useNavigate();
 
     async function updateChart(name: string) {
-        try {
+        await handleErrors(async () => {
             await axios.patch(`/Api/Charts/${chartId}`, { name });
             setCharts(
                 charts.map((chart) => {
@@ -277,25 +259,7 @@ function EditChartItem({
 
             setShow(false);
             setSuccess('Updated this chart.');
-        } catch (err) {
-            if (
-                axios.isAxiosError<CustomError>(err) &&
-                problemDetailsSchema.isValidSync(err.response?.data)
-            ) {
-                if (err.response.status == 401) {
-                    localStorage.removeItem('authenticated');
-                    return navigate('/auth');
-                }
-
-                setError(err.response.data);
-            } else {
-                setError({
-                    title: 'Unknown Error',
-                    detail: 'Something went wrong!',
-                    status: 500,
-                });
-            }
-        }
+        }, setError, navigate)
     }
 
     return (
@@ -378,31 +342,13 @@ function DeleteChartItem({
     const navigate = useNavigate();
 
     async function deleteChart() {
-        try {
+        await handleErrors(async () => {
             await axios.delete(`/Api/Charts/${chartId}`);
             setCharts(charts.filter((chart) => chart.id !== chartId));
 
             setShow(false);
             setSuccess('Deleted this chart.');
-        } catch (err) {
-            if (
-                axios.isAxiosError<CustomError>(err) &&
-                problemDetailsSchema.isValidSync(err.response?.data)
-            ) {
-                if (err.response.status == 401) {
-                    localStorage.removeItem('authenticated');
-                    return navigate('/auth');
-                }
-
-                setError(err.response.data);
-            } else {
-                setError({
-                    title: 'Unknown Error',
-                    detail: 'Something went wrong!',
-                    status: 500,
-                });
-            }
-        }
+        }, setError, navigate)
     }
 
     return (
@@ -441,41 +387,27 @@ function CreateChartButton({
     const [show, setShow] = useState(false);
 
     async function handleSubmit(values: { name: string; type: ChartType }) {
-        try {
-            const res = await axios.post<{ id: string }>('/Api/Charts', values);
+        await handleErrors(
+            async () => {
+                const res = await axios.post<{ id: string }>('/Api/Charts', values);
 
-            setCharts([
-                {
-                    id: res.data.id,
-                    name: values.name,
-                    type: values.type,
-                    createdAt: new Date(),
-                },
-                ...charts,
-            ]);
+                setCharts([
+                    {
+                        id: res.data.id,
+                        name: values.name,
+                        type: values.type,
+                        createdAt: new Date(),
+                    },
+                    ...charts,
+                ]);
 
-            values.name = '';
-            setShow(false);
-            setSuccess('Created a chart.');
-        } catch (err) {
-            if (
-                axios.isAxiosError<CustomError>(err) &&
-                problemDetailsSchema.isValidSync(err.response?.data)
-            ) {
-                if (err.response.status == 401) {
-                    localStorage.removeItem('authenticated');
-                    return navigate('/auth');
-                }
-
-                setError(err.response.data);
-            } else {
-                setError({
-                    title: 'Unknown Error',
-                    detail: 'Something went wrong!',
-                    status: 500,
-                });
-            }
-        }
+                values.name = '';
+                setShow(false);
+                setSuccess('Created a chart.');
+            },
+            setError,
+            navigate
+        );
     }
 
     return (
