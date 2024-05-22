@@ -53,6 +53,7 @@ export default function Account() {
                     problemDetailsSchema.isValidSync(err.response?.data)
                 ) {
                     if (err.response.status == 401) {
+                        localStorage.removeItem('authenticated');
                         return navigate('/auth');
                     }
 
@@ -152,6 +153,7 @@ function DeleteAccount({ setError, navigate }: { setError: setError; navigate: N
                 },
             });
 
+            localStorage.removeItem('authenticated');
             navigate('/auth');
         } catch (err) {
             if (
@@ -159,6 +161,7 @@ function DeleteAccount({ setError, navigate }: { setError: setError; navigate: N
                 problemDetailsSchema.isValidSync(err.response?.data)
             ) {
                 if (err.response.status == 401) {
+                    localStorage.removeItem('authenticated');
                     return navigate('/auth');
                 }
 
@@ -279,6 +282,7 @@ function EditAccount({
                 problemDetailsSchema.isValidSync(err.response?.data)
             ) {
                 if (err.response.status == 401) {
+                    localStorage.removeItem('authenticated');
                     return navigate('/auth');
                 }
 

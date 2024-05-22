@@ -59,6 +59,7 @@ export default function Home() {
                     problemDetailsSchema.isValidSync(err.response?.data)
                 ) {
                     if (err.response.status == 401) {
+                        localStorage.removeItem('authenticated');
                         return navigate('/auth');
                     }
 
@@ -282,6 +283,7 @@ function EditChartItem({
                 problemDetailsSchema.isValidSync(err.response?.data)
             ) {
                 if (err.response.status == 401) {
+                    localStorage.removeItem('authenticated');
                     return navigate('/auth');
                 }
 
@@ -388,6 +390,7 @@ function DeleteChartItem({
                 problemDetailsSchema.isValidSync(err.response?.data)
             ) {
                 if (err.response.status == 401) {
+                    localStorage.removeItem('authenticated');
                     return navigate('/auth');
                 }
 
@@ -460,6 +463,7 @@ function CreateChartButton({
                 problemDetailsSchema.isValidSync(err.response?.data)
             ) {
                 if (err.response.status == 401) {
+                    localStorage.removeItem('authenticated');
                     return navigate('/auth');
                 }
 

@@ -29,6 +29,7 @@ export default function Chart() {
                     problemDetailsSchema.isValidSync(err.response?.data)
                 ) {
                     if (err.response.status == 401) {
+                        localStorage.removeItem('authenticated');
                         return navigate('/auth');
                     }
 
