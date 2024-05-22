@@ -145,6 +145,9 @@ public class EntriesController : CustomBase
     {
         public required Guid Id { get; set; }
         public required DateTimeOffset CreatedAt { get; set; }
+        public uint? Rating { get; set; }
+        public uint? Count { get; set; }
+        public bool? Checked { get; set; }
     }
 
     [ProducesResponseType(typeof(List<EntryDTO>), StatusCodes.Status200OK)]
@@ -152,7 +155,7 @@ public class EntriesController : CustomBase
     [HttpGet(Name = "GetEntries")]
     public async Task<IActionResult> GetEntries(
         [FromRoute] Guid chartId,
-        [FromQuery] DateTimeOffset end,
+        [FromQuery] int year,
         ChartService chartService,
         EntryService entryService
     )
@@ -165,7 +168,7 @@ public class EntriesController : CustomBase
             throw new NotFoundException("Could not find chart.");
         }
 
-        var entries = await entryService.GetEntries(chartId, end);
+        var entries = await entryService.GetEntries(chartId, year);
 
         if (entries is null)
         {
