@@ -12,7 +12,6 @@ public class EntriesController : CustomBase
 {
     public class CreateEntryBody
     {
-        public required ChartType Type { get; set; }
         public uint? Rating { get; set; }
         public bool? Checked { get; set; }
         public uint? Count { get; set; }
@@ -23,12 +22,6 @@ public class EntriesController : CustomBase
     {
         public CreateEntryValidator()
         {
-            RuleFor(e => e.Type)
-                .NotEmpty()
-                .NotNull()
-                .Must(t => Enum.IsDefined(typeof(ChartType), t))
-                .WithMessage("Invalid chart type.");
-
             RuleFor(e => e)
                 .Must(e => e.Count is not null || e.Checked is not null || e.Rating is not null)
                 .WithMessage("Must have a value for the entry.");
