@@ -43,16 +43,12 @@ public class EntryService
 
     public async Task<List<EntryDTO>> GetEntries(Guid chartId, int year)
     {
-        var start = new DateTimeOffset(new DateTime(year, 1, 1, 0, 0, 0), TimeSpan.Zero);
-
         return await _context
             .Entries.Where(e => (e.ChartId == chartId) && (e.Year == year))
             .Select(e => new EntryDTO
             {
                 Id = e.Id,
-                Year = e.Year,
-                Month = e.Month,
-                Day = e.Day,
+                Day = $"{e.Year}-{e.Month}-{e.Day}",
                 Checked = e is CheckmarkEntry ? ((CheckmarkEntry)e).Checked : null,
                 Count = e is CounterEntry ? ((CounterEntry)e).Count : null,
                 Rating = e is ScaleEntry ? ((ScaleEntry)e).Rating : null,

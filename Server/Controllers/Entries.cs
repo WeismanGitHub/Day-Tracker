@@ -143,13 +143,11 @@ public class EntriesController : CustomBase
 
     public class EntryDTO
     {
-        public required Guid Id { get; set; }
-        public required int Year { get; set; }
-        public required int Month { get; set; }
-        public required int Day { get; set; }
+        public required Guid Id { get; set; } // Optimized for front-end.
+        public required string Day { get; set; }
         public uint? Rating { get; set; }
-        public uint? Count { get; set; }
         public bool? Checked { get; set; }
+        public uint? Count { get; set; }
     }
 
     [ProducesResponseType(typeof(List<EntryDTO>), StatusCodes.Status200OK)]
