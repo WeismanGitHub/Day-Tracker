@@ -53,6 +53,11 @@ public class EntriesController : CustomBase
             throw new NotFoundException("Could not find chart.");
         }
 
+        if (body.Date.Year > chart.CreatedAt.Year)
+        {
+            throw new BadRequestException("Invalid Year");
+        }
+
         var entry = CreateEntryObject(body, chart);
         await entryService.CreateEntry(chart, entry);
 
