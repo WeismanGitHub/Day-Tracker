@@ -15,6 +15,14 @@ export default function Chart() {
     const [error, setError] = useState<CustomError | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
 
+    const [searchParams] = useSearchParams();
+    const [year, setYear] = useState<number>(getYear(searchParams.get('year')))
+
+    // Validate the year.
+    if (chart && (year < new Date(chart.createdAt).getFullYear())) {
+        setYear(new Date().getFullYear())
+    }
+
     useEffect(() => {
         handleErrors(
             async () => {
@@ -40,10 +48,11 @@ export default function Chart() {
                     <Breadcrumb>
                         <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
                         <Breadcrumb.Item href={`/charts/${chartId}`}>{chart?.name}</Breadcrumb.Item>
+                        <Breadcrumb.Item href={`/charts/${chartId}?year=${year}`}>{year}</Breadcrumb.Item>
                     </Breadcrumb>
                 </h4>
                 <div className="d-flex justify-content-center align-items-center">
-                    <MyCalendar />
+                    <TrackerCalendar entries={entries} year={year}/>
                 </div>
             </div>
 
