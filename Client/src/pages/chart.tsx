@@ -9,19 +9,17 @@ import { Breadcrumb, Toast, ToastContainer } from 'react-bootstrap';
 
 interface Entry {
     id: string;
-    year: number;
-    month: number;
-    day: number;
+    day: string;
     rating?: number;
     count?: number;
-    checked?: boolean
+    checked?: boolean;
 }
 
 function getYear(paramsYear: string | null): number {
     const currentYear = new Date().getFullYear();
-    const castYear = paramsYear ? Number(paramsYear) : currentYear
+    const castYear = paramsYear ? Number(paramsYear) : currentYear;
 
-    return Number.isNaN(castYear) ? currentYear : castYear
+    return Number.isNaN(castYear) ? currentYear : castYear;
 }
 
 export default function Chart() {
@@ -34,11 +32,11 @@ export default function Chart() {
     const [success, setSuccess] = useState<string | null>(null);
 
     const [searchParams] = useSearchParams();
-    const [year, setYear] = useState<number>(getYear(searchParams.get('year')))
+    const [year, setYear] = useState<number>(getYear(searchParams.get('year')));
 
     // Validate the year.
-    if (chart && (year < new Date(chart.createdAt).getFullYear())) {
-        setYear(new Date().getFullYear())
+    if (chart && year < new Date(chart.createdAt).getFullYear()) {
+        setYear(new Date().getFullYear());
     }
 
     useEffect(() => {
@@ -46,8 +44,8 @@ export default function Chart() {
             async () => {
                 const [chartRes, entriesRes] = await Promise.all([
                     axios.get<Chart>(`/Api/Charts/${chartId}`),
-                    axios.get<Entry[]>(`/Api/Charts/${chartId}/Entries?year=${year}`)
-                ])
+                    axios.get<Entry[]>(`/Api/Charts/${chartId}/Entries?year=${year}`),
+                ]);
 
                 if (!chartSchema.validateSync(chartRes.data)) {
                     throw new Error();
@@ -74,7 +72,7 @@ export default function Chart() {
                     </Breadcrumb>
                 </h4>
                 <div className="d-flex justify-content-center align-items-center">
-                    <TrackerCalendar entries={entries} year={year}/>
+                    <TrackerCalendar entries={entries} year={year} />
                 </div>
             </div>
 
@@ -115,23 +113,24 @@ export default function Chart() {
     );
 }
 
-function TrackerCalendar({ entries, year }: { entries: Entry[], year: number }) {
+function TrackerCalendar({ entries, year }: { entries: Entry[]; year: number }) {
     return (
-        <div style={{ textAlign: 'center', width: '600px', height: '400px' }}>
+        <div style={{ textAlign: 'center', width: '95%', height: '250px' }}>
             <ResponsiveCalendar
-                data={entries.map(e => {
-                    const day = `${e.year}-${e.month}-${e.day}`
-                    const value = e.checked !== null ? Number(e.checked) : e.count ?? e.rating
+                data={entries.map((e) => {
+                    const value = e.checked !== null ? Number(e.checked) : e.count ?? e.rating;
 
-                    return { day, value: value ?? 0 }
+                    return { day: e.day, value: value ?? 0 };
                 })}
+                theme={{ labels: { text: { fontSize: 'large' } }}}
                 from={new Date(year, 0, 1, 0, 0, 0, 0)}
                 to={new Date(year, 11, 31, 23, 59, 59, 999)}
                 emptyColor="#eeeeee"
-                colors={['#61cdbb', '#97e3d5', '#e8c1a0', '#f47560']}
+                colors={['#ccccff', '#b2b2ff', '#9999ff', '#7f7fff', '#6666ff', '#4c4cff', '#3232ff', '#1919ff', '#0000e5', '#0000b2', '#00007f']}
                 margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
+                monthBorderColor="#9cc3ff"
+                monthBorderWidth={0}
                 yearSpacing={40}
-                monthBorderColor="#ffffff"
                 dayBorderWidth={2}
                 dayBorderColor="#ffffff"
                 legends={[
