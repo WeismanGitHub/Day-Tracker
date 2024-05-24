@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Server.Database.Models;
 
 [Index(nameof(ChartId))]
+[Index(nameof(Year))]
 public abstract class Entry
 {
     [Key, Required]
@@ -13,7 +14,14 @@ public abstract class Entry
     public required Guid ChartId { get; set; }
 
     [Required]
-    public DateTimeOffset CreatedAt { get; set; } = DateTime.UtcNow;
+    public required int Year { get; set; }
+
+    [Required]
+    public required int Month { get; set; }
+
+    [Required]
+    public required int Day { get; set; }
+
     public Chart Chart { get; set; }
 }
 
