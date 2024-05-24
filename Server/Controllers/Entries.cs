@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Server.Database.Models;
 using Server.Database.Services;
@@ -45,6 +44,13 @@ public class EntriesController : CustomBase
         EntryService entryService
     )
     {
+        var result = new CreateEntryValidator().Validate(body);
+
+        if (!result.IsValid)
+        {
+            throw new ValidationException(result);
+        }
+
         var accountId = HttpContext.GetUserId();
         var chart = await chartService.GetUserChart(chartId, accountId);
 
@@ -181,5 +187,98 @@ public class EntriesController : CustomBase
         }
 
         return Ok(entries);
+    }
+
+    public class UpdateEntryBody
+    {
+        public uint? Rating { get; set; }
+        public bool? Checked { get; set; }
+        public uint? Count { get; set; }
+    }
+
+    private class UpdateEntryValidator : AbstractValidator<UpdateEntryBody>
+    {
+        public UpdateEntryValidator()
+        {
+            RuleFor(e => e)
+                .Must(e => e.Count is not null || e.Checked is not null || e.Rating is not null)
+                .WithMessage("Must have a new value.");
+        }
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [HttpPost("{entryId:guid}", Name = "UpdateEntry")]
+    public async Task<IActionResult> UpdateEntry(
+        [FromRoute] Guid chartId,
+        [FromRoute] Guid entryId,
+        [FromBody] UpdateEntryBody body,
+        ChartService chartService,
+        EntryService entryService
+    )
+    {
+        var result = new UpdateEntryValidator().Validate(body);
+
+        if (!result.IsValid)
+        {
+            throw new ValidationException(result);
+        }
+
+        var accountId = HttpContext.GetUserId();
+        var chart = await chartService.GetUserChart(chartId, accountId);
+
+        if (chart is null)
+        {
+            throw new NotFoundException("Could not find chart.");
+        }
+
+        var entry = await entryService.GetEntry(chartId, entryId);
+
+        if (entry is null)
+        {
+            throw new NotFoundException("Could not find entry.");
+        }
+
+        var updatedEntry = UpdateEntryObject(body, chart.Type, entry);
+        await entryService.UpdateEntry(updatedEntry);
+
+        return Ok();
+    }
+
+    private static Entry UpdateEntryObject(UpdateEntryBody body, ChartType type, Entry entry)
+    {
+        switch (type)
+        {
+            case ChartType.Scale:
+                if (body.Rating is null)
+                {
+                    throw new BadRequestException("Invalid Rating");
+                }
+
+                var scaleEntry = (ScaleEntry)entry;
+                scaleEntry.Rating = (uint)body.Rating;
+                return scaleEntry;
+            case ChartType.Counter:
+                if (body.Count is null)
+                {
+                    throw new BadRequestException("Invalid Count");
+                }
+
+                var counterEntry = (CounterEntry)entry;
+                counterEntry.Count = (uint)body.Count;
+                return counterEntry;
+            case ChartType.CheckMark:
+                if (body.Checked is null)
+                {
+                    throw new BadRequestException("Invalid Value");
+                }
+
+                var castEntry = (CheckmarkEntry)entry;
+                castEntry.Checked = (bool)body.Checked;
+                return castEntry;
+            default:
+                throw new Exception("Something went wrong!");
+        }
     }
 }

@@ -21,7 +21,7 @@ public class EntryService
 
         if (existingEntry is not null)
         {
-            throw new BadRequestException("An entry for today already exists.");
+            throw new BadRequestException("An entry for this day already exists.");
         }
 
         _context.Entries.Add(entry);
@@ -54,5 +54,11 @@ public class EntryService
                 Rating = e is ScaleEntry ? ((ScaleEntry)e).Rating : null,
             })
             .ToListAsync();
+    }
+
+    public async Task UpdateEntry(Entry entry)
+    {
+        _context.Entries.Update(entry);
+        await _context.SaveChangesAsync();
     }
 }
