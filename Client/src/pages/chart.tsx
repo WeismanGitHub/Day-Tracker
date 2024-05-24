@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ResponsiveCalendar } from '@nivo/calendar';
 import { useEffect, useState } from 'react';
 import { handleErrors } from '../helpers';
@@ -7,8 +7,26 @@ import NavBar from '../navbar';
 import axios from 'axios';
 import { Breadcrumb, Toast, ToastContainer } from 'react-bootstrap';
 
+interface Entry {
+    id: string;
+    year: number;
+    month: number;
+    day: number;
+    rating?: number;
+    count?: number;
+    checked?: boolean
+}
+
+function getYear(paramsYear: string | null): number {
+    const currentYear = new Date().getFullYear();
+    const castYear = paramsYear ? Number(paramsYear) : currentYear
+
+    return Number.isNaN(castYear) ? currentYear : castYear
+}
+
 export default function Chart() {
-    const [chart, setChart] = useState<Chart | null>();
+    const [entries, setEntries] = useState<Entry[]>([]);
+    const [chart, setChart] = useState<Chart | null>(null);
     const { chartId } = useParams();
     const navigate = useNavigate();
 
@@ -26,13 +44,17 @@ export default function Chart() {
     useEffect(() => {
         handleErrors(
             async () => {
-                const res = await axios.get<Chart>(`/Api/Charts/${chartId}`);
+                const [chartRes, entriesRes] = await Promise.all([
+                    axios.get<Chart>(`/Api/Charts/${chartId}`),
+                    axios.get<Entry[]>(`/Api/Charts/${chartId}/Entries?year=${year}`)
+                ])
 
-                if (!chartSchema.validateSync(res.data)) {
+                if (!chartSchema.validateSync(chartRes.data)) {
                     throw new Error();
                 }
 
-                setChart(res.data);
+                setEntries(entriesRes.data);
+                setChart(chartRes.data);
             },
             setError,
             navigate
@@ -93,13 +115,18 @@ export default function Chart() {
     );
 }
 
-function MyCalendar() {
+function TrackerCalendar({ entries, year }: { entries: Entry[], year: number }) {
     return (
         <div style={{ textAlign: 'center', width: '600px', height: '400px' }}>
             <ResponsiveCalendar
-                data={[]}
-                from="2023-05-20"
-                to="2024-05-20"
+                data={entries.map(e => {
+                    const day = `${e.year}-${e.month}-${e.day}`
+                    const value = e.checked !== null ? Number(e.checked) : e.count ?? e.rating
+
+                    return { day, value: value ?? 0 }
+                })}
+                from={new Date(year, 0, 1, 0, 0, 0, 0)}
+                to={new Date(year, 11, 31, 23, 59, 59, 999)}
                 emptyColor="#eeeeee"
                 colors={['#61cdbb', '#97e3d5', '#e8c1a0', '#f47560']}
                 margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
