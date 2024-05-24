@@ -48,7 +48,8 @@ public class EntryService
             .Select(e => new EntryDTO
             {
                 Id = e.Id,
-                Day = $"{e.Year}-{e.Month}-{e.Day}",
+                Day =
+                    $"{e.Year}-{e.Month.ToString().PadLeft(2, '0')}-{e.Day.ToString().PadLeft(2, '0')}",
                 Checked = e is CheckmarkEntry ? ((CheckmarkEntry)e).Checked : null,
                 Count = e is CounterEntry ? ((CounterEntry)e).Count : null,
                 Rating = e is ScaleEntry ? ((ScaleEntry)e).Rating : null,
