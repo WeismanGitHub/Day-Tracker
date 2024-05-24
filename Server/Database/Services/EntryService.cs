@@ -11,7 +11,12 @@ public class EntryService
     public async Task CreateEntry(Chart chart, Entry entry)
     {
         var existingEntry = await _context
-            .Entries.Where(e => (e.ChartId == chart.Id) && e.CreatedAt.Date == entry.CreatedAt.Date)
+            .Entries.Where(e =>
+                (e.ChartId == chart.Id)
+                && (e.Year == entry.Year)
+                && (e.Month == entry.Month)
+                && (e.Day == entry.Day)
+            )
             .SingleOrDefaultAsync();
 
         if (existingEntry is not null)
@@ -38,13 +43,16 @@ public class EntryService
 
     public async Task<List<EntryDTO>> GetEntries(Guid chartId, int year)
     {
+        var start = new DateTimeOffset(new DateTime(year, 1, 1, 0, 0, 0), TimeSpan.Zero);
+
         return await _context
-            .Entries.Where(e => e.ChartId == chartId)
-            .Where(e => e.CreatedAt.Year == year)
+            .Entries.Where(e => (e.ChartId == chartId) && (e.Year == year))
             .Select(e => new EntryDTO
             {
                 Id = e.Id,
-                CreatedAt = e.CreatedAt,
+                Year = e.Year,
+                Month = e.Month,
+                Day = e.Day,
                 Checked = e is CheckmarkEntry ? ((CheckmarkEntry)e).Checked : null,
                 Count = e is CounterEntry ? ((CounterEntry)e).Count : null,
                 Rating = e is ScaleEntry ? ((ScaleEntry)e).Rating : null,
