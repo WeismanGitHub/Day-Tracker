@@ -1,4 +1,5 @@
-﻿using FluentValidation;
+﻿using System.ComponentModel.DataAnnotations;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Server.Database.Models;
 using Server.Database.Services;
@@ -15,7 +16,7 @@ public class EntriesController : CustomBase
         public uint? Rating { get; set; }
         public bool? Checked { get; set; }
         public uint? Count { get; set; }
-        public required DateTimeOffset Date { get; set; }
+        public required DateTime Date { get; set; }
     }
 
     private class CreateEntryValidator : AbstractValidator<CreateEntryBody>
@@ -72,7 +73,9 @@ public class EntriesController : CustomBase
                 {
                     ChartId = chart.Id,
                     Rating = (uint)body.Rating,
-                    CreatedAt = body.Date
+                    Year = body.Date.Year,
+                    Month = body.Date.Month,
+                    Day = body.Date.Day,
                 };
             case ChartType.Counter:
                 if (body.Count is null)
@@ -84,7 +87,9 @@ public class EntriesController : CustomBase
                 {
                     ChartId = chart.Id,
                     Count = (uint)body.Count,
-                    CreatedAt = body.Date
+                    Year = body.Date.Year,
+                    Month = body.Date.Month,
+                    Day = body.Date.Day,
                 };
             case ChartType.CheckMark:
                 if (body.Checked is null)
@@ -96,7 +101,9 @@ public class EntriesController : CustomBase
                 {
                     ChartId = chart.Id,
                     Checked = (bool)body.Checked,
-                    CreatedAt = body.Date
+                    Year = body.Date.Year,
+                    Month = body.Date.Month,
+                    Day = body.Date.Day,
                 };
             default:
                 throw new BadRequestException("Invalid Type");
@@ -137,7 +144,9 @@ public class EntriesController : CustomBase
     public class EntryDTO
     {
         public required Guid Id { get; set; }
-        public required DateTimeOffset CreatedAt { get; set; }
+        public required int Year { get; set; }
+        public required int Month { get; set; }
+        public required int Day { get; set; }
         public uint? Rating { get; set; }
         public uint? Count { get; set; }
         public bool? Checked { get; set; }
