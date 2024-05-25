@@ -122,11 +122,22 @@ function TrackerCalendar({ entries, year }: { entries: Entry[]; year: number }) 
 
                     return { day: e.day, value: value ?? 0 };
                 })}
-                theme={{ labels: { text: { fontSize: 'large' } }}}
+                theme={{ labels: { text: { fontSize: 'large' } } }}
                 from={new Date(year, 0, 1, 0, 0, 0, 0)}
                 to={new Date(year, 11, 31, 23, 59, 59, 999)}
                 emptyColor="#eeeeee"
-                colors={['#ccccff', '#b2b2ff', '#9999ff', '#7f7fff', '#6666ff', '#4c4cff', '#3232ff', '#1919ff', '#0000e5', '#0000b2', '#00007f']}
+                colors={[
+                    '#8080ff',
+                    '#6666ff',
+                    '#4d4dff',
+                    '#3333ff',
+                    '#1a1aff',
+                    '#0000ff',
+                    '#0000e6',
+                    '#0000cc',
+                    '#0000b3',
+                    '#000099',
+                ]}
                 margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
                 monthBorderColor="#9cc3ff"
                 monthBorderWidth={0}
