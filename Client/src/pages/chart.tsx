@@ -85,14 +85,16 @@ export default function Chart() {
                         <Breadcrumb>
                             <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
                             <Breadcrumb.Item href={`/charts/${chartId}`}>{chart?.name}</Breadcrumb.Item>
-                            <Breadcrumb.Item>
-                                <a href={`/charts/${chartId}?year=${year}`}>{year}</a>
-                                <Dropdown.Toggle
-                                    style={{ padding: '0px 7.5px 0px 5px', border: 0 }}
-                                    variant="none"
-                                    id="dropdown-basic"
-                                ></Dropdown.Toggle>
+                            <Breadcrumb.Item href={`/charts/${chartId}?year=${year}`}>
+                                {year}
+                            </Breadcrumb.Item>
+                            <Dropdown.Toggle
+                                style={{ padding: '0px 7.5px 0px 5px', border: 0 }}
+                                variant="none"
+                                id="dropdown-basic"
+                            ></Dropdown.Toggle>
 
+                        </Breadcrumb>
                                 <Dropdown.Menu>
                                     {years.map((year) => (
                                         <Dropdown.Item href={`/charts/${chartId}?year=${year}`}>
@@ -100,8 +102,6 @@ export default function Chart() {
                                         </Dropdown.Item>
                                     ))}
                                 </Dropdown.Menu>
-                            </Breadcrumb.Item>
-                        </Breadcrumb>
                     </Dropdown>
                 </h4>
                 <div className="d-flex justify-content-center align-items-center">
