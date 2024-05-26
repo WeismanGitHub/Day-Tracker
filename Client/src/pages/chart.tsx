@@ -5,23 +5,38 @@ import { handleErrors } from '../helpers';
 import { chartSchema } from '../schemas';
 import NavBar from '../navbar';
 import axios from 'axios';
-import { Breadcrumb, Toast, ToastContainer } from 'react-bootstrap';
+import {
+    Breadcrumb,
+    Button,
+    ButtonGroup,
+    Card,
+    Col,
+    Dropdown,
+    Form,
+    Row,
+    Toast,
+    ToastContainer,
+    ToggleButton,
+} from 'react-bootstrap';
 
 interface Entry {
     id: string;
-    year: number;
-    month: number;
-    day: number;
+    day: string;
     rating?: number;
     count?: number;
-    checked?: boolean
+    checked?: boolean;
 }
+
+type CalendarSettings = {
+    outlineMonths: boolean;
+    direction: 'vertical' | 'horizontal';
+};
 
 function getYear(paramsYear: string | null): number {
     const currentYear = new Date().getFullYear();
-    const castYear = paramsYear ? Number(paramsYear) : currentYear
+    const castYear = paramsYear ? Number(paramsYear) : currentYear;
 
-    return Number.isNaN(castYear) ? currentYear : castYear
+    return Number.isNaN(castYear) ? currentYear : castYear;
 }
 
 export default function Chart() {
@@ -34,20 +49,25 @@ export default function Chart() {
     const [success, setSuccess] = useState<string | null>(null);
 
     const [searchParams] = useSearchParams();
-    const [year, setYear] = useState<number>(getYear(searchParams.get('year')))
+    const [year, setYear] = useState<number>(getYear(searchParams.get('year')));
 
     // Validate the year.
-    if (chart && (year < new Date(chart.createdAt).getFullYear())) {
-        setYear(new Date().getFullYear())
+    if (chart && year < new Date(chart.createdAt).getFullYear()) {
+        setYear(new Date().getFullYear());
     }
+
+    const [settings, setSettings] = useState<CalendarSettings>({
+        outlineMonths: Boolean(localStorage.getItem('outlineMonths')),
+        direction: localStorage.getItem('direction') ? 'vertical' : 'horizontal',
+    });
 
     useEffect(() => {
         handleErrors(
             async () => {
                 const [chartRes, entriesRes] = await Promise.all([
                     axios.get<Chart>(`/Api/Charts/${chartId}`),
-                    axios.get<Entry[]>(`/Api/Charts/${chartId}/Entries?year=${year}`)
-                ])
+                    axios.get<Entry[]>(`/Api/Charts/${chartId}/Entries?year=${year}`),
+                ]);
 
                 if (!chartSchema.validateSync(chartRes.data)) {
                     throw new Error();
@@ -62,20 +82,80 @@ export default function Chart() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const years = (() => {
+        if (!chart) {
+            return [];
+        }
+
+        let currentYear = new Date().getFullYear();
+        const years: number[] = [];
+
+        while (currentYear >= new Date(chart.createdAt).getFullYear()) {
+            years.push(currentYear);
+            currentYear--;
+        }
+
+        return years;
+    })();
+
     return (
         <>
             <NavBar />
-            <div className="full-height-minus-navbar">
-                <h4 className="ps-4 pt-2">
-                    <Breadcrumb>
-                        <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
-                        <Breadcrumb.Item href={`/charts/${chartId}`}>{chart?.name}</Breadcrumb.Item>
-                        <Breadcrumb.Item href={`/charts/${chartId}?year=${year}`}>{year}</Breadcrumb.Item>
-                    </Breadcrumb>
+            <div className="full-height-minus-navbar d-flex justify-content-center flex-wrap">
+                <h4 className="ps-4 pt-2 w-100" style={{ height: '50px' }}>
+                    <Dropdown>
+                        <Breadcrumb>
+                            <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
+                            <Breadcrumb.Item href={`/charts/${chartId}`}>{chart?.name}</Breadcrumb.Item>
+                            <Breadcrumb.Item href={`/charts/${chartId}?year=${year}`}>{year}</Breadcrumb.Item>
+                            <Dropdown.Toggle
+                                style={{ padding: '0px 7.5px 0px 5px', border: 0 }}
+                                variant="none"
+                                id="dropdown-basic"
+                            ></Dropdown.Toggle>
+                        </Breadcrumb>
+                        <Dropdown.Menu>
+                            {years.map((year) => (
+                                <Dropdown.Item href={`/charts/${chartId}?year=${year}`}>{year}</Dropdown.Item>
+                            ))}
+                        </Dropdown.Menu>
+                    </Dropdown>
                 </h4>
-                <div className="d-flex justify-content-center align-items-center">
-                    <TrackerCalendar entries={entries} year={year}/>
+                <div className="container">
+                    <Card style={{ maxWidth: '500px' }} className="mx-auto mb-2 mt-2">
+                        <Card.Header className="bg-primary text-white">
+                            <h2>Settings</h2>
+                        </Card.Header>
+                        <Card.Body>
+                            <Row>
+                                <Col>
+                                    <Card.Text>
+                                        <SettingsPanel setSettings={setSettings} settings={settings} />
+                                    </Card.Text>
+                                </Col>
+                            </Row>
+                            <Row className="mt-3">
+                                <Col className="d-flex justify-content-center">
+                                    <Button
+                                        onClick={() => {
+                                            localStorage.removeItem('outlineMonths');
+                                            localStorage.removeItem('direction');
+
+                                            setSettings({
+                                                direction: 'horizontal',
+                                                outlineMonths: false,
+                                            });
+                                        }}
+                                        variant="warning"
+                                    >
+                                        Reset
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Card.Body>
+                    </Card>
                 </div>
+                <TrackerCalendar entries={entries} year={year} settings={settings} />
             </div>
 
             <ToastContainer position="top-end">
@@ -115,23 +195,115 @@ export default function Chart() {
     );
 }
 
-function TrackerCalendar({ entries, year }: { entries: Entry[], year: number }) {
+function SettingsPanel({
+    settings,
+    setSettings,
+}: {
+    settings: CalendarSettings;
+    setSettings: setState<CalendarSettings>;
+}) {
     return (
-        <div style={{ textAlign: 'center', width: '600px', height: '400px' }}>
-            <ResponsiveCalendar
-                data={entries.map(e => {
-                    const day = `${e.year}-${e.month}-${e.day}`
-                    const value = e.checked !== null ? Number(e.checked) : e.count ?? e.rating
+        <div className="d-flex justify-content-center align-content-center flex-wrap">
+            <Form>
+                <Form.Check
+                    checked={settings.outlineMonths}
+                    onClick={() => {
+                        if (!settings.outlineMonths) {
+                            localStorage.setItem('outlineMonths', 'true');
+                        } else {
+                            localStorage.removeItem('outlineMonths');
+                        }
 
-                    return { day, value: value ?? 0 }
+                        setSettings({
+                            outlineMonths: !settings.outlineMonths,
+                            direction: settings.direction,
+                        });
+                    }}
+                    reverse={true}
+                    inline={true}
+                    type="switch"
+                    label="Show Month Borders"
+                />
+            </Form>
+            <div className="w-100"></div>
+            <ButtonGroup className="mt-2">
+                <ToggleButton
+                    id="horizontal"
+                    type="radio"
+                    name="radio"
+                    value={'horizontal'}
+                    checked={settings.direction === 'horizontal'}
+                    onChange={() => {
+                        localStorage.removeItem('direction');
+                        setSettings({ direction: 'horizontal', outlineMonths: settings.outlineMonths });
+                    }}
+                    style={{ width: '100px' }}
+                >
+                    Horizontal
+                </ToggleButton>
+                <ToggleButton
+                    id="vertical"
+                    type="radio"
+                    name="radio"
+                    value={'vertical'}
+                    checked={settings.direction === 'vertical'}
+                    onChange={() => {
+                        localStorage.setItem('direction', 'vertical');
+                        setSettings({ direction: 'vertical', outlineMonths: settings.outlineMonths });
+                    }}
+                    style={{ width: '100px' }}
+                >
+                    Vertical
+                </ToggleButton>
+            </ButtonGroup>
+        </div>
+    );
+}
+
+function TrackerCalendar({
+    entries,
+    year,
+    settings,
+}: {
+    entries: Entry[];
+    year: number;
+    settings: CalendarSettings;
+}) {
+    return (
+        <div
+            style={{
+                textAlign: 'center',
+                width: '95%',
+                height: settings.direction === 'vertical' ? '1500px' : '250px',
+            }}
+        >
+            <ResponsiveCalendar
+                data={entries.map((e) => {
+                    const value = e.checked !== null ? Number(e.checked) : e.count ?? e.rating;
+
+                    return { day: e.day, value: value ?? 0 };
                 })}
+                theme={{ labels: { text: { fontSize: 'large' } } }}
                 from={new Date(year, 0, 1, 0, 0, 0, 0)}
                 to={new Date(year, 11, 31, 23, 59, 59, 999)}
                 emptyColor="#eeeeee"
-                colors={['#61cdbb', '#97e3d5', '#e8c1a0', '#f47560']}
+                direction={settings.direction}
+                colors={[
+                    '#8080ff',
+                    '#6666ff',
+                    '#4d4dff',
+                    '#3333ff',
+                    '#1a1aff',
+                    '#0000ff',
+                    '#0000e6',
+                    '#0000cc',
+                    '#0000b3',
+                    '#000099',
+                ]}
                 margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
+                monthBorderColor="#9cc3ff"
+                monthBorderWidth={settings.outlineMonths ? 2 : 0}
                 yearSpacing={40}
-                monthBorderColor="#ffffff"
                 dayBorderWidth={2}
                 dayBorderColor="#ffffff"
                 legends={[
