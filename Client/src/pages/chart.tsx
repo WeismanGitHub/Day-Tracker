@@ -5,7 +5,19 @@ import { handleErrors } from '../helpers';
 import { chartSchema } from '../schemas';
 import NavBar from '../navbar';
 import axios from 'axios';
-import { Breadcrumb, Button, Card, Col, Dropdown, Form, Row, Toast, ToastContainer } from 'react-bootstrap';
+import {
+    Breadcrumb,
+    Button,
+    ButtonGroup,
+    Card,
+    Col,
+    Dropdown,
+    Form,
+    Row,
+    Toast,
+    ToastContainer,
+    ToggleButton,
+} from 'react-bootstrap';
 
 interface Entry {
     id: string;
@@ -17,6 +29,7 @@ interface Entry {
 
 type CalendarSettings = {
     outlineMonths: boolean;
+    direction: 'vertical' | 'horizontal';
 };
 
 function getYear(paramsYear: string | null): number {
@@ -44,7 +57,8 @@ export default function Chart() {
     }
 
     const [settings, setSettings] = useState<CalendarSettings>({
-        outlineMonths: localStorage.getItem('outlineMonths') === 'true',
+        outlineMonths: Boolean(localStorage.getItem('outlineMonths')),
+        direction: localStorage.getItem('direction') ? 'vertical' : 'horizontal',
     });
 
     useEffect(() => {
@@ -108,7 +122,7 @@ export default function Chart() {
                     </Dropdown>
                 </h4>
                 <div className="container">
-                    <Card style={{ maxWidth: '500px' }} className="mx-auto mb-2">
+                    <Card style={{ maxWidth: '500px' }} className="mx-auto mb-2 mt-2">
                         <Card.Header className="bg-primary text-white">
                             <h2>Settings</h2>
                         </Card.Header>
@@ -125,10 +139,14 @@ export default function Chart() {
                                     <Button
                                         onClick={() => {
                                             localStorage.removeItem('outlineMonths');
+                                            localStorage.removeItem('direction');
+
                                             setSettings({
+                                                direction: 'horizontal',
                                                 outlineMonths: false,
                                             });
                                         }}
+                                        variant="warning"
                                     >
                                         Reset
                                     </Button>
@@ -185,22 +203,60 @@ function SettingsPanel({
     setSettings: setState<CalendarSettings>;
 }) {
     return (
-        <Form>
-            <Form.Check
-                checked={settings.outlineMonths}
-                onClick={() => {
-                    localStorage.setItem('outlineMonths', String(!settings.outlineMonths));
+        <div className="d-flex justify-content-center align-content-center flex-wrap">
+            <Form>
+                <Form.Check
+                    checked={settings.outlineMonths}
+                    onClick={() => {
+                        if (!settings.outlineMonths) {
+                            localStorage.setItem('outlineMonths', 'true');
+                        } else {
+                            localStorage.removeItem('outlineMonths');
+                        }
 
-                    setSettings({
-                        outlineMonths: !settings.outlineMonths,
-                    });
-                }}
-                reverse={true}
-                inline={true}
-                type="switch"
-                label="Show Month Borders"
-            />
-        </Form>
+                        setSettings({
+                            outlineMonths: !settings.outlineMonths,
+                            direction: settings.direction,
+                        });
+                    }}
+                    reverse={true}
+                    inline={true}
+                    type="switch"
+                    label="Show Month Borders"
+                />
+            </Form>
+            <div className='w-100'></div>
+            <ButtonGroup className='mt-2'>
+                <ToggleButton
+                    id="horizontal"
+                    type="radio"
+                    name="radio"
+                    value={'horizontal'}
+                    checked={settings.direction === 'horizontal'}
+                    onChange={() => {
+                        localStorage.removeItem('direction');
+                        setSettings({ direction: 'horizontal', outlineMonths: settings.outlineMonths });
+                    }}
+                    style={{ width: '100px' }}
+                >
+                    Horizontal
+                </ToggleButton>
+                <ToggleButton
+                    id="vertical"
+                    type="radio"
+                    name="radio"
+                    value={'vertical'}
+                    checked={settings.direction === 'vertical'}
+                    onChange={() => {
+                        localStorage.setItem('direction', 'vertical');
+                        setSettings({ direction: 'vertical', outlineMonths: settings.outlineMonths });
+                    }}
+                    style={{ width: '100px' }}
+                >
+                    Vertical
+                </ToggleButton>
+            </ButtonGroup>
+        </div>
     );
 }
 
@@ -214,7 +270,13 @@ function TrackerCalendar({
     settings: CalendarSettings;
 }) {
     return (
-        <div style={{ textAlign: 'center', width: '95%', height: '250px' }}>
+        <div
+            style={{
+                textAlign: 'center',
+                width: '95%',
+                height: settings.direction === 'vertical' ? '1500px' : '250px',
+            }}
+        >
             <ResponsiveCalendar
                 data={entries.map((e) => {
                     const value = e.checked !== null ? Number(e.checked) : e.count ?? e.rating;
@@ -225,6 +287,7 @@ function TrackerCalendar({
                 from={new Date(year, 0, 1, 0, 0, 0, 0)}
                 to={new Date(year, 11, 31, 23, 59, 59, 999)}
                 emptyColor="#eeeeee"
+                direction={settings.direction}
                 colors={[
                     '#8080ff',
                     '#6666ff',
