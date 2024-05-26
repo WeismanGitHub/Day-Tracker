@@ -100,6 +100,11 @@ export default function NavBar() {
                     >
                         <ul className="navbar-nav d-flex justify-content-center align-items-center">
                             <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
+                                <a className="nav-item active w-100" href="/" style={{ color: 'white' }}>
+                                    Home
+                                </a>
+                            </li>
+                            <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
                                 <a className="nav-item active w-100" href="/about" style={{ color: 'white' }}>
                                     About
                                 </a>
