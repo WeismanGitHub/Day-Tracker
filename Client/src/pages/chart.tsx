@@ -5,7 +5,7 @@ import { handleErrors } from '../helpers';
 import { chartSchema } from '../schemas';
 import NavBar from '../navbar';
 import axios from 'axios';
-import { Breadcrumb, Toast, ToastContainer } from 'react-bootstrap';
+import { Breadcrumb, Dropdown, Toast, ToastContainer } from 'react-bootstrap';
 
 interface Entry {
     id: string;
@@ -60,16 +60,49 @@ export default function Chart() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    const years = (() => {
+        if (!chart) {
+            return [];
+        }
+
+        let currentYear = new Date().getFullYear();
+        const years: number[] = [];
+
+        while (currentYear >= new Date(chart.createdAt).getFullYear()) {
+            years.push(currentYear);
+            currentYear--;
+        }
+
+        return years;
+    })();
+
     return (
         <>
             <NavBar />
             <div className="full-height-minus-navbar">
                 <h4 className="ps-4 pt-2">
-                    <Breadcrumb>
-                        <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
-                        <Breadcrumb.Item href={`/charts/${chartId}`}>{chart?.name}</Breadcrumb.Item>
-                        <Breadcrumb.Item href={`/charts/${chartId}?year=${year}`}>{year}</Breadcrumb.Item>
-                    </Breadcrumb>
+                    <Dropdown>
+                        <Breadcrumb>
+                            <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
+                            <Breadcrumb.Item href={`/charts/${chartId}`}>{chart?.name}</Breadcrumb.Item>
+                            <Breadcrumb.Item>
+                                <a href={`/charts/${chartId}?year=${year}`}>{year}</a>
+                                <Dropdown.Toggle
+                                    style={{ padding: '0px 7.5px 0px 5px', border: 0 }}
+                                    variant="none"
+                                    id="dropdown-basic"
+                                ></Dropdown.Toggle>
+
+                                <Dropdown.Menu>
+                                    {years.map((year) => (
+                                        <Dropdown.Item href={`/charts/${chartId}?year=${year}`}>
+                                            {year}
+                                        </Dropdown.Item>
+                                    ))}
+                                </Dropdown.Menu>
+                            </Breadcrumb.Item>
+                        </Breadcrumb>
+                    </Dropdown>
                 </h4>
                 <div className="d-flex justify-content-center align-items-center">
                     <TrackerCalendar entries={entries} year={year} />
