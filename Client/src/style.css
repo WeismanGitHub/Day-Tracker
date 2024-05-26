@@ -94,5 +94,6 @@ body {
 }
 
 .form-check-label {
+    cursor: text;
     margin-right: 7.5px;
 }

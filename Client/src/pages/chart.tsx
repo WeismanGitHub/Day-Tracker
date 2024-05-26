@@ -5,7 +5,7 @@ import { handleErrors } from '../helpers';
 import { chartSchema } from '../schemas';
 import NavBar from '../navbar';
 import axios from 'axios';
-import { Breadcrumb, Card, Col, Dropdown, Form, Row, Toast, ToastContainer } from 'react-bootstrap';
+import { Breadcrumb, Button, Card, Col, Dropdown, Form, Row, Toast, ToastContainer } from 'react-bootstrap';
 
 interface Entry {
     id: string;
@@ -107,20 +107,36 @@ export default function Chart() {
                         </Dropdown.Menu>
                     </Dropdown>
                 </h4>
-                <Card style={{ maxWidth: '300px', width: '25%' }} className="mx-auto mb-2 m-0">
-                    <Card.Header className="bg-primary text-white">
-                        <h2>Settings</h2>
-                    </Card.Header>
-                    <Card.Body>
-                        <Row>
-                            <Col>
-                                <Card.Text>
-                                    <SettingsPanel setSettings={setSettings} settings={settings} />
-                                </Card.Text>
-                            </Col>
-                        </Row>
-                    </Card.Body>
-                </Card>
+                <div className="container">
+                    <Card style={{ maxWidth: '500px' }} className="mx-auto mb-2">
+                        <Card.Header className="bg-primary text-white">
+                            <h2>Settings</h2>
+                        </Card.Header>
+                        <Card.Body>
+                            <Row>
+                                <Col>
+                                    <Card.Text>
+                                        <SettingsPanel setSettings={setSettings} settings={settings} />
+                                    </Card.Text>
+                                </Col>
+                            </Row>
+                            <Row className="mt-3">
+                                <Col className="d-flex justify-content-center">
+                                    <Button
+                                        onClick={() => {
+                                            localStorage.removeItem('outlineMonths');
+                                            setSettings({
+                                                outlineMonths: false,
+                                            });
+                                        }}
+                                    >
+                                        Reset
+                                    </Button>
+                                </Col>
+                            </Row>
+                        </Card.Body>
+                    </Card>
+                </div>
                 <TrackerCalendar entries={entries} year={year} settings={settings} />
             </div>
 
