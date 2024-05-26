@@ -87,3 +87,12 @@ body {
     color: white !important;
     background-color: var(--bs-primary) !important;
 }
+
+.form-check-input {
+    cursor: pointer;
+    transform: scale(1.5);
+}
+
+.form-check-label {
+    margin-right: 7.5px;
+}

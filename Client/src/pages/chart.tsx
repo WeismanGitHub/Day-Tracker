@@ -5,7 +5,7 @@ import { handleErrors } from '../helpers';
 import { chartSchema } from '../schemas';
 import NavBar from '../navbar';
 import axios from 'axios';
-import { Breadcrumb, Dropdown, Toast, ToastContainer } from 'react-bootstrap';
+import { Breadcrumb, Card, Col, Dropdown, Form, Row, Toast, ToastContainer } from 'react-bootstrap';
 
 interface Entry {
     id: string;
@@ -14,6 +14,10 @@ interface Entry {
     count?: number;
     checked?: boolean;
 }
+
+type CalendarSettings = {
+    outlineMonths: boolean;
+};
 
 function getYear(paramsYear: string | null): number {
     const currentYear = new Date().getFullYear();
@@ -38,6 +42,10 @@ export default function Chart() {
     if (chart && year < new Date(chart.createdAt).getFullYear()) {
         setYear(new Date().getFullYear());
     }
+
+    const [settings, setSettings] = useState<CalendarSettings>({
+        outlineMonths: localStorage.getItem('outlineMonths') === 'true',
+    });
 
     useEffect(() => {
         handleErrors(
@@ -79,34 +87,41 @@ export default function Chart() {
     return (
         <>
             <NavBar />
-            <div className="full-height-minus-navbar">
-                <h4 className="ps-4 pt-2">
+            <div className="full-height-minus-navbar d-flex justify-content-center flex-wrap">
+                <h4 className="ps-4 pt-2 w-100" style={{ height: '50px' }}>
                     <Dropdown>
                         <Breadcrumb>
                             <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
                             <Breadcrumb.Item href={`/charts/${chartId}`}>{chart?.name}</Breadcrumb.Item>
-                            <Breadcrumb.Item href={`/charts/${chartId}?year=${year}`}>
-                                {year}
-                            </Breadcrumb.Item>
+                            <Breadcrumb.Item href={`/charts/${chartId}?year=${year}`}>{year}</Breadcrumb.Item>
                             <Dropdown.Toggle
                                 style={{ padding: '0px 7.5px 0px 5px', border: 0 }}
                                 variant="none"
                                 id="dropdown-basic"
                             ></Dropdown.Toggle>
-
                         </Breadcrumb>
-                                <Dropdown.Menu>
-                                    {years.map((year) => (
-                                        <Dropdown.Item href={`/charts/${chartId}?year=${year}`}>
-                                            {year}
-                                        </Dropdown.Item>
-                                    ))}
-                                </Dropdown.Menu>
+                        <Dropdown.Menu>
+                            {years.map((year) => (
+                                <Dropdown.Item href={`/charts/${chartId}?year=${year}`}>{year}</Dropdown.Item>
+                            ))}
+                        </Dropdown.Menu>
                     </Dropdown>
                 </h4>
-                <div className="d-flex justify-content-center align-items-center">
-                    <TrackerCalendar entries={entries} year={year} />
-                </div>
+                <Card style={{ maxWidth: '300px', width: '25%' }} className="mx-auto mb-2 m-0">
+                    <Card.Header className="bg-primary text-white">
+                        <h2>Settings</h2>
+                    </Card.Header>
+                    <Card.Body>
+                        <Row>
+                            <Col>
+                                <Card.Text>
+                                    <SettingsPanel setSettings={setSettings} settings={settings} />
+                                </Card.Text>
+                            </Col>
+                        </Row>
+                    </Card.Body>
+                </Card>
+                <TrackerCalendar entries={entries} year={year} settings={settings} />
             </div>
 
             <ToastContainer position="top-end">
@@ -146,7 +161,42 @@ export default function Chart() {
     );
 }
 
-function TrackerCalendar({ entries, year }: { entries: Entry[]; year: number }) {
+function SettingsPanel({
+    settings,
+    setSettings,
+}: {
+    settings: CalendarSettings;
+    setSettings: setState<CalendarSettings>;
+}) {
+    return (
+        <Form>
+            <Form.Check
+                checked={settings.outlineMonths}
+                onClick={() => {
+                    localStorage.setItem('outlineMonths', String(!settings.outlineMonths));
+
+                    setSettings({
+                        outlineMonths: !settings.outlineMonths,
+                    });
+                }}
+                reverse={true}
+                inline={true}
+                type="switch"
+                label="Show Month Borders"
+            />
+        </Form>
+    );
+}
+
+function TrackerCalendar({
+    entries,
+    year,
+    settings,
+}: {
+    entries: Entry[];
+    year: number;
+    settings: CalendarSettings;
+}) {
     return (
         <div style={{ textAlign: 'center', width: '95%', height: '250px' }}>
             <ResponsiveCalendar
@@ -173,7 +223,7 @@ function TrackerCalendar({ entries, year }: { entries: Entry[]; year: number }) 
                 ]}
                 margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
                 monthBorderColor="#9cc3ff"
-                monthBorderWidth={0}
+                monthBorderWidth={settings.outlineMonths ? 2 : 0}
                 yearSpacing={40}
                 dayBorderWidth={2}
                 dayBorderColor="#ffffff"
