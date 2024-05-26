@@ -145,6 +145,8 @@ export default function Chart() {
                                                 direction: 'horizontal',
                                                 outlineMonths: false,
                                             });
+
+                                            setSuccess("Reset calendar settings.")
                                         }}
                                         variant="warning"
                                     >
