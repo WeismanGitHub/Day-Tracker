@@ -124,7 +124,7 @@ export default function Chart() {
                 <div className="container">
                     <Card style={{ maxWidth: '500px' }} className="mx-auto mb-2 mt-2">
                         <Card.Header className="bg-primary text-white">
-                            <h2>Settings</h2>
+                            <h2>Calendar Settings</h2>
                         </Card.Header>
                         <Card.Body>
                             <Row>
@@ -288,6 +288,9 @@ function TrackerCalendar({
                 to={new Date(year, 11, 31, 23, 59, 59, 999)}
                 emptyColor="#eeeeee"
                 direction={settings.direction}
+                monthLegend={(_year, _month, date) => {
+                    return window.innerWidth > 550 ? date.toLocaleString('default', { month: 'short' }) : ''
+                }}
                 colors={[
                     '#8080ff',
                     '#6666ff',
