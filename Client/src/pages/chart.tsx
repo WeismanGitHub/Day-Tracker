@@ -225,8 +225,8 @@ function SettingsPanel({
                     label="Show Month Borders"
                 />
             </Form>
-            <div className="w-100"></div>
-            <ButtonGroup className="mt-2">
+            <div className='w-100'></div>
+            <ButtonGroup className='mt-2'>
                 <ToggleButton
                     id="horizontal"
                     type="radio"

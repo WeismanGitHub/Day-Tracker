@@ -1,5 +1,7 @@
 import { Form, NavigateFunction, useNavigate } from 'react-router-dom';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import { ChartType, handleErrors } from '../helpers';
+import Tooltip from 'react-bootstrap/Tooltip';
 import { useEffect, useState } from 'react';
 import { chartSchema } from '../schemas';
 import { Formik } from 'formik';
@@ -171,7 +173,9 @@ function Charts({
                                         flexGrow: 1,
                                     }}
                                 >
-                                    <strong>{chart.name}</strong>
+                                    <OverlayTrigger overlay={<Tooltip id={chart.id}>{chart.name}</Tooltip>}>
+                                        <strong>{chart.name}</strong>
+                                    </OverlayTrigger>
                                 </h4>
                                 <a
                                     href="#."
