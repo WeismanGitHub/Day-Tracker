@@ -14,7 +14,7 @@ export default function NavBar() {
 
     async function signout() {
         try {
-            await axios.post('Api/Users/Account/SignOut');
+            await axios.post('/Api/Users/Account/SignOut');
             localStorage.removeItem('authenticated');
             setShowModal(false);
             setTimeout(() => {
