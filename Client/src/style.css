@@ -97,3 +97,7 @@ body {
     cursor: text;
     margin-right: 7.5px;
 }
+
+rect {
+    cursor: pointer;
+}

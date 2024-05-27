@@ -271,6 +271,12 @@ function TrackerCalendar({
     year: number;
     settings: CalendarSettings;
 }) {
+    const calendar = document.querySelector('rect')
+
+    if (calendar) {
+        calendar.style.cursor = 'default'
+    }
+
     return (
         <div
             style={{
