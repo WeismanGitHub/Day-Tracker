@@ -133,7 +133,7 @@ public class UsersController : CustomBase
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status401Unauthorized)]
     [Tags("Users")]
     [HttpPost("Account/SignOut", Name = "SignOut")]
-    public async Task<IActionResult> SignOut()
+    public async Task<IActionResult> LogOut()
     {
         await HttpContext.SignOutAsync();
         return Ok();
