@@ -258,6 +258,7 @@ export default function Chart() {
 
     function CalendarHeatmap() {
         const [day, setDay] = useState<Day | null>(null);
+        const squareSize = window.innerWidth < 405 ? 21 : 30
         const colors = [
             '#8080ff',
             '#6666ff',
@@ -324,20 +325,20 @@ export default function Chart() {
                 ]}
                 onClick={(data) => console.log(data)}
             />
-                    <div className="mb-5">
+                    <div style={{ paddingBottom: '10px' }}>
                         Less
                         <svg
-                            height={'30px'}
-                            width={colors.length * 30}
+                            height={squareSize}
+                            width={colors.length * squareSize}
                             style={{ cursor: 'default', borderRadius: '5px' }}
-                            className=" me-2 ms-2"
+                            className="me-2 ms-2"
                         >
                             {colors.map((color, index) => (
                                 <rect
-                                    height="30px"
-                                    width="30px"
+                                    height={squareSize}
+                                    width={squareSize}
                                     y="0"
-                                    x={index * 30}
+                                    x={index * squareSize}
                                     style={{
                                         cursor: 'default',
                                         fill: color,
