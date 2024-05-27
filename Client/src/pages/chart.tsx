@@ -130,7 +130,7 @@ export default function Chart() {
                             <Row>
                                 <Col>
                                     <Card.Text>
-                                        <SettingsPanel setSettings={setSettings} settings={settings} />
+                                        <SettingsPanel />
                                     </Card.Text>
                                 </Col>
                             </Row>
@@ -146,7 +146,7 @@ export default function Chart() {
                                                 outlineMonths: false,
                                             });
 
-                                            setSuccess("Reset calendar settings.")
+                                            setSuccess('Reset calendar settings.');
                                         }}
                                         variant="warning"
                                     >
@@ -195,71 +195,65 @@ export default function Chart() {
             </ToastContainer>
         </>
     );
-}
 
-function SettingsPanel({
-    settings,
-    setSettings,
-}: {
-    settings: CalendarSettings;
-    setSettings: setState<CalendarSettings>;
-}) {
-    return (
-        <div className="d-flex justify-content-center align-content-center flex-wrap">
-            <Form>
-                <Form.Check
-                    checked={settings.outlineMonths}
-                    onClick={() => {
-                        if (!settings.outlineMonths) {
-                            localStorage.setItem('outlineMonths', 'true');
-                        } else {
-                            localStorage.removeItem('outlineMonths');
-                        }
+    function SettingsPanel() {
+        return (
+            <div className="d-flex justify-content-center align-content-center flex-wrap">
+                <Form>
+                    <Form.Check
+                        checked={settings.outlineMonths}
+                        onClick={() => {
+                            if (!settings.outlineMonths) {
+                                localStorage.setItem('outlineMonths', 'true');
+                            } else {
+                                localStorage.removeItem('outlineMonths');
+                            }
 
-                        setSettings({
-                            outlineMonths: !settings.outlineMonths,
-                            direction: settings.direction,
-                        });
-                    }}
-                    reverse={true}
-                    inline={true}
-                    type="switch"
-                    label="Show Month Borders"
-                />
-            </Form>
-            <div className='w-100'></div>
-            <ButtonGroup className='mt-2'>
-                <ToggleButton
-                    id="horizontal"
-                    type="radio"
-                    name="radio"
-                    value={'horizontal'}
-                    checked={settings.direction === 'horizontal'}
-                    onChange={() => {
-                        localStorage.removeItem('direction');
-                        setSettings({ direction: 'horizontal', outlineMonths: settings.outlineMonths });
-                    }}
-                    style={{ width: '100px' }}
-                >
-                    Horizontal
-                </ToggleButton>
-                <ToggleButton
-                    id="vertical"
-                    type="radio"
-                    name="radio"
-                    value={'vertical'}
-                    checked={settings.direction === 'vertical'}
-                    onChange={() => {
-                        localStorage.setItem('direction', 'vertical');
-                        setSettings({ direction: 'vertical', outlineMonths: settings.outlineMonths });
-                    }}
-                    style={{ width: '100px' }}
-                >
-                    Vertical
-                </ToggleButton>
-            </ButtonGroup>
-        </div>
-    );
+                            setSettings({
+                                outlineMonths: !settings.outlineMonths,
+                                direction: settings.direction,
+                            });
+                        }}
+                        reverse={true}
+                        inline={true}
+                        type="switch"
+                        label="Show Month Borders"
+                    />
+                </Form>
+                <div className="w-100"></div>
+                <ButtonGroup className="mt-2">
+                    <ToggleButton
+                        id="horizontal"
+                        type="radio"
+                        name="radio"
+                        value={'horizontal'}
+                        checked={settings.direction === 'horizontal'}
+                        onChange={() => {
+                            localStorage.removeItem('direction');
+                            setSettings({ direction: 'horizontal', outlineMonths: settings.outlineMonths });
+                        }}
+                        style={{ width: '100px' }}
+                    >
+                        Horizontal
+                    </ToggleButton>
+                    <ToggleButton
+                        id="vertical"
+                        type="radio"
+                        name="radio"
+                        value={'vertical'}
+                        checked={settings.direction === 'vertical'}
+                        onChange={() => {
+                            localStorage.setItem('direction', 'vertical');
+                            setSettings({ direction: 'vertical', outlineMonths: settings.outlineMonths });
+                        }}
+                        style={{ width: '100px' }}
+                    >
+                        Vertical
+                    </ToggleButton>
+                </ButtonGroup>
+            </div>
+        );
+    }
 }
 
 function TrackerCalendar({
@@ -271,11 +265,13 @@ function TrackerCalendar({
     year: number;
     settings: CalendarSettings;
 }) {
-    const calendar = document.querySelector('rect')
+    const calendar = document.querySelector('rect');
 
     if (calendar) {
-        calendar.style.cursor = 'default'
+        calendar.style.cursor = 'default';
     }
+
+    // const [show, setShow] = useState<boolean>(false);
 
     return (
         <div
@@ -297,7 +293,7 @@ function TrackerCalendar({
                 emptyColor="#eeeeee"
                 direction={settings.direction}
                 monthLegend={(_year, _month, date) => {
-                    return window.innerWidth > 550 ? date.toLocaleString('default', { month: 'short' }) : ''
+                    return window.innerWidth > 550 ? date.toLocaleString('default', { month: 'short' }) : '';
                 }}
                 colors={[
                     '#8080ff',
@@ -329,6 +325,7 @@ function TrackerCalendar({
                         itemDirection: 'right-to-left',
                     },
                 ]}
+                onClick={(data) => console.log(data)}
             />
         </div>
     );

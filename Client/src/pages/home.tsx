@@ -1,4 +1,4 @@
-import { Form, NavigateFunction, useNavigate } from 'react-router-dom';
+import { Form, useNavigate } from 'react-router-dom';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import { ChartType, handleErrors } from '../helpers';
 import Tooltip from 'react-bootstrap/Tooltip';
@@ -81,23 +81,12 @@ export default function Home() {
                             </Row>
                             <Row className="mt-3">
                                 <Col className="d-flex justify-content-center">
-                                    <CreateChartButton
-                                        navigate={navigate}
-                                        setSuccess={setSuccess}
-                                        setError={setError}
-                                        setCharts={setCharts}
-                                        charts={charts}
-                                    />
+                                    <CreateChartButton />
                                 </Col>
                             </Row>
                         </Card.Body>
                     </Card>
-                    <Charts
-                        charts={charts}
-                        setCharts={setCharts}
-                        setError={setError}
-                        setSuccess={setSuccess}
-                    />
+                    <Charts />
                 </div>
             </div>
 
@@ -136,415 +125,362 @@ export default function Home() {
             </ToastContainer>
         </>
     );
-}
 
-function Charts({
-    charts,
-    setCharts,
-    setError,
-    setSuccess,
-}: {
-    charts: Chart[] | null;
-    setCharts: setState<Chart[] | null>;
-    setSuccess: setState<string>;
-    setError: setError;
-}) {
-    return (
-        <div className="d-flex gap-2 flex-wrap justify-content-center w-100 pb-3">
-            {charts?.map((chart) => (
-                <a href={`/charts/${chart.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
-                    <Card
-                        key={chart.id}
-                        style={{
-                            width: '18rem',
-                            backgroundColor: ChartColorMap[chart.type as ChartType],
-                            cursor: 'pointer',
-                        }}
-                        className="shadow-sm chart"
-                    >
-                        <Card.Body>
-                            <Card.Title style={{ display: 'flex', alignItems: 'center' }}>
-                                <h4
-                                    style={{
-                                        paddingBottom: '3px',
-                                        textOverflow: 'ellipsis',
-                                        overflow: 'hidden',
-                                        whiteSpace: 'nowrap',
-                                        flexGrow: 1,
-                                    }}
-                                >
-                                    <OverlayTrigger overlay={<Tooltip id={chart.id}>{chart.name}</Tooltip>}>
-                                        <strong>{chart.name}</strong>
-                                    </OverlayTrigger>
-                                </h4>
-                                <a
-                                    href="#."
-                                    style={{
-                                        float: 'right',
-                                        display: 'inline-block',
-                                        paddingBottom: '15px',
-                                    }}
-                                >
-                                    <div className="dropdown dropdown-menu-end">
-                                        <div data-bs-toggle="dropdown" className="ms-auto">
-                                            <img
-                                                src="three-dots-vertical.svg"
-                                                width="22.5"
-                                                height="22.5"
-                                                alt="options"
-                                            />
+    function Charts() {
+        return (
+            <div className="d-flex gap-2 flex-wrap justify-content-center w-100 pb-3">
+                {charts?.map((chart) => (
+                    <a href={`/charts/${chart.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                        <Card
+                            key={chart.id}
+                            style={{
+                                width: '18rem',
+                                backgroundColor: ChartColorMap[chart.type as ChartType],
+                                cursor: 'pointer',
+                            }}
+                            className="shadow-sm chart"
+                        >
+                            <Card.Body>
+                                <Card.Title style={{ display: 'flex', alignItems: 'center' }}>
+                                    <h4
+                                        style={{
+                                            paddingBottom: '3px',
+                                            textOverflow: 'ellipsis',
+                                            overflow: 'hidden',
+                                            whiteSpace: 'nowrap',
+                                            flexGrow: 1,
+                                        }}
+                                    >
+                                        <OverlayTrigger
+                                            overlay={<Tooltip id={chart.id}>{chart.name}</Tooltip>}
+                                        >
+                                            <strong>{chart.name}</strong>
+                                        </OverlayTrigger>
+                                    </h4>
+                                    <a
+                                        href="#."
+                                        style={{
+                                            float: 'right',
+                                            display: 'inline-block',
+                                            paddingBottom: '15px',
+                                        }}
+                                    >
+                                        <div className="dropdown dropdown-menu-end">
+                                            <div data-bs-toggle="dropdown" className="ms-auto">
+                                                <img
+                                                    src="three-dots-vertical.svg"
+                                                    width="22.5"
+                                                    height="22.5"
+                                                    alt="options"
+                                                />
+                                            </div>
+
+                                            <div className="dropdown-menu">
+                                                <Dropdown.Item href={`/charts/${chart.id}`}>
+                                                    View
+                                                </Dropdown.Item>
+                                                <EditChartItem chart={chart} />
+                                                <DeleteChartItem chartId={chart.id} />
+                                            </div>
                                         </div>
-
-                                        <div className="dropdown-menu">
-                                            <Dropdown.Item href={`/charts/${chart.id}`}>View</Dropdown.Item>
-                                            <EditChartItem
-                                                chart={chart}
-                                                chartId={chart.id}
-                                                charts={charts}
-                                                setCharts={setCharts}
-                                                setError={setError}
-                                                setSuccess={setSuccess}
-                                            />
-
-                                            <DeleteChartItem
-                                                chartId={chart.id}
-                                                charts={charts}
-                                                setCharts={setCharts}
-                                                setError={setError}
-                                                setSuccess={setSuccess}
-                                            />
-                                        </div>
-                                    </div>
-                                </a>
-                            </Card.Title>
-                            <Card.Text>
-                                <strong>Type:</strong> {ChartType[chart.type]}
-                            </Card.Text>
-                            <Card.Text>
-                                <strong>Created:</strong>{' '}
-                                {new Date(chart.createdAt).toLocaleString([], { dateStyle: 'short' })}
-                            </Card.Text>
-                        </Card.Body>
-                    </Card>
-                </a>
-            ))}
-        </div>
-    );
-}
-
-function EditChartItem({
-    chart,
-    chartId,
-    setError,
-    setSuccess,
-    charts,
-    setCharts,
-}: {
-    chart: Chart;
-    chartId: string;
-    setSuccess: setState<string>;
-    setError: setError;
-    setCharts: setState<Chart[]>;
-    charts: Chart[];
-}) {
-    const [show, setShow] = useState(false);
-    const navigate = useNavigate();
-
-    async function updateChart(name: string) {
-        await handleErrors(
-            async () => {
-                await axios.patch(`/Api/Charts/${chartId}`, { name });
-                setCharts(
-                    charts.map((chart) => {
-                        if (chart.id === chartId) {
-                            chart.name = name;
-                        }
-
-                        return chart;
-                    })
-                );
-
-                setShow(false);
-                setSuccess('Updated this chart.');
-            },
-            setError,
-            navigate
+                                    </a>
+                                </Card.Title>
+                                <Card.Text>
+                                    <strong>Type:</strong> {ChartType[chart.type]}
+                                </Card.Text>
+                                <Card.Text>
+                                    <strong>Created:</strong>{' '}
+                                    {new Date(chart.createdAt).toLocaleString([], { dateStyle: 'short' })}
+                                </Card.Text>
+                            </Card.Body>
+                        </Card>
+                    </a>
+                ))}
+            </div>
         );
     }
 
-    return (
-        <>
-            <Dropdown.Item onClick={() => setShow(true)}>Edit</Dropdown.Item>
+    function EditChartItem({ chart }: { chart: Chart }) {
+        const [show, setShow] = useState(false);
+        const navigate = useNavigate();
 
-            <Formik
-                validationSchema={yup.object().shape({
-                    name: chartNameSchema,
-                })}
-                validateOnMount
-                validateOnChange
-                initialValues={{
-                    name: chart.name,
-                }}
-                onSubmit={(values) => updateChart(values.name)}
-            >
-                {({ handleSubmit, handleChange, values, errors }) => (
-                    <Modal
-                        show={show}
-                        centered
-                        keyboard={true}
-                        onHide={() => setShow(false)}
-                        animation={false}
-                    >
-                        <Form noValidate onSubmit={handleSubmit}>
-                            <Modal.Header closeButton>
-                                <Modal.Title>Update this chart?</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <Row className="mb-3">
-                                    <FormGroup as={Col} controlId="NameId">
-                                        <FormLabel>New Name</FormLabel>
-                                        <InputGroup hasValidation>
-                                            <FormControl
-                                                autoFocus
-                                                aria-describedby="inputGroupPrepend"
-                                                name="name"
-                                                value={values.name}
-                                                onChange={handleChange}
-                                                isInvalid={!!errors.name}
-                                            />
+        async function updateChart(name: string) {
+            await handleErrors(
+                async () => {
+                    await axios.patch(`/Api/Charts/${chart.id}`, { name });
+                    setCharts(
+                        charts.map((c) => {
+                            if (c.id === chart.id) {
+                                c.name = name;
+                            }
+
+                            return c;
+                        })
+                    );
+
+                    setShow(false);
+                    setSuccess('Updated this chart.');
+                },
+                setError,
+                navigate
+            );
+        }
+
+        return (
+            <>
+                <Dropdown.Item onClick={() => setShow(true)}>Edit</Dropdown.Item>
+
+                <Formik
+                    validationSchema={yup.object().shape({
+                        name: chartNameSchema,
+                    })}
+                    validateOnMount
+                    validateOnChange
+                    initialValues={{
+                        name: chart.name,
+                    }}
+                    onSubmit={(values) => updateChart(values.name)}
+                >
+                    {({ handleSubmit, handleChange, values, errors }) => (
+                        <Modal
+                            show={show}
+                            centered
+                            keyboard={true}
+                            onHide={() => setShow(false)}
+                            animation={false}
+                        >
+                            <Form noValidate onSubmit={handleSubmit}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Update this chart?</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <Row className="mb-3">
+                                        <FormGroup as={Col} controlId="NameId">
+                                            <FormLabel>New Name</FormLabel>
+                                            <InputGroup hasValidation>
+                                                <FormControl
+                                                    autoFocus
+                                                    aria-describedby="inputGroupPrepend"
+                                                    name="name"
+                                                    value={values.name}
+                                                    onChange={handleChange}
+                                                    isInvalid={!!errors.name}
+                                                />
+                                                <FormControl.Feedback type="invalid">
+                                                    {errors.name}
+                                                </FormControl.Feedback>
+                                            </InputGroup>
+                                        </FormGroup>
+                                    </Row>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button type="submit" variant="warning">
+                                        Update
+                                    </Button>
+                                    <Button variant="secondary" onClick={() => setShow(false)}>
+                                        Close
+                                    </Button>
+                                </Modal.Footer>
+                            </Form>
+                        </Modal>
+                    )}
+                </Formik>
+            </>
+        );
+    }
+
+    function DeleteChartItem({ chartId }: { chartId: string }) {
+        const [show, setShow] = useState(false);
+        const navigate = useNavigate();
+
+        async function deleteChart() {
+            await handleErrors(
+                async () => {
+                    await axios.delete(`/Api/Charts/${chartId}`);
+                    setCharts(charts.filter((chart) => chart.id !== chartId));
+
+                    setShow(false);
+                    setSuccess('Deleted this chart.');
+                },
+                setError,
+                navigate
+            );
+        }
+
+        return (
+            <>
+                <Dropdown.Item onClick={() => setShow(true)}>Delete</Dropdown.Item>
+
+                <Modal show={show} centered keyboard={true} onHide={() => setShow(false)} animation={false}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Delete this chart?</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Footer>
+                        <Button variant="danger" onClick={deleteChart}>
+                            Delete
+                        </Button>
+                        <Button variant="secondary" onClick={() => setShow(false)}>
+                            Close
+                        </Button>
+                    </Modal.Footer>
+                </Modal>
+            </>
+        );
+    }
+
+    function CreateChartButton() {
+        const [show, setShow] = useState(false);
+
+        async function handleSubmit(values: { name: string; type: ChartType }) {
+            await handleErrors(
+                async () => {
+                    const res = await axios.post<{ id: string }>('/Api/Charts', values);
+
+                    setCharts([
+                        {
+                            id: res.data.id,
+                            name: values.name,
+                            type: values.type,
+                            createdAt: new Date(),
+                        },
+                        ...charts,
+                    ]);
+
+                    values.name = '';
+                    setShow(false);
+                    setSuccess('Created a chart.');
+                },
+                setError,
+                navigate
+            );
+        }
+
+        return (
+            <>
+                <Button variant="primary" onClick={() => setShow(true)}>
+                    Create
+                </Button>
+
+                <Formik
+                    validationSchema={yup.object().shape({
+                        name: chartNameSchema,
+                        type: yup.string().oneOf(Object.keys(ChartType)).required('Type is required.'),
+                    })}
+                    validateOnChange
+                    initialValues={{
+                        name: '',
+                        type: ChartType.Counter,
+                    }}
+                    onSubmit={handleSubmit}
+                >
+                    {({ handleSubmit, handleChange, values, errors, setFieldValue }) => (
+                        <Modal
+                            show={show}
+                            centered
+                            keyboard={true}
+                            onHide={() => setShow(false)}
+                            animation={false}
+                        >
+                            <Form noValidate onSubmit={handleSubmit}>
+                                <Modal.Header closeButton>
+                                    <Modal.Title>Create a chart?</Modal.Title>
+                                </Modal.Header>
+                                <Modal.Body>
+                                    <Row className="mb-3">
+                                        <FormGroup as={Col} controlId="nameId">
+                                            <FormLabel>Name</FormLabel>
+                                            <InputGroup hasValidation>
+                                                <FormControl
+                                                    autoFocus
+                                                    aria-describedby="inputGroupPrepend"
+                                                    name="name"
+                                                    value={values.name}
+                                                    onChange={handleChange}
+                                                    isInvalid={!!errors.name}
+                                                />
+                                                <FormControl.Feedback type="invalid">
+                                                    {errors.name}
+                                                </FormControl.Feedback>
+                                            </InputGroup>
+                                        </FormGroup>
+                                    </Row>
+                                    <Row className="mb-3">
+                                        <FormGroup as={Col}>
+                                            <FormLabel>Chart Type</FormLabel>
+                                            <br />
+                                            <ListGroup horizontal={true}>
+                                                <ListGroup.Item
+                                                    action
+                                                    active={values.type == ChartType.Counter}
+                                                    className="text-black"
+                                                    style={{
+                                                        backgroundColor: ChartColorMap[0],
+                                                        fontWeight:
+                                                            values.type === ChartType.Counter
+                                                                ? 'bold'
+                                                                : 'normal',
+                                                    }}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        setFieldValue('type', ChartType.Counter);
+                                                    }}
+                                                >
+                                                    Counter
+                                                </ListGroup.Item>
+                                                <ListGroup.Item
+                                                    action
+                                                    active={values.type == ChartType.Checkmark}
+                                                    className="text-black"
+                                                    style={{
+                                                        backgroundColor: ChartColorMap[1],
+                                                        fontWeight:
+                                                            values.type === ChartType.Checkmark
+                                                                ? 'bold'
+                                                                : 'normal',
+                                                    }}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        setFieldValue('type', ChartType.Checkmark);
+                                                    }}
+                                                >
+                                                    Checkmark
+                                                </ListGroup.Item>
+                                                <ListGroup.Item
+                                                    action
+                                                    active={values.type == ChartType.Scale}
+                                                    className="text-black"
+                                                    style={{
+                                                        backgroundColor: ChartColorMap[2],
+                                                        fontWeight:
+                                                            values.type === ChartType.Scale
+                                                                ? 'bold'
+                                                                : 'normal',
+                                                    }}
+                                                    onClick={(e) => {
+                                                        e.preventDefault();
+                                                        setFieldValue('type', ChartType.Scale);
+                                                    }}
+                                                >
+                                                    Scale
+                                                </ListGroup.Item>
+                                            </ListGroup>
                                             <FormControl.Feedback type="invalid">
-                                                {errors.name}
+                                                {errors.type}
                                             </FormControl.Feedback>
-                                        </InputGroup>
-                                    </FormGroup>
-                                </Row>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button type="submit" variant="warning">
-                                    Update
-                                </Button>
-                                <Button variant="secondary" onClick={() => setShow(false)}>
-                                    Close
-                                </Button>
-                            </Modal.Footer>
-                        </Form>
-                    </Modal>
-                )}
-            </Formik>
-        </>
-    );
-}
-
-function DeleteChartItem({
-    chartId,
-    setError,
-    setSuccess,
-    charts,
-    setCharts,
-}: {
-    chartId: string;
-    setSuccess: setState<string>;
-    setError: setError;
-    setCharts: setState<Chart[]>;
-    charts: Chart[];
-}) {
-    const [show, setShow] = useState(false);
-    const navigate = useNavigate();
-
-    async function deleteChart() {
-        await handleErrors(
-            async () => {
-                await axios.delete(`/Api/Charts/${chartId}`);
-                setCharts(charts.filter((chart) => chart.id !== chartId));
-
-                setShow(false);
-                setSuccess('Deleted this chart.');
-            },
-            setError,
-            navigate
+                                        </FormGroup>
+                                    </Row>
+                                </Modal.Body>
+                                <Modal.Footer>
+                                    <Button type="submit">Create</Button>
+                                    <Button variant="secondary" onClick={() => setShow(false)}>
+                                        Close
+                                    </Button>
+                                </Modal.Footer>
+                            </Form>
+                        </Modal>
+                    )}
+                </Formik>
+            </>
         );
     }
-
-    return (
-        <>
-            <Dropdown.Item onClick={() => setShow(true)}>Delete</Dropdown.Item>
-
-            <Modal show={show} centered keyboard={true} onHide={() => setShow(false)} animation={false}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Delete this chart?</Modal.Title>
-                </Modal.Header>
-                <Modal.Footer>
-                    <Button variant="danger" onClick={deleteChart}>
-                        Delete
-                    </Button>
-                    <Button variant="secondary" onClick={() => setShow(false)}>
-                        Close
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </>
-    );
-}
-function CreateChartButton({
-    setError,
-    setCharts,
-    charts,
-    setSuccess,
-    navigate,
-}: {
-    setError: setError;
-    navigate: NavigateFunction;
-    setCharts: setState<Chart[]>;
-    charts: Chart[];
-    setSuccess: setState<string>;
-}) {
-    const [show, setShow] = useState(false);
-
-    async function handleSubmit(values: { name: string; type: ChartType }) {
-        await handleErrors(
-            async () => {
-                const res = await axios.post<{ id: string }>('/Api/Charts', values);
-
-                setCharts([
-                    {
-                        id: res.data.id,
-                        name: values.name,
-                        type: values.type,
-                        createdAt: new Date(),
-                    },
-                    ...charts,
-                ]);
-
-                values.name = '';
-                setShow(false);
-                setSuccess('Created a chart.');
-            },
-            setError,
-            navigate
-        );
-    }
-
-    return (
-        <>
-            <Button variant="primary" onClick={() => setShow(true)}>
-                Create
-            </Button>
-
-            <Formik
-                validationSchema={yup.object().shape({
-                    name: chartNameSchema,
-                    type: yup.string().oneOf(Object.keys(ChartType)).required('Type is required.'),
-                })}
-                validateOnChange
-                initialValues={{
-                    name: '',
-                    type: ChartType.Counter,
-                }}
-                onSubmit={handleSubmit}
-            >
-                {({ handleSubmit, handleChange, values, errors, setFieldValue }) => (
-                    <Modal
-                        show={show}
-                        centered
-                        keyboard={true}
-                        onHide={() => setShow(false)}
-                        animation={false}
-                    >
-                        <Form noValidate onSubmit={handleSubmit}>
-                            <Modal.Header closeButton>
-                                <Modal.Title>Create a chart?</Modal.Title>
-                            </Modal.Header>
-                            <Modal.Body>
-                                <Row className="mb-3">
-                                    <FormGroup as={Col} controlId="nameId">
-                                        <FormLabel>Name</FormLabel>
-                                        <InputGroup hasValidation>
-                                            <FormControl
-                                                autoFocus
-                                                aria-describedby="inputGroupPrepend"
-                                                name="name"
-                                                value={values.name}
-                                                onChange={handleChange}
-                                                isInvalid={!!errors.name}
-                                            />
-                                            <FormControl.Feedback type="invalid">
-                                                {errors.name}
-                                            </FormControl.Feedback>
-                                        </InputGroup>
-                                    </FormGroup>
-                                </Row>
-                                <Row className="mb-3">
-                                    <FormGroup as={Col}>
-                                        <FormLabel>Chart Type</FormLabel>
-                                        <br />
-                                        <ListGroup horizontal={true}>
-                                            <ListGroup.Item
-                                                action
-                                                active={values.type == ChartType.Counter}
-                                                className="text-black"
-                                                style={{
-                                                    backgroundColor: ChartColorMap[0],
-                                                    fontWeight:
-                                                        values.type === ChartType.Counter ? 'bold' : 'normal',
-                                                }}
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    setFieldValue('type', ChartType.Counter);
-                                                }}
-                                            >
-                                                Counter
-                                            </ListGroup.Item>
-                                            <ListGroup.Item
-                                                action
-                                                active={values.type == ChartType.Checkmark}
-                                                className="text-black"
-                                                style={{
-                                                    backgroundColor: ChartColorMap[1],
-                                                    fontWeight:
-                                                        values.type === ChartType.Checkmark
-                                                            ? 'bold'
-                                                            : 'normal',
-                                                }}
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    setFieldValue('type', ChartType.Checkmark);
-                                                }}
-                                            >
-                                                Checkmark
-                                            </ListGroup.Item>
-                                            <ListGroup.Item
-                                                action
-                                                active={values.type == ChartType.Scale}
-                                                className="text-black"
-                                                style={{
-                                                    backgroundColor: ChartColorMap[2],
-                                                    fontWeight:
-                                                        values.type === ChartType.Scale ? 'bold' : 'normal',
-                                                }}
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    setFieldValue('type', ChartType.Scale);
-                                                }}
-                                            >
-                                                Scale
-                                            </ListGroup.Item>
-                                        </ListGroup>
-                                        <FormControl.Feedback type="invalid">
-                                            {errors.type}
-                                        </FormControl.Feedback>
-                                    </FormGroup>
-                                </Row>
-                            </Modal.Body>
-                            <Modal.Footer>
-                                <Button type="submit">Create</Button>
-                                <Button variant="secondary" onClick={() => setShow(false)}>
-                                    Close
-                                </Button>
-                            </Modal.Footer>
-                        </Form>
-                    </Modal>
-                )}
-            </Formik>
-        </>
-    );
 }
