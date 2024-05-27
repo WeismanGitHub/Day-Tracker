@@ -11,5 +11,5 @@ interface Chart {
     id: string;
     name: string;
     type: number;
-    createdAt: string;
+    createdAt: Date;
 }
