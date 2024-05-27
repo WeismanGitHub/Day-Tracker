@@ -48,7 +48,6 @@ public static class AppUtilities
         });
 
         services.AddEndpointsApiExplorer();
-        services.Configure<SwaggerUIOptions>(options => options.EnableTryItOutByDefault());
         services.AddSwaggerGen(x =>
         {
             x.SwaggerDoc(
@@ -67,7 +66,7 @@ public static class AppUtilities
     public static void ConfigureMiddleware(WebApplication app)
     {
         app.UseSwagger();
-        app.UseSwaggerUI();
+        app.UseSwaggerUI(options => options.EnableTryItOutByDefault());
 
         app.UseProblemDetails();
 
