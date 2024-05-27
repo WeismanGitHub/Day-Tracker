@@ -256,20 +256,28 @@ export default function Chart() {
     }
 }
 
-function TrackerCalendar({
-    entries,
-    year,
-    settings,
-}: {
-    entries: Entry[];
-    year: number;
-    settings: CalendarSettings;
-}) {
+    function CalendarHeatmap() {
+        const [day, setDay] = useState<Day | null>(null);
+        const colors = [
+            '#8080ff',
+            '#6666ff',
+            '#4d4dff',
+            '#3333ff',
+            '#1a1aff',
+            '#0000ff',
+            '#0000e6',
+            '#0000cc',
+            '#0000b3',
+            '#000099',
+        ];
+
+        setTimeout(() => {
     const calendar = document.querySelector('rect');
 
     if (calendar) {
         calendar.style.cursor = 'default';
     }
+        }, 250);
 
     // const [show, setShow] = useState<boolean>(false);
 
@@ -295,18 +303,7 @@ function TrackerCalendar({
                 monthLegend={(_year, _month, date) => {
                     return window.innerWidth > 550 ? date.toLocaleString('default', { month: 'short' }) : '';
                 }}
-                colors={[
-                    '#8080ff',
-                    '#6666ff',
-                    '#4d4dff',
-                    '#3333ff',
-                    '#1a1aff',
-                    '#0000ff',
-                    '#0000e6',
-                    '#0000cc',
-                    '#0000b3',
-                    '#000099',
-                ]}
+                        colors={colors}
                 margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
                 monthBorderColor="#9cc3ff"
                 monthBorderWidth={settings.outlineMonths ? 2 : 0}
@@ -327,6 +324,29 @@ function TrackerCalendar({
                 ]}
                 onClick={(data) => console.log(data)}
             />
+                    <div className="mb-5">
+                        Less
+                        <svg
+                            height={'30px'}
+                            width={colors.length * 30}
+                            style={{ cursor: 'default', borderRadius: '5px' }}
+                            className=" me-2 ms-2"
+                        >
+                            {colors.map((color, index) => (
+                                <rect
+                                    height="30px"
+                                    width="30px"
+                                    y="0"
+                                    x={index * 30}
+                                    style={{
+                                        cursor: 'default',
+                                        fill: color,
+                                    }}
+                                ></rect>
+                            ))}
+                        </svg>
+                        More
+                    </div>
         </div>
     );
 }
