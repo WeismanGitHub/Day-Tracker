@@ -1,9 +1,11 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { handleErrors } from '../helpers';
 import { ResponsiveCalendar } from '@nivo/calendar';
 import { useEffect, useState } from 'react';
-import { handleErrors } from '../helpers';
 import { chartSchema } from '../schemas';
+import { Formik } from 'formik';
 import NavBar from '../navbar';
+import * as yup from 'yup';
 import axios from 'axios';
 import {
     Breadcrumb,
@@ -13,6 +15,11 @@ import {
     Col,
     Dropdown,
     Form,
+    FormControl,
+    FormGroup,
+    FormLabel,
+    InputGroup,
+    Modal,
     Row,
     Toast,
     ToastContainer,
@@ -26,6 +33,15 @@ interface Entry {
     count?: number;
     checked?: boolean;
 }
+
+type Day = {
+    color: string;
+    date: Date;
+    day: string;
+    size: number;
+    x: number;
+    y: number;
+};
 
 type CalendarSettings = {
     outlineMonths: boolean;
@@ -115,15 +131,15 @@ export default function Chart() {
     return (
         <>
             <NavBar />
-            <div className="full-height-minus-navbar d-flex justify-content-center flex-wrap">
+            <div className="full-height-minus-navbar">
                 <ChartBreadCrumbs />
                 <div className="container">
-                                        <SettingsPanel />
+                    <SettingsPanel />
                     <div className="mx-auto">
                         <CalendarHeatmap />
-                </div>
+                    </div>
                     <ColorScale />
-            </div>
+                </div>
             </div>
 
             <ToastContainer position="top-end">
@@ -224,66 +240,66 @@ export default function Chart() {
                     <Row>
                         <Col>
                             <Card.Text>
-            <div className="d-flex justify-content-center align-content-center flex-wrap">
-                <Form>
-                    <Form.Check
-                        checked={settings.outlineMonths}
-                        onClick={() => {
-                            if (!settings.outlineMonths) {
-                                localStorage.setItem('outlineMonths', 'true');
-                            } else {
-                                localStorage.removeItem('outlineMonths');
-                            }
+                                <div className="d-flex justify-content-center align-content-center flex-wrap">
+                                    <Form>
+                                        <Form.Check
+                                            checked={settings.outlineMonths}
+                                            onClick={() => {
+                                                if (!settings.outlineMonths) {
+                                                    localStorage.setItem('outlineMonths', 'true');
+                                                } else {
+                                                    localStorage.removeItem('outlineMonths');
+                                                }
 
-                            setSettings({
-                                outlineMonths: !settings.outlineMonths,
-                                direction: settings.direction,
-                            });
-                        }}
-                        reverse={true}
-                        inline={true}
-                        type="switch"
-                        label="Show Month Borders"
-                    />
-                </Form>
-                <div className="w-100"></div>
-                <ButtonGroup className="mt-2">
-                    <ToggleButton
-                        id="horizontal"
-                        type="radio"
-                        name="radio"
-                        value={'horizontal'}
-                        checked={settings.direction === 'horizontal'}
-                        onChange={() => {
-                            localStorage.removeItem('direction');
+                                                setSettings({
+                                                    outlineMonths: !settings.outlineMonths,
+                                                    direction: settings.direction,
+                                                });
+                                            }}
+                                            reverse={true}
+                                            inline={true}
+                                            type="switch"
+                                            label="Show Month Borders"
+                                        />
+                                    </Form>
+                                    <div className="w-100"></div>
+                                    <ButtonGroup className="mt-2">
+                                        <ToggleButton
+                                            id="horizontal"
+                                            type="radio"
+                                            name="radio"
+                                            value={'horizontal'}
+                                            checked={settings.direction === 'horizontal'}
+                                            onChange={() => {
+                                                localStorage.removeItem('direction');
                                                 setSettings({
                                                     direction: 'horizontal',
                                                     outlineMonths: settings.outlineMonths,
                                                 });
-                        }}
-                        style={{ width: '100px' }}
-                    >
-                        Horizontal
-                    </ToggleButton>
-                    <ToggleButton
-                        id="vertical"
-                        type="radio"
-                        name="radio"
-                        value={'vertical'}
-                        checked={settings.direction === 'vertical'}
-                        onChange={() => {
-                            localStorage.setItem('direction', 'vertical');
+                                            }}
+                                            style={{ width: '100px' }}
+                                        >
+                                            Horizontal
+                                        </ToggleButton>
+                                        <ToggleButton
+                                            id="vertical"
+                                            type="radio"
+                                            name="radio"
+                                            value={'vertical'}
+                                            checked={settings.direction === 'vertical'}
+                                            onChange={() => {
+                                                localStorage.setItem('direction', 'vertical');
                                                 setSettings({
                                                     direction: 'vertical',
                                                     outlineMonths: settings.outlineMonths,
                                                 });
-                        }}
-                        style={{ width: '100px' }}
-                    >
-                        Vertical
-                    </ToggleButton>
-                </ButtonGroup>
-            </div>
+                                            }}
+                                            style={{ width: '100px' }}
+                                        >
+                                            Vertical
+                                        </ToggleButton>
+                                    </ButtonGroup>
+                                </div>
                             </Card.Text>
                         </Col>
                     </Row>
@@ -311,100 +327,198 @@ export default function Chart() {
             </Card>
         );
     }
-}
 
     function CalendarHeatmap() {
         const [day, setDay] = useState<Day | null>(null);
-        const squareSize = window.innerWidth < 405 ? 21 : 30
-        const colors = [
-            '#8080ff',
-            '#6666ff',
-            '#4d4dff',
-            '#3333ff',
-            '#1a1aff',
-            '#0000ff',
-            '#0000e6',
-            '#0000cc',
-            '#0000b3',
-            '#000099',
-        ];
 
         setTimeout(() => {
-    const calendar = document.querySelector('rect');
+            const calendar = document.querySelector('rect');
 
-    if (calendar) {
-        calendar.style.cursor = 'default';
-    }
+            if (calendar) {
+                calendar.style.cursor = 'default';
+            }
         }, 250);
 
-    // const [show, setShow] = useState<boolean>(false);
+        return (
+            <>
+                <ModifyEntry day={day} setDay={setDay} />
+                <div
+                    style={{
+                        textAlign: 'center',
+                        overflowX: 'auto',
+                    }}
+                >
+                    <div
+                        style={{
+                            minWidth: settings.direction === 'horizontal' ? '725px' : '295px',
+                            height: settings.direction === 'vertical' ? '1500px' : '175px',
+                        }}
+                    >
+                        <ResponsiveCalendar
+                            data={entries.map((e) => {
+                                const value = e.checked !== null ? Number(e.checked) : e.count ?? e.rating;
 
-    return (
-        <div
-            style={{
-                textAlign: 'center',
-                width: '95%',
-                height: settings.direction === 'vertical' ? '1500px' : '250px',
-            }}
-        >
-            <ResponsiveCalendar
-                data={entries.map((e) => {
-                    const value = e.checked !== null ? Number(e.checked) : e.count ?? e.rating;
-
-                    return { day: e.day, value: value ?? 0 };
-                })}
-                theme={{ labels: { text: { fontSize: 'large' } } }}
-                from={new Date(year, 0, 1, 0, 0, 0, 0)}
-                to={new Date(year, 11, 31, 23, 59, 59, 999)}
-                emptyColor="#eeeeee"
-                direction={settings.direction}
-                monthLegend={(_year, _month, date) => {
-                    return window.innerWidth > 550 ? date.toLocaleString('default', { month: 'short' }) : '';
-                }}
-                        colors={colors}
-                margin={{ top: 40, right: 40, bottom: 40, left: 40 }}
-                monthBorderColor="#9cc3ff"
-                monthBorderWidth={settings.outlineMonths ? 2 : 0}
-                yearSpacing={40}
-                dayBorderWidth={2}
-                dayBorderColor="#ffffff"
-                legends={[
-                    {
-                        anchor: 'bottom-right',
-                        direction: 'row',
-                        translateY: 36,
-                        itemCount: 4,
-                        itemWidth: 42,
-                        itemHeight: 36,
-                        itemsSpacing: 14,
-                        itemDirection: 'right-to-left',
-                    },
-                ]}
-                onClick={(data) => console.log(data)}
-            />
-                    <div style={{ paddingBottom: '10px' }}>
-                        Less
-                        <svg
-                            height={squareSize}
-                            width={colors.length * squareSize}
-                            style={{ cursor: 'default', borderRadius: '5px' }}
-                            className="me-2 ms-2"
-                        >
-                            {colors.map((color, index) => (
-                                <rect
-                                    height={squareSize}
-                                    width={squareSize}
-                                    y="0"
-                                    x={index * squareSize}
-                                    style={{
-                                        cursor: 'default',
-                                        fill: color,
-                                    }}
-                                ></rect>
-                            ))}
-                        </svg>
-                        More
+                                return { day: e.day, value: value ?? 0 };
+                            })}
+                            theme={{ labels: { text: { fontSize: 'large' } } }}
+                            from={new Date(year, 0, 1, 0, 0, 0, 0)}
+                            to={new Date(year, 11, 31, 23, 59, 59, 999)}
+                            emptyColor="#eeeeee"
+                            direction={settings.direction}
+                            colors={colors}
+                            margin={{ top: 40, right: 40, bottom: 2, left: 40 }}
+                            monthBorderColor="#9cc3ff"
+                            monthBorderWidth={settings.outlineMonths ? 2 : 0}
+                            yearSpacing={40}
+                            dayBorderWidth={2}
+                            dayBorderColor="#ffffff"
+                            legends={[
+                                {
+                                    anchor: 'bottom-right',
+                                    direction: 'row',
+                                    translateY: 36,
+                                    itemCount: 4,
+                                    itemWidth: 42,
+                                    itemHeight: 36,
+                                    itemsSpacing: 14,
+                                    itemDirection: 'right-to-left',
+                                },
+                            ]}
+                            onClick={(data) => setDay(data)}
+                        />
                     </div>
-        </div>
-    );
+                </div>
+            </>
+        );
+    }
+
+    // function createValueSchema(): yup.Schema {
+
+    // }
+
+    function ModifyEntry({ day, setDay }: { day: Day | null; setDay: setState<Day | null> }) {
+        // const valueSchema = chart!.type == ChartType.Checkmark ? yup.boolean() : yup.number();
+        // valueSchema.required('A value is required.')
+
+        // if (ChartType[chart?.type] == ChartType.Counter) {
+        //     valueSchema
+        // }
+
+        async function updateEntry(value: number) {
+            console.log(value);
+            await handleErrors(
+                async () => {
+                    await axios.delete(`/Api/Charts/${chartId}/Entries/${'dhjfkshjdfs'}`);
+                    setSuccess('Deleted this chart.');
+                },
+                setError,
+                navigate
+            );
+        }
+
+        return (
+            <Formik
+                validationSchema={yup.object().shape({
+                    // value: createValueSchema(),
+                })}
+                validateOnMount
+                validateOnChange
+                initialValues={{
+                    value: 0,
+                }}
+                onSubmit={(values) => updateEntry(values.value)}
+            >
+                {({ handleSubmit, handleChange, values, errors }) => (
+                    <Modal
+                        show={day !== null}
+                        centered
+                        keyboard={true}
+                        onHide={() => setDay(null)}
+                        animation={false}
+                    >
+                        <Form noValidate onSubmit={handleSubmit}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Update this chart?</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <Row className="mb-3">
+                                    <FormGroup as={Col} controlId="NameId">
+                                        <FormLabel>New Name</FormLabel>
+                                        <InputGroup hasValidation>
+                                            <FormControl
+                                                autoFocus
+                                                aria-describedby="inputGroupPrepend"
+                                                name="name"
+                                                value={values.value}
+                                                onChange={handleChange}
+                                                isInvalid={!!errors.value}
+                                            />
+                                            <FormControl.Feedback type="invalid">
+                                                {errors.value}
+                                            </FormControl.Feedback>
+                                        </InputGroup>
+                                    </FormGroup>
+                                </Row>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button type="submit" variant="warning">
+                                    Update
+                                </Button>
+                                <DeleteButton />
+                                <Button variant="secondary" onClick={() => setDay(null)}>
+                                    Close
+                                </Button>
+                            </Modal.Footer>
+                        </Form>
+                    </Modal>
+                )}
+            </Formik>
+        );
+
+        function DeleteButton() {
+            const [show, setShow] = useState(false);
+
+            async function deleteEntry() {
+                await handleErrors(
+                    async () => {
+                        await axios.delete(`/Api/Charts/${chartId}/Entries/${'dhjfkshjdfs'}`);
+                        setDay(null);
+
+                        setShow(false);
+                        setSuccess('Deleted this chart.');
+                    },
+                    setError,
+                    navigate
+                );
+            }
+
+            return (
+                <>
+                    <Button variant="danger" onClick={() => setShow(true)}>
+                        Delete
+                    </Button>
+
+                    <Modal
+                        show={show}
+                        centered
+                        keyboard={true}
+                        onHide={() => setShow(false)}
+                        animation={false}
+                    >
+                        <Modal.Header closeButton>
+                            <Modal.Title>Delete the entry for this day?</Modal.Title>
+                        </Modal.Header>
+                        <Modal.Footer>
+                            <Button variant="danger" onClick={deleteEntry}>
+                                Delete
+                            </Button>
+                            <Button variant="secondary" onClick={() => setShow(false)}>
+                                Close
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                </>
+            );
+        }
+    }
 }
