@@ -1,7 +1,7 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { handleErrors } from '../helpers';
 import { ResponsiveCalendar } from '@nivo/calendar';
 import { useEffect, useState } from 'react';
+import { handleErrors } from '../helpers';
 import { chartSchema } from '../schemas';
 import { Formik } from 'formik';
 import NavBar from '../navbar';
@@ -180,7 +180,7 @@ export default function Chart() {
 
     function ChartBreadCrumbs() {
         return (
-            <h4 className="ps-4 pt-2 w-100" style={{ height: '50px' }}>
+            <h4 className="ps-4 pe-4 pt-2 pb-5 w-100" style={{ height: '50px' }}>
                 <Dropdown>
                     <Breadcrumb>
                         <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
