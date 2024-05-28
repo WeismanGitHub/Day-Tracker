@@ -130,7 +130,8 @@ export default function Home() {
         return (
             <div className="d-flex gap-2 flex-wrap justify-content-center w-100 pb-3">
                 {charts?.map((chart) => (
-                    <a href={`/charts/${chart.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>
+                    <a href={`/charts/${chart.id}`} style={{ color: 'inherit', textDecoration: 'none' }} className="dropdown dropdown-menu-end">
+
                         <Card
                             key={chart.id}
                             style={{
@@ -165,7 +166,6 @@ export default function Home() {
                                             paddingBottom: '15px',
                                         }}
                                     >
-                                        <div className="dropdown dropdown-menu-end">
                                             <div
                                                 data-bs-toggle="dropdown"
                                                 className="ms-auto"
@@ -189,7 +189,6 @@ export default function Home() {
                                                 <EditChartItem chart={chart} />
                                                 <DeleteChartItem chartId={chart.id} />
                                             </div>
-                                        </div>
                                     </div>
                                 </Card.Title>
                                 <Card.Text>
