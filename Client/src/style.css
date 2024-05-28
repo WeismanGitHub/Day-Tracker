@@ -74,13 +74,13 @@ body {
 }
 
 .btn-custom-white {
-    background-color: white !important; /* Ensure it overrides other styles */
-    color: black !important; /* Text color, you can adjust as needed */
-    border: 1px solid #ccc; /* Optional: Add a light gray border */
+    background-color: white !important;
+    color: black !important;
+    border: 1px solid #ccc;
 }
 
 .btn-custom-white:hover {
-    background-color: #f8f9fae6 !important; /* Optional: Lighten background on hover */
+    background-color: #f8f9fae6 !important;
 }
 
 .btn-custom-white:active {
