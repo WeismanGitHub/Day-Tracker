@@ -102,6 +102,8 @@ rect {
     cursor: pointer;
 }
 
-.dropdown-menu {
-    position: fixed !important;
+@media only screen and (max-width: 520px) {
+    .dropdown-menu {
+        position: fixed !important;
+    }
 }

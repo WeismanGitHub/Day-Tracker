@@ -166,7 +166,11 @@ export default function Home() {
                                         }}
                                     >
                                         <div className="dropdown dropdown-menu-end">
-                                            <div data-bs-toggle="dropdown" className="ms-auto">
+                                            <div
+                                                data-bs-toggle="dropdown"
+                                                className="ms-auto"
+                                                style={{ padding: '5px', margin: '-5px' }}
+                                            >
                                                 <img
                                                     src="three-dots-vertical.svg"
                                                     width="22.5"
