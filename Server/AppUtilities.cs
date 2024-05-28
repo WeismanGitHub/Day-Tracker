@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Server.Database.Services;
-using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace Server;
 
