@@ -157,8 +157,8 @@ export default function Home() {
                                             <strong>{chart.name}</strong>
                                         </OverlayTrigger>
                                     </h4>
-                                    <a
-                                        href="#."
+                                    <div
+                                        onClick={(e) => e.preventDefault()}
                                         style={{
                                             float: 'right',
                                             display: 'inline-block',
@@ -176,14 +176,17 @@ export default function Home() {
                                             </div>
 
                                             <div className="dropdown-menu">
-                                                <Dropdown.Item href={`/charts/${chart.id}`}>
+                                                <Dropdown.Item
+                                                    href={`/charts/${chart.id}`}
+                                                    onClick={() => navigate(`/charts/${chart.id}`)}
+                                                >
                                                     View
                                                 </Dropdown.Item>
                                                 <EditChartItem chart={chart} />
                                                 <DeleteChartItem chartId={chart.id} />
                                             </div>
                                         </div>
-                                    </a>
+                                    </div>
                                 </Card.Title>
                                 <Card.Text>
                                     <strong>Type:</strong> {ChartType[chart.type]}

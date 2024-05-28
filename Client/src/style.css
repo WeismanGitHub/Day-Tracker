@@ -101,3 +101,7 @@ body {
 rect {
     cursor: pointer;
 }
+
+.dropdown-menu {
+    position: fixed !important;
+}

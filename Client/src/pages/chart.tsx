@@ -204,29 +204,32 @@ export default function Chart() {
 
     function ColorScale() {
         return (
-                <div className='mx-auto' style={{ paddingBottom: '10px', paddingTop: '10px', width: 'fit-content' }}>
-                    Less
-                    <svg
-                        height={squareSize}
-                        width={colors.length * squareSize}
-                        style={{ cursor: 'default', borderRadius: '5px' }}
-                        className="me-2 ms-2"
-                    >
-                        {colors.map((color, index) => (
-                            <rect
-                                height={squareSize}
-                                width={squareSize}
-                                y="0"
-                                x={index * squareSize}
-                                style={{
-                                    cursor: 'default',
-                                    fill: color,
-                                }}
-                            ></rect>
-                        ))}
-                    </svg>
-                    More
-                </div>
+            <div
+                className="mx-auto"
+                style={{ paddingBottom: '10px', paddingTop: '10px', width: 'fit-content' }}
+            >
+                Less
+                <svg
+                    height={squareSize}
+                    width={colors.length * squareSize}
+                    style={{ cursor: 'default', borderRadius: '5px' }}
+                    className="me-2 ms-2"
+                >
+                    {colors.map((color, index) => (
+                        <rect
+                            height={squareSize}
+                            width={squareSize}
+                            y="0"
+                            x={index * squareSize}
+                            style={{
+                                cursor: 'default',
+                                fill: color,
+                            }}
+                        ></rect>
+                    ))}
+                </svg>
+                More
+            </div>
         );
     }
 
