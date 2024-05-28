@@ -98,66 +98,32 @@ export default function Chart() {
         return years;
     })();
 
+    const squareSize = window.innerWidth < 405 ? 21 : 30;
+    const colors = [
+        '#8080ff',
+        '#6666ff',
+        '#4d4dff',
+        '#3333ff',
+        '#1a1aff',
+        '#0000ff',
+        '#0000e6',
+        '#0000cc',
+        '#0000b3',
+        '#000099',
+    ];
+
     return (
         <>
             <NavBar />
             <div className="full-height-minus-navbar d-flex justify-content-center flex-wrap">
-                <h4 className="ps-4 pt-2 w-100" style={{ height: '50px' }}>
-                    <Dropdown>
-                        <Breadcrumb>
-                            <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
-                            <Breadcrumb.Item href={`/charts/${chartId}`}>{chart?.name}</Breadcrumb.Item>
-                            <Breadcrumb.Item href={`/charts/${chartId}?year=${year}`}>{year}</Breadcrumb.Item>
-                            <Dropdown.Toggle
-                                style={{ padding: '0px 7.5px 0px 5px', border: 0 }}
-                                variant="none"
-                                id="dropdown-basic"
-                            ></Dropdown.Toggle>
-                        </Breadcrumb>
-                        <Dropdown.Menu>
-                            {years.map((year) => (
-                                <Dropdown.Item href={`/charts/${chartId}?year=${year}`}>{year}</Dropdown.Item>
-                            ))}
-                        </Dropdown.Menu>
-                    </Dropdown>
-                </h4>
+                <ChartBreadCrumbs />
                 <div className="container">
-                    <Card style={{ maxWidth: '500px' }} className="mx-auto mb-2 mt-2">
-                        <Card.Header className="bg-primary text-white">
-                            <h2>Calendar Settings</h2>
-                        </Card.Header>
-                        <Card.Body>
-                            <Row>
-                                <Col>
-                                    <Card.Text>
                                         <SettingsPanel />
-                                    </Card.Text>
-                                </Col>
-                            </Row>
-                            <Row className="mt-3">
-                                <Col className="d-flex justify-content-center">
-                                    <Button
-                                        onClick={() => {
-                                            localStorage.removeItem('outlineMonths');
-                                            localStorage.removeItem('direction');
-
-                                            setSettings({
-                                                direction: 'horizontal',
-                                                outlineMonths: false,
-                                            });
-
-                                            setSuccess('Reset calendar settings.');
-                                        }}
-                                        variant="warning"
-                                    >
-                                        Reset
-                                    </Button>
-                                </Col>
-                            </Row>
-                        </Card.Body>
-                    </Card>
+                    <div className="mx-auto">
+                        <CalendarHeatmap />
                 </div>
-                <TrackerCalendar entries={entries} year={year} settings={settings} />
+                    <ColorScale />
+            </div>
             </div>
 
             <ToastContainer position="top-end">
@@ -196,8 +162,68 @@ export default function Chart() {
         </>
     );
 
+    function ChartBreadCrumbs() {
+        return (
+            <h4 className="ps-4 pt-2 w-100" style={{ height: '50px' }}>
+                <Dropdown>
+                    <Breadcrumb>
+                        <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
+                        <Breadcrumb.Item href={`/charts/${chartId}`}>{chart?.name}</Breadcrumb.Item>
+                        <Breadcrumb.Item href={`/charts/${chartId}?year=${year}`}>{year}</Breadcrumb.Item>
+                        <Dropdown.Toggle
+                            style={{ padding: '0px 7.5px 0px 5px', border: 0 }}
+                            variant="none"
+                            id="dropdown-basic"
+                        ></Dropdown.Toggle>
+                    </Breadcrumb>
+                    <Dropdown.Menu>
+                        {years.map((year) => (
+                            <Dropdown.Item href={`/charts/${chartId}?year=${year}`}>{year}</Dropdown.Item>
+                        ))}
+                    </Dropdown.Menu>
+                </Dropdown>
+            </h4>
+        );
+    }
+
+    function ColorScale() {
+        return (
+                <div className='mx-auto' style={{ paddingBottom: '10px', paddingTop: '10px', width: 'fit-content' }}>
+                    Less
+                    <svg
+                        height={squareSize}
+                        width={colors.length * squareSize}
+                        style={{ cursor: 'default', borderRadius: '5px' }}
+                        className="me-2 ms-2"
+                    >
+                        {colors.map((color, index) => (
+                            <rect
+                                height={squareSize}
+                                width={squareSize}
+                                y="0"
+                                x={index * squareSize}
+                                style={{
+                                    cursor: 'default',
+                                    fill: color,
+                                }}
+                            ></rect>
+                        ))}
+                    </svg>
+                    More
+                </div>
+        );
+    }
+
     function SettingsPanel() {
         return (
+            <Card style={{ maxWidth: '500px' }} className="mx-auto mb-2 mt-2">
+                <Card.Header className="bg-primary text-white">
+                    <h2>Calendar Settings</h2>
+                </Card.Header>
+                <Card.Body>
+                    <Row>
+                        <Col>
+                            <Card.Text>
             <div className="d-flex justify-content-center align-content-center flex-wrap">
                 <Form>
                     <Form.Check
@@ -230,7 +256,10 @@ export default function Chart() {
                         checked={settings.direction === 'horizontal'}
                         onChange={() => {
                             localStorage.removeItem('direction');
-                            setSettings({ direction: 'horizontal', outlineMonths: settings.outlineMonths });
+                                                setSettings({
+                                                    direction: 'horizontal',
+                                                    outlineMonths: settings.outlineMonths,
+                                                });
                         }}
                         style={{ width: '100px' }}
                     >
@@ -244,7 +273,10 @@ export default function Chart() {
                         checked={settings.direction === 'vertical'}
                         onChange={() => {
                             localStorage.setItem('direction', 'vertical');
-                            setSettings({ direction: 'vertical', outlineMonths: settings.outlineMonths });
+                                                setSettings({
+                                                    direction: 'vertical',
+                                                    outlineMonths: settings.outlineMonths,
+                                                });
                         }}
                         style={{ width: '100px' }}
                     >
@@ -252,6 +284,31 @@ export default function Chart() {
                     </ToggleButton>
                 </ButtonGroup>
             </div>
+                            </Card.Text>
+                        </Col>
+                    </Row>
+                    <Row className="mt-3">
+                        <Col className="d-flex justify-content-center">
+                            <Button
+                                onClick={() => {
+                                    localStorage.removeItem('outlineMonths');
+                                    localStorage.removeItem('direction');
+
+                                    setSettings({
+                                        direction: 'horizontal',
+                                        outlineMonths: false,
+                                    });
+
+                                    setSuccess('Reset calendar settings.');
+                                }}
+                                variant="warning"
+                            >
+                                Reset
+                            </Button>
+                        </Col>
+                    </Row>
+                </Card.Body>
+            </Card>
         );
     }
 }
