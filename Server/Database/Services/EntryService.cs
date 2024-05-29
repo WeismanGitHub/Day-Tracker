@@ -10,7 +10,25 @@ public class EntryService
 
     public async Task UpsertEntry(Entry entry)
     {
-        _context.Entries.Update(entry);
+        var existingEntry = await _context
+            .Entries.Where(e =>
+                (e.ChartId == entry.ChartId)
+                && (e.Year == entry.Year)
+                && (e.Month == entry.Month)
+                && (e.Day == entry.Day)
+            )
+            .SingleOrDefaultAsync();
+
+        if (existingEntry is null)
+        {
+            _context.Entries.Add(entry);
+        }
+        else
+        {
+            existingEntry.NumberValue = entry.NumberValue;
+            _context.Entries.Update(existingEntry);
+        }
+
         await _context.SaveChangesAsync();
     }
 
