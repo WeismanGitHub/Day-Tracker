@@ -46,13 +46,13 @@ public class EntriesController : CustomBase
         }
 
         var entry = new Entry()
-    {
-                    ChartId = chart.Id,
+        {
+            ChartId = chart.Id,
             NumberValue = body.NumberValue,
-                    Year = body.Date.Year,
-                    Month = body.Date.Month,
-                    Day = body.Date.Day,
-                };
+            Year = body.Date.Year,
+            Month = body.Date.Month,
+            Day = body.Date.Day,
+        };
 
         await entryService.CreateEntry(chart, entry);
 
@@ -94,9 +94,7 @@ public class EntriesController : CustomBase
     {
         public required Guid Id { get; set; } // Optimized for front-end.
         public required string Day { get; set; }
-        public uint? Rating { get; set; }
-        public bool? Checked { get; set; }
-        public uint? Count { get; set; }
+        public required int NumberValue { get; set; }
     }
 
     [ProducesResponseType(typeof(List<EntryDTO>), StatusCodes.Status200OK)]
@@ -129,19 +127,7 @@ public class EntriesController : CustomBase
 
     public class UpdateEntryBody
     {
-        public uint? Rating { get; set; }
-        public bool? Checked { get; set; }
-        public uint? Count { get; set; }
-    }
-
-    private class UpdateEntryValidator : AbstractValidator<UpdateEntryBody>
-    {
-        public UpdateEntryValidator()
-        {
-            RuleFor(e => e)
-                .Must(e => e.Count is not null || e.Checked is not null || e.Rating is not null)
-                .WithMessage("Must have a new value.");
-        }
+        public int NumberValue { get; set; }
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -156,13 +142,6 @@ public class EntriesController : CustomBase
         EntryService entryService
     )
     {
-        var result = new UpdateEntryValidator().Validate(body);
-
-        if (!result.IsValid)
-        {
-            throw new ValidationException(result);
-        }
-
         var accountId = HttpContext.GetUserId();
         var chart = await chartService.GetUserChart(chartId, accountId);
 
@@ -178,45 +157,9 @@ public class EntriesController : CustomBase
             throw new NotFoundException("Could not find entry.");
         }
 
-        var updatedEntry = UpdateEntryObject(body, chart.Type, entry);
-        await entryService.UpdateEntry(updatedEntry);
+        entry.NumberValue = body.NumberValue;
+        await entryService.UpdateEntry(entry);
 
         return Ok();
-    }
-
-    private static Entry UpdateEntryObject(UpdateEntryBody body, ChartType type, Entry entry)
-    {
-        switch (type)
-        {
-            case ChartType.Scale:
-                if (body.Rating is null)
-                {
-                    throw new BadRequestException("Invalid Rating");
-                }
-
-                var scaleEntry = (ScaleEntry)entry;
-                scaleEntry.Rating = (uint)body.Rating;
-                return scaleEntry;
-            case ChartType.Counter:
-                if (body.Count is null)
-                {
-                    throw new BadRequestException("Invalid Count");
-                }
-
-                var counterEntry = (CounterEntry)entry;
-                counterEntry.Count = (uint)body.Count;
-                return counterEntry;
-            case ChartType.CheckMark:
-                if (body.Checked is null)
-                {
-                    throw new BadRequestException("Invalid Value");
-                }
-
-                var castEntry = (CheckmarkEntry)entry;
-                castEntry.Checked = (bool)body.Checked;
-                return castEntry;
-            default:
-                throw new Exception("Something went wrong!");
-        }
     }
 }
