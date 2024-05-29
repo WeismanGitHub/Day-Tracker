@@ -349,6 +349,7 @@ export default function Chart() {
                     style={{
                         textAlign: 'center',
                         overflowX: 'auto',
+                        overflowY: 'hidden'
                     }}
                 >
                     <div
@@ -372,7 +373,7 @@ export default function Chart() {
                             margin={{ top: 40, right: 40, bottom: 2, left: 40 }}
                             monthBorderColor="#9cc3ff"
                             monthBorderWidth={settings.outlineMonths ? 2 : 0}
-                            yearSpacing={40}
+                            yearSpacing={0}
                             dayBorderWidth={2}
                             dayBorderColor="#ffffff"
                             legends={[
