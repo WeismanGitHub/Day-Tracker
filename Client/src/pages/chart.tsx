@@ -392,18 +392,7 @@ export default function Chart() {
         );
     }
 
-    // function createValueSchema(): yup.Schema {
-
-    // }
-
     function ModifyEntry({ day, setDay }: { day: Day | null; setDay: setState<Day | null> }) {
-        // const valueSchema = chart!.type == ChartType.Checkmark ? yup.boolean() : yup.number();
-        // valueSchema.required('A value is required.')
-
-        // if (ChartType[chart?.type] == ChartType.Counter) {
-        //     valueSchema
-        // }
-
         async function updateEntry(value: number) {
             console.log(value);
             await handleErrors(
@@ -419,7 +408,7 @@ export default function Chart() {
         return (
             <Formik
                 validationSchema={yup.object().shape({
-                    // value: createValueSchema(),
+                    numberValue: yup.number().required('A value is required.'),
                 })}
                 validateOnMount
                 validateOnChange
@@ -462,9 +451,9 @@ export default function Chart() {
                             </Modal.Body>
                             <Modal.Footer>
                                 <Button type="submit" variant="warning">
-                                    Update
+                                    Set
                                 </Button>
-                                <DeleteButton />
+                                <ClearButton />
                                 <Button variant="secondary" onClick={() => setDay(null)}>
                                     Close
                                 </Button>
@@ -475,17 +464,22 @@ export default function Chart() {
             </Formik>
         );
 
-        function DeleteButton() {
-            const [show, setShow] = useState(false);
-
+        function ClearButton() {
             async function deleteEntry() {
+                if (!day) return;
+
                 await handleErrors(
                     async () => {
-                        await axios.delete(`/Api/Charts/${chartId}/Entries/${'dhjfkshjdfs'}`);
-                        setDay(null);
+                        await axios.delete(`/Api/Charts/${chartId}/Entries`, {
+                            data: {
+                                date: day.date,
+                            },
+                        });
 
-                        setShow(false);
-                        setSuccess('Deleted this chart.');
+                        setDay(null);
+                        setSuccess('Cleared this entry.');
+
+                        setEntries(entries.filter((entry) => entry.day !== day.day));
                     },
                     setError,
                     navigate
@@ -493,31 +487,9 @@ export default function Chart() {
             }
 
             return (
-                <>
-                    <Button variant="danger" onClick={() => setShow(true)}>
-                        Delete
-                    </Button>
-
-                    <Modal
-                        show={show}
-                        centered
-                        keyboard={true}
-                        onHide={() => setShow(false)}
-                        animation={false}
-                    >
-                        <Modal.Header closeButton>
-                            <Modal.Title>Delete the entry for this day?</Modal.Title>
-                        </Modal.Header>
-                        <Modal.Footer>
-                            <Button variant="danger" onClick={deleteEntry}>
-                                Delete
-                            </Button>
-                            <Button variant="secondary" onClick={() => setShow(false)}>
-                                Close
-                            </Button>
-                        </Modal.Footer>
-                    </Modal>
-                </>
+                <Button variant="danger" onClick={deleteEntry}>
+                    Clear
+                </Button>
             );
         }
     }
