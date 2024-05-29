@@ -58,12 +58,17 @@ public class EntriesController : CustomBase
         return Ok(new EntryIdDTO() { Id = entry.Id });
     }
 
+    public class DeleteEntryBody
+    {
+        public required DateTime Date { get; set; }
+    }
+
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [HttpDelete("{entryId:guid}", Name = "DeleteEntry")]
+    [HttpDelete(Name = "DeleteEntry")]
     public async Task<IActionResult> DeleteEntry(
         [FromRoute] Guid chartId,
-        [FromRoute] Guid entryId,
+        [FromBody] DeleteEntryBody body,
         ChartService chartService,
         EntryService entryService
     )
@@ -77,7 +82,8 @@ public class EntriesController : CustomBase
             throw new NotFoundException("Could not find chart.");
         }
 
-        var entry = await entryService.GetEntry(chartId, entryId);
+        // Must make sure entry belongs to chart.
+        var entry = await entryService.GetEntry(chartId, body.Date);
 
         if (entry is null)
         {
