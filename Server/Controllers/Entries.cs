@@ -12,20 +12,8 @@ public class EntriesController : CustomBase
 {
     public class CreateEntryBody
     {
-        public uint? Rating { get; set; }
-        public bool? Checked { get; set; }
-        public uint? Count { get; set; }
+        public required int NumberValue { get; set; }
         public required DateTime Date { get; set; }
-    }
-
-    private class CreateEntryValidator : AbstractValidator<CreateEntryBody>
-    {
-        public CreateEntryValidator()
-        {
-            RuleFor(e => e)
-                .Must(e => e.Count is not null || e.Checked is not null || e.Rating is not null)
-                .WithMessage("Must have a value for the entry.");
-        }
     }
 
     public class EntryIdDTO
@@ -44,13 +32,6 @@ public class EntriesController : CustomBase
         EntryService entryService
     )
     {
-        var result = new CreateEntryValidator().Validate(body);
-
-        if (!result.IsValid)
-        {
-            throw new ValidationException(result);
-        }
-
         var accountId = HttpContext.GetUserId();
         var chart = await chartService.GetUserChart(chartId, accountId);
 
@@ -64,61 +45,18 @@ public class EntriesController : CustomBase
             throw new BadRequestException("Invalid Year");
         }
 
-        var entry = CreateEntryObject(body, chart);
+        var entry = new Entry()
+    {
+                    ChartId = chart.Id,
+            NumberValue = body.NumberValue,
+                    Year = body.Date.Year,
+                    Month = body.Date.Month,
+                    Day = body.Date.Day,
+                };
+
         await entryService.CreateEntry(chart, entry);
 
         return Ok(new EntryIdDTO() { Id = entry.Id });
-    }
-
-    private static Entry CreateEntryObject(CreateEntryBody body, Chart chart)
-    {
-        switch (chart.Type)
-        {
-            case ChartType.Scale:
-                if (body.Rating is null)
-                {
-                    throw new BadRequestException("Rating cannot be null in a scale entry.");
-                }
-
-                return new ScaleEntry()
-                {
-                    ChartId = chart.Id,
-                    Rating = (uint)body.Rating,
-                    Year = body.Date.Year,
-                    Month = body.Date.Month,
-                    Day = body.Date.Day,
-                };
-            case ChartType.Counter:
-                if (body.Count is null)
-                {
-                    throw new BadRequestException("Count cannot be null in a counter entry.");
-                }
-
-                return new CounterEntry()
-                {
-                    ChartId = chart.Id,
-                    Count = (uint)body.Count,
-                    Year = body.Date.Year,
-                    Month = body.Date.Month,
-                    Day = body.Date.Day,
-                };
-            case ChartType.CheckMark:
-                if (body.Checked is null)
-                {
-                    throw new BadRequestException("Checked cannot be null in a checkmark entry.");
-                }
-
-                return new CheckmarkEntry()
-                {
-                    ChartId = chart.Id,
-                    Checked = (bool)body.Checked,
-                    Year = body.Date.Year,
-                    Month = body.Date.Month,
-                    Day = body.Date.Day,
-                };
-            default:
-                throw new BadRequestException("Invalid Type");
-        }
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
