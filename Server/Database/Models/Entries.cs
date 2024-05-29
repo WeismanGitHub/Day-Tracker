@@ -5,7 +5,7 @@ namespace Server.Database.Models;
 
 [Index(nameof(ChartId))]
 [Index(nameof(Year))]
-public abstract class Entry
+public class Entry
 {
     [Key, Required]
     public Guid Id { get; set; } = Guid.NewGuid();
@@ -22,23 +22,8 @@ public abstract class Entry
     [Required]
     public required int Day { get; set; }
 
+    [Required]
+    public required int NumberValue { get; set; }
+
     public Chart Chart { get; set; }
-}
-
-public class CounterEntry : Entry
-{
-    [Required]
-    public required uint Count { get; set; }
-}
-
-public class ScaleEntry : Entry
-{
-    [Required]
-    public required uint Rating { get; set; }
-}
-
-public class CheckmarkEntry : Entry
-{
-    [Required]
-    public required bool Checked { get; set; }
 }
