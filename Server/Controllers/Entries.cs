@@ -10,7 +10,7 @@ namespace Server.Controllers;
 [Tags("Entries")]
 public class EntriesController : CustomBase
 {
-    public class CreateEntryBody
+    public class UpsertEntryBody
     {
         public required int NumberValue { get; set; }
         public required DateTime Date { get; set; }
@@ -24,10 +24,10 @@ public class EntriesController : CustomBase
     [ProducesResponseType(typeof(EntryIdDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [HttpPost(Name = "CreateEntry")]
-    public async Task<IActionResult> CreateEntry(
+    [HttpPost(Name = "UpsertEntry")]
+    public async Task<IActionResult> UpsertEntry(
         [FromRoute] Guid chartId,
-        [FromBody] CreateEntryBody body,
+        [FromBody] UpsertEntryBody body,
         ChartService chartService,
         EntryService entryService
     )
@@ -54,7 +54,7 @@ public class EntriesController : CustomBase
             Day = body.Date.Day,
         };
 
-        await entryService.CreateEntry(chart, entry);
+        await entryService.UpsertEntry(entry);
 
         return Ok(new EntryIdDTO() { Id = entry.Id });
     }
@@ -123,43 +123,5 @@ public class EntriesController : CustomBase
         }
 
         return Ok(entries);
-    }
-
-    public class UpdateEntryBody
-    {
-        public int NumberValue { get; set; }
-    }
-
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [HttpPost("{entryId:guid}", Name = "UpdateEntry")]
-    public async Task<IActionResult> UpdateEntry(
-        [FromRoute] Guid chartId,
-        [FromRoute] Guid entryId,
-        [FromBody] UpdateEntryBody body,
-        ChartService chartService,
-        EntryService entryService
-    )
-    {
-        var accountId = HttpContext.GetUserId();
-        var chart = await chartService.GetUserChart(chartId, accountId);
-
-        if (chart is null)
-        {
-            throw new NotFoundException("Could not find chart.");
-        }
-
-        var entry = await entryService.GetEntry(chartId, entryId);
-
-        if (entry is null)
-        {
-            throw new NotFoundException("Could not find entry.");
-        }
-
-        entry.NumberValue = body.NumberValue;
-        await entryService.UpdateEntry(entry);
-
-        return Ok();
     }
 }

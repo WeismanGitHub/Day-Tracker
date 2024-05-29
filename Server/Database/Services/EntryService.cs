@@ -8,23 +8,9 @@ public class EntryService
 {
     public DayTrackerContext _context { get; set; } = new();
 
-    public async Task CreateEntry(Chart chart, Entry entry)
+    public async Task UpsertEntry(Entry entry)
     {
-        var existingEntry = await _context
-            .Entries.Where(e =>
-                (e.ChartId == chart.Id)
-                && (e.Year == entry.Year)
-                && (e.Month == entry.Month)
-                && (e.Day == entry.Day)
-            )
-            .SingleOrDefaultAsync();
-
-        if (existingEntry is not null)
-        {
-            throw new BadRequestException("An entry for this day already exists.");
-        }
-
-        _context.Entries.Add(entry);
+        _context.Entries.Update(entry);
         await _context.SaveChangesAsync();
     }
 
@@ -53,11 +39,5 @@ public class EntryService
                 NumberValue = e.NumberValue,
             })
             .ToListAsync();
-    }
-
-    public async Task UpdateEntry(Entry entry)
-    {
-        _context.Entries.Update(entry);
-        await _context.SaveChangesAsync();
     }
 }
