@@ -23,7 +23,7 @@ public class Entry
     public required int Day { get; set; }
 
     [Required]
-    public required int NumberValue { get; set; }
+    public required int Value { get; set; }
 
     public Chart Chart { get; set; }
 }

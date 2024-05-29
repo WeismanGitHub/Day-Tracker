@@ -12,6 +12,7 @@ public class EntriesController : CustomBase
     public class UpsertEntryBody
     {
         public required int NumberValue { get; set; }
+        public required int Value { get; set; }
         public required DateTime Date { get; set; }
     }
 
@@ -47,7 +48,7 @@ public class EntriesController : CustomBase
         var entry = new Entry()
         {
             ChartId = chart.Id,
-            NumberValue = body.NumberValue,
+            Value = body.Value,
             Year = body.Date.Year,
             Month = body.Date.Month,
             Day = body.Date.Day,
@@ -99,7 +100,7 @@ public class EntriesController : CustomBase
     {
         public required Guid Id { get; set; } // Optimized for front-end.
         public required string Day { get; set; }
-        public required int NumberValue { get; set; }
+        public required int Value { get; set; }
     }
 
     [ProducesResponseType(typeof(List<EntryDTO>), StatusCodes.Status200OK)]

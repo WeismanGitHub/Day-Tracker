@@ -66,7 +66,8 @@ public class EntryService
                 Id = e.Id,
                 Day =
                     $"{e.Year}-{e.Month.ToString().PadLeft(2, '0')}-{e.Day.ToString().PadLeft(2, '0')}",
-                NumberValue = e.NumberValue,
+                Value = e.Value,
+                Notes = e.Notes,
             })
             .ToListAsync();
     }
