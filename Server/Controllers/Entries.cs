@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Net;
+using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Server.Database.Models;
 using Server.Database.Services;
+using static Server.Controllers.UsersController;
 
 namespace Server.Controllers;
 
@@ -11,7 +14,7 @@ public class EntriesController : CustomBase
 {
     public class UpsertEntryBody
     {
-        public required int NumberValue { get; set; }
+        public string? Notes { get; set; }
         public required int Value { get; set; }
         public required DateTime Date { get; set; }
     }
@@ -19,6 +22,22 @@ public class EntriesController : CustomBase
     public class EntryIdDTO
     {
         public required Guid Id { get; set; }
+    }
+
+    private class UpsertEntryValidator : AbstractValidator<UpsertEntryBody>
+    {
+        public UpsertEntryValidator()
+        {
+            When(
+                u => u.Notes is not null,
+                () =>
+                    RuleFor(u => u.Notes)
+                        .NotEmpty()
+                        .MinimumLength(1)
+                        .MaximumLength(500)
+                        .WithMessage("Notes must be between 1 and 500 characters.")
+            );
+        }
     }
 
     [ProducesResponseType(typeof(EntryIdDTO), StatusCodes.Status200OK)]
@@ -32,6 +51,13 @@ public class EntriesController : CustomBase
         EntryService entryService
     )
     {
+        var result = new UpsertEntryValidator().Validate(body);
+
+        if (!result.IsValid)
+        {
+            throw new ValidationException(result);
+        }
+
         var accountId = HttpContext.GetUserId();
         var chart = await chartService.GetUserChart(chartId, accountId);
 
@@ -52,6 +78,7 @@ public class EntriesController : CustomBase
             Year = body.Date.Year,
             Month = body.Date.Month,
             Day = body.Date.Day,
+            Notes = body.Notes,
         };
 
         await entryService.UpsertEntry(entry);
@@ -98,9 +125,10 @@ public class EntriesController : CustomBase
 
     public class EntryDTO
     {
-        public required Guid Id { get; set; } // Optimized for front-end.
-        public required string Day { get; set; }
+        public required Guid Id { get; set; }
+        public required string Day { get; set; } // Optimized for front-end.
         public required int Value { get; set; }
+        public string? Notes { get; set; }
     }
 
     [ProducesResponseType(typeof(List<EntryDTO>), StatusCodes.Status200OK)]

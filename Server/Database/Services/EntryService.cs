@@ -25,7 +25,13 @@ public class EntryService
         }
         else
         {
-            existingEntry.NumberValue = entry.NumberValue;
+            existingEntry.Value = entry.Value;
+
+            if (entry.Notes is not null)
+            {
+                existingEntry.Notes = entry.Notes;
+            }
+
             _context.Entries.Update(existingEntry);
         }
 
@@ -64,6 +70,7 @@ public class EntryService
             .Select(e => new EntryDTO
             {
                 Id = e.Id,
+                // Optimized for front-end.
                 Day =
                     $"{e.Year}-{e.Month.ToString().PadLeft(2, '0')}-{e.Day.ToString().PadLeft(2, '0')}",
                 Value = e.Value,
