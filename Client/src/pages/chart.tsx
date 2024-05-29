@@ -29,9 +29,7 @@ import {
 interface Entry {
     id: string;
     day: string;
-    rating?: number;
-    count?: number;
-    checked?: boolean;
+    numberValue: number;
 }
 
 type Day = {
@@ -349,7 +347,7 @@ export default function Chart() {
                     style={{
                         textAlign: 'center',
                         overflowX: 'auto',
-                        overflowY: 'hidden'
+                        overflowY: 'hidden',
                     }}
                 >
                     <div
@@ -360,9 +358,7 @@ export default function Chart() {
                     >
                         <ResponsiveCalendar
                             data={entries.map((e) => {
-                                const value = e.checked !== null ? Number(e.checked) : e.count ?? e.rating;
-
-                                return { day: e.day, value: value ?? 0 };
+                                return { day: e.day, value: e.numberValue };
                             })}
                             theme={{ labels: { text: { fontSize: 'large' } } }}
                             from={new Date(year, 0, 1, 0, 0, 0, 0)}
