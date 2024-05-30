@@ -91,10 +91,14 @@ public class EntriesController : CustomBase
         {
             RuleFor(e => e).Must(e => (e.Value is not null) || (e.Notes is not null));
 
-            RuleFor(e => e.Notes)
-                .NotNull()
-                .MaximumLength(500)
-                .WithMessage("Notes must be between 1 and 500 characters.");
+            When(
+                e => e.Notes is not null,
+                () =>
+                    RuleFor(e => e.Notes)
+                        .NotNull()
+                        .MaximumLength(500)
+                        .WithMessage("Notes cannot be greater than 500 characters.")
+            );
         }
     }
 
