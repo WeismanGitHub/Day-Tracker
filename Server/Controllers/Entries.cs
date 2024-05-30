@@ -1,9 +1,7 @@
-﻿using System.Net;
-using FluentValidation;
+﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Server.Database.Models;
 using Server.Database.Services;
-using static Server.Controllers.UsersController;
 
 namespace Server.Controllers;
 
@@ -12,9 +10,9 @@ namespace Server.Controllers;
 [Tags("Entries")]
 public class EntriesController : CustomBase
 {
-    public class UpsertEntryBody
+    public class CreateEntryBody
     {
-        public string? Notes { get; set; }
+        public required string Notes { get; set; }
         public required int Value { get; set; }
         public required DateTime Date { get; set; }
     }
@@ -24,34 +22,29 @@ public class EntriesController : CustomBase
         public required Guid Id { get; set; }
     }
 
-    private class UpsertEntryValidator : AbstractValidator<UpsertEntryBody>
+    private class CreateEntryValidator : AbstractValidator<CreateEntryBody>
     {
-        public UpsertEntryValidator()
+        public CreateEntryValidator()
         {
-            When(
-                u => u.Notes is not null,
-                () =>
-                    RuleFor(u => u.Notes)
-                        .NotEmpty()
-                        .MinimumLength(1)
-                        .MaximumLength(500)
-                        .WithMessage("Notes must be between 1 and 500 characters.")
-            );
+            RuleFor(u => u.Notes)
+                .NotNull()
+                .MaximumLength(500)
+                .WithMessage("Notes must be between 1 and 500 characters.");
         }
     }
 
     [ProducesResponseType(typeof(EntryIdDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [HttpPost(Name = "UpsertEntry")]
-    public async Task<IActionResult> UpsertEntry(
+    [HttpPost(Name = "CreateEntry")]
+    public async Task<IActionResult> CreateEntry(
         [FromRoute] Guid chartId,
-        [FromBody] UpsertEntryBody body,
+        [FromBody] CreateEntryBody body,
         ChartService chartService,
         EntryService entryService
     )
     {
-        var result = new UpsertEntryValidator().Validate(body);
+        var result = new CreateEntryValidator().Validate(body);
 
         if (!result.IsValid)
         {
@@ -81,9 +74,77 @@ public class EntriesController : CustomBase
             Notes = body.Notes,
         };
 
-        await entryService.UpsertEntry(entry);
+        await entryService.CreateEntry(entry);
 
         return Ok(new EntryIdDTO() { Id = entry.Id });
+    }
+
+    public class UpdateEntryBody
+    {
+        public int? Value { get; set; }
+        public string? Notes { get; set; }
+    }
+
+    private class UpdateEntryValidator : AbstractValidator<UpdateEntryBody>
+    {
+        public UpdateEntryValidator()
+        {
+            RuleFor(e => e).Must(e => (e.Value is not null) || (e.Notes is not null));
+
+            RuleFor(e => e.Notes)
+                .NotNull()
+                .MaximumLength(500)
+                .WithMessage("Notes must be between 1 and 500 characters.");
+        }
+    }
+
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [HttpPatch("{entryId:guid}", Name = "UpdateEntry")]
+    public async Task<IActionResult> UpdateEntry(
+        [FromRoute] Guid chartId,
+        [FromRoute] Guid entryId,
+        [FromBody] UpdateEntryBody body,
+        ChartService chartService,
+        EntryService entryService
+    )
+    {
+        var result = new UpdateEntryValidator().Validate(body);
+
+        if (!result.IsValid)
+        {
+            throw new ValidationException(result);
+        }
+
+        var accountId = HttpContext.GetUserId();
+        var chart = await chartService.GetUserChart(chartId, accountId);
+
+        if (chart is null)
+        {
+            throw new NotFoundException("Could not find chart.");
+        }
+
+        var entry = await entryService.GetEntry(chartId, entryId);
+
+        if (entry is null)
+        {
+            throw new NotFiniteNumberException("Could not find entry.");
+        }
+
+        if (body.Value is not null)
+        {
+            entry.Value = (int)body.Value;
+        }
+
+        if (body.Notes is not null)
+        {
+            entry.Notes = body.Notes;
+        }
+
+        await entryService.UpdateEntry(entry);
+
+        return Ok();
     }
 
     public class DeleteEntryBody
