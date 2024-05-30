@@ -8,7 +8,7 @@ public class EntryService
 {
     public DayTrackerContext _context { get; set; } = new();
 
-    public async Task UpsertEntry(Entry entry)
+    public async Task CreateEntry(Entry entry)
     {
         var existingEntry = await _context
             .Entries.Where(e =>
@@ -19,22 +19,18 @@ public class EntryService
             )
             .SingleOrDefaultAsync();
 
-        if (existingEntry is null)
+        if (existingEntry is not null)
         {
-            _context.Entries.Add(entry);
-        }
-        else
-        {
-            existingEntry.Value = entry.Value;
-
-            if (entry.Notes is not null)
-            {
-                existingEntry.Notes = entry.Notes;
-            }
-
-            _context.Entries.Update(existingEntry);
+            throw new BadRequestException("An entry for this date already exists.");
         }
 
+        _context.Entries.Add(entry);
+        await _context.SaveChangesAsync();
+    }
+
+    public async Task UpdateEntry(Entry entry)
+    {
+        _context.Entries.Update(entry);
         await _context.SaveChangesAsync();
     }
 
