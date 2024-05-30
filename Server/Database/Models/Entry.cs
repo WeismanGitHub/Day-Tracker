@@ -25,8 +25,8 @@ public class Entry
     [Required]
     public required int Value { get; set; }
 
-    [MaxLength(500), MinLength(1)]
-    public string? Notes { get; set; }
+    [MaxLength(500)]
+    public required string Notes { get; set; }
 
     public Chart Chart { get; set; }
 }
