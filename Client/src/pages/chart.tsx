@@ -201,7 +201,14 @@ export default function Chart() {
                     </Breadcrumb>
                     <Dropdown.Menu>
                         {years.map((year) => (
-                            <Dropdown.Item onClick={() => setYear(year)}>{year}</Dropdown.Item>
+                            <Dropdown.Item
+                                onClick={() => {
+                                    window.history.pushState('', '', `/charts/${chartId}?year=${year}`);
+                                    setYear(year);
+                                }}
+                            >
+                                {year}
+                            </Dropdown.Item>
                         ))}
                     </Dropdown.Menu>
                 </Dropdown>
