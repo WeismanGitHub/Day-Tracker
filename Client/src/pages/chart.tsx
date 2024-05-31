@@ -78,10 +78,7 @@ export default function Chart() {
     useEffect(() => {
         handleErrors(
             async () => {
-                const [chartRes, entriesRes] = await Promise.all([
-                    axios.get<Chart>(`/Api/Charts/${chartId}`),
-                    axios.get<Entry[]>(`/Api/Charts/${chartId}/Entries?year=${year}`),
-                ]);
+                const chartRes = await axios.get<Chart>(`/Api/Charts/${chartId}`);
 
                 if (!chartSchema.validateSync(chartRes.data)) {
                     throw new Error();
@@ -95,6 +92,18 @@ export default function Chart() {
         );
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        handleErrors(
+            async () => {
+                const entriesRes = await axios.get<Entry[]>(`/Api/Charts/${chartId}/Entries?year=${year}`);
+                setEntries(entriesRes.data);
+            },
+            setError,
+            navigate
+        );
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [year]);
 
     const years = (() => {
         if (!chart) {
