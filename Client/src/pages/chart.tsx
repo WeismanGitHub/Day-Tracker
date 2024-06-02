@@ -438,13 +438,13 @@ function CalendarHeatmap({
 
     function EntryModal({ day, setDay }: { day: Day | null; setDay: setState<Day | null> }) {
         const entry = entries.find((entry) => entry.day === day?.day);
-    
+
         return <>{entry ? <CreateEntry /> : <ModifyEntry />}</>;
-    
+
         function CreateEntry() {
             const entry = entries.find((entry) => entry.day === day?.day);
             console.log(entry);
-    
+
             return (
                 <Formik
                     validationSchema={yup.object().shape({
@@ -468,7 +468,7 @@ function CalendarHeatmap({
                                     value: values.value,
                                     // notes: values.notes
                                 });
-    
+
                                 setSuccess('Updated Entry');
                             },
                             setError,
@@ -499,7 +499,7 @@ function CalendarHeatmap({
                             //                 </InputGroup>
                             return <></>;
                         }
-    
+
                         return (
                             <Modal
                                 show={day !== null}
@@ -553,11 +553,11 @@ function CalendarHeatmap({
                     }}
                 </Formik>
             );
-    
+
             function ClearButton() {
                 async function deleteEntry() {
                     if (!day) return;
-    
+
                     await handleErrors(
                         async () => {
                             await axios.delete(`/Api/Charts/${chart.id}/Entries`, {
@@ -565,17 +565,17 @@ function CalendarHeatmap({
                                     date: day.date,
                                 },
                             });
-    
+
                             setDay(null);
                             setSuccess('Cleared this entry.');
-    
+
                             setEntries(entries.filter((entry) => entry.day !== day.day));
                         },
                         setError,
                         navigate
                     );
                 }
-    
+
                 return (
                     <Button variant="danger" onClick={deleteEntry}>
                         Clear
@@ -583,11 +583,11 @@ function CalendarHeatmap({
                 );
             }
         }
-    
+
         function ModifyEntry() {
             const entry = entries.find((entry) => entry.day === day?.day);
             console.log(entry);
-    
+
             return (
                 <Formik
                     validationSchema={yup.object().shape({
@@ -611,7 +611,7 @@ function CalendarHeatmap({
                                     value: values.value,
                                     // notes: values.notes
                                 });
-    
+
                                 setSuccess('Updated Entry');
                             },
                             setError,
@@ -642,7 +642,7 @@ function CalendarHeatmap({
                             //                 </InputGroup>
                             return <></>;
                         }
-    
+
                         return (
                             <Modal
                                 show={day !== null}
@@ -696,11 +696,11 @@ function CalendarHeatmap({
                     }}
                 </Formik>
             );
-    
+
             function ClearButton() {
                 async function deleteEntry() {
                     if (!day) return;
-    
+
                     await handleErrors(
                         async () => {
                             await axios.delete(`/Api/Charts/${chart.id}/Entries`, {
@@ -708,17 +708,17 @@ function CalendarHeatmap({
                                     date: day.date,
                                 },
                             });
-    
+
                             setDay(null);
                             setSuccess('Cleared this entry.');
-    
+
                             setEntries(entries.filter((entry) => entry.day !== day.day));
                         },
                         setError,
                         navigate
                     );
                 }
-    
+
                 return (
                     <Button variant="danger" onClick={deleteEntry}>
                         Clear
