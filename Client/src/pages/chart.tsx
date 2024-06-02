@@ -54,6 +54,19 @@ function getYear(paramsYear: string | null): number {
     return Number.isNaN(castYear) ? currentYear : castYear;
 }
 
+const colors = [
+    '#8080ff',
+    '#6666ff',
+    '#4d4dff',
+    '#3333ff',
+    '#1a1aff',
+    '#0000ff',
+    '#0000e6',
+    '#0000cc',
+    '#0000b3',
+    '#000099',
+];
+
 export default function Chart() {
     const [entries, setEntries] = useState<Entry[]>([]);
     const [chart, setChart] = useState<Chart | null>(null);
@@ -121,20 +134,6 @@ export default function Chart() {
         return years;
     })();
 
-    const squareSize = window.innerWidth < 405 ? 21 : 30;
-    const colors = [
-        '#8080ff',
-        '#6666ff',
-        '#4d4dff',
-        '#3333ff',
-        '#1a1aff',
-        '#0000ff',
-        '#0000e6',
-        '#0000cc',
-        '#0000b3',
-        '#000099',
-    ];
-
     return (
         <>
             <NavBar />
@@ -143,7 +142,17 @@ export default function Chart() {
                 <div className="container">
                     <SettingsPanel />
                     <div className="mx-auto">
-                        <CalendarHeatmap />
+                        {chart && (
+                            <CalendarHeatmap
+                                entries={entries}
+                                settings={settings}
+                                year={year}
+                                chart={chart}
+                                setEntries={setEntries}
+                                setError={setError}
+                                setSuccess={setSuccess}
+                            />
+                        )}
                     </div>
                     <ColorScale />
                 </div>
@@ -217,6 +226,8 @@ export default function Chart() {
     }
 
     function ColorScale() {
+        const squareSize = window.innerWidth < 405 ? 21 : 30;
+
         return (
             <div
                 className="mx-auto"
@@ -344,69 +355,86 @@ export default function Chart() {
             </Card>
         );
     }
+}
 
-    function CalendarHeatmap() {
-        const [day, setDay] = useState<Day | null>(null);
+function CalendarHeatmap({
+    settings,
+    entries,
+    year,
+    setError,
+    setEntries,
+    setSuccess,
+    chart,
+}: {
+    settings: CalendarSettings;
+    entries: Entry[];
+    year: number;
+    setError: setState<CustomError>;
+    setEntries: setState<Entry[]>;
+    setSuccess: setState<string>;
+    chart: Chart;
+}) {
+    const [day, setDay] = useState<Day | null>(null);
+    const navigate = useNavigate();
 
-        setTimeout(() => {
-            const calendar = document.querySelector('rect');
+    setTimeout(() => {
+        const calendar = document.querySelector('rect');
 
-            if (calendar) {
-                calendar.style.cursor = 'default';
-            }
-        }, 250);
+        if (calendar) {
+            calendar.style.cursor = 'default';
+        }
+    }, 250);
 
-        return (
-            <>
-                <ModifyEntry day={day} setDay={setDay} />
+    return (
+        <>
+            <ModifyEntry day={day} setDay={setDay} />
+            <div
+                style={{
+                    textAlign: 'center',
+                    overflowX: 'auto',
+                    overflowY: 'hidden',
+                }}
+            >
                 <div
                     style={{
-                        textAlign: 'center',
-                        overflowX: 'auto',
-                        overflowY: 'hidden',
+                        minWidth: settings.direction === 'horizontal' ? '725px' : '295px',
+                        height: settings.direction === 'vertical' ? '1500px' : '175px',
                     }}
                 >
-                    <div
-                        style={{
-                            minWidth: settings.direction === 'horizontal' ? '725px' : '295px',
-                            height: settings.direction === 'vertical' ? '1500px' : '175px',
-                        }}
-                    >
-                        <ResponsiveCalendar
-                            data={entries.map((e) => {
-                                return { day: e.day, value: e.value };
-                            })}
-                            theme={{ labels: { text: { fontSize: 'large' } } }}
-                            from={new Date(year, 0, 1, 0, 0, 0, 0)}
-                            to={new Date(year, 11, 31, 23, 59, 59, 999)}
-                            emptyColor="#eeeeee"
-                            direction={settings.direction}
-                            colors={colors}
-                            margin={{ top: 40, right: 40, bottom: 2, left: 40 }}
-                            monthBorderColor="#9cc3ff"
-                            monthBorderWidth={settings.outlineMonths ? 2 : 0}
-                            yearSpacing={0}
-                            dayBorderWidth={2}
-                            dayBorderColor="#ffffff"
-                            legends={[
-                                {
-                                    anchor: 'bottom-right',
-                                    direction: 'row',
-                                    translateY: 36,
-                                    itemCount: 4,
-                                    itemWidth: 42,
-                                    itemHeight: 36,
-                                    itemsSpacing: 14,
-                                    itemDirection: 'right-to-left',
-                                },
-                            ]}
-                            onClick={(data) => setDay(data)}
-                        />
-                    </div>
+                    <ResponsiveCalendar
+                        data={entries.map((e) => {
+                            return { day: e.day, value: e.value };
+                        })}
+                        theme={{ labels: { text: { fontSize: 'large' } } }}
+                        from={new Date(year, 0, 1, 0, 0, 0, 0)}
+                        to={new Date(year, 11, 31, 23, 59, 59, 999)}
+                        emptyColor="#eeeeee"
+                        direction={settings.direction}
+                        colors={colors}
+                        margin={{ top: 40, right: 40, bottom: 2, left: 40 }}
+                        monthBorderColor="#9cc3ff"
+                        monthBorderWidth={settings.outlineMonths ? 2 : 0}
+                        yearSpacing={0}
+                        dayBorderWidth={2}
+                        dayBorderColor="#ffffff"
+                        legends={[
+                            {
+                                anchor: 'bottom-right',
+                                direction: 'row',
+                                translateY: 36,
+                                itemCount: 4,
+                                itemWidth: 42,
+                                itemHeight: 36,
+                                itemsSpacing: 14,
+                                itemDirection: 'right-to-left',
+                            },
+                        ]}
+                        onClick={(data) => setDay(data)}
+                    />
                 </div>
-            </>
-        );
-    }
+            </div>
+        </>
+    );
 
     // function CreateEntry({ day, setDay }: { day: Day | null; setDay: setState<Day | null> }) {
     //     const entry = entries.find((entry) => entry.day === day?.day);
@@ -573,7 +601,7 @@ export default function Chart() {
                 onSubmit={async (values) => {
                     await handleErrors(
                         async () => {
-                            await axios.post(`/Api/Charts/${chartId}/Entries`, {
+                            await axios.post(`/Api/Charts/${chart.id}/Entries`, {
                                 date: day?.date,
                                 value: values.value,
                                 // notes: values.notes
@@ -588,7 +616,7 @@ export default function Chart() {
             >
                 {({ handleSubmit, handleChange, values, errors }) => {
                     function ValueInput() {
-                        switch (chart?.type) {
+                        switch (chart.type) {
                             case ChartType.Checkmark:
                                 break;
                             default:
@@ -670,7 +698,7 @@ export default function Chart() {
 
                 await handleErrors(
                     async () => {
-                        await axios.delete(`/Api/Charts/${chartId}/Entries`, {
+                        await axios.delete(`/Api/Charts/${chart.id}/Entries`, {
                             data: {
                                 date: day.date,
                             },
