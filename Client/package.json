@@ -9,7 +9,6 @@
     "preview": "vite preview",
     "prettier": "npx prettier --write src",
     "build": "tsc && vite build --mode development"
-    "build:production": "tsc && vite build --mode production"
   },
   "dependencies": {
     "@nivo/calendar": "^0.87.0",
