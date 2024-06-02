@@ -435,20 +435,17 @@ function CalendarHeatmap({
             </div>
         </>
     );
-    
+
     function EntryModal({ day, setDay }: { day: Day | null; setDay: setState<Day | null> }) {
         const entry = entries.find((entry) => entry.day === day?.day);
-
+    
         return <>{entry ? <CreateEntry /> : <ModifyEntry />}</>;
-
+    
         function CreateEntry() {
-            return <></>
-        }
-
-        function ModifyEntry() {
             const entry = entries.find((entry) => entry.day === day?.day);
-
-            return (!entry ? <h2>Something went wrong!</h2> : 
+            console.log(entry);
+    
+            return (
                 <Formik
                     validationSchema={yup.object().shape({
                         value: yup.number().required('A value is required.'),
@@ -471,7 +468,7 @@ function CalendarHeatmap({
                                     value: values.value,
                                     // notes: values.notes
                                 });
-
+    
                                 setSuccess('Updated Entry');
                             },
                             setError,
@@ -502,7 +499,7 @@ function CalendarHeatmap({
                             //                 </InputGroup>
                             return <></>;
                         }
-
+    
                         return (
                             <Modal
                                 show={day !== null}
@@ -556,11 +553,11 @@ function CalendarHeatmap({
                     }}
                 </Formik>
             );
-
+    
             function ClearButton() {
                 async function deleteEntry() {
                     if (!day) return;
-
+    
                     await handleErrors(
                         async () => {
                             await axios.delete(`/Api/Charts/${chart.id}/Entries`, {
@@ -568,17 +565,160 @@ function CalendarHeatmap({
                                     date: day.date,
                                 },
                             });
-
+    
                             setDay(null);
                             setSuccess('Cleared this entry.');
-
+    
                             setEntries(entries.filter((entry) => entry.day !== day.day));
                         },
                         setError,
                         navigate
                     );
                 }
-
+    
+                return (
+                    <Button variant="danger" onClick={deleteEntry}>
+                        Clear
+                    </Button>
+                );
+            }
+        }
+    
+        function ModifyEntry() {
+            const entry = entries.find((entry) => entry.day === day?.day);
+            console.log(entry);
+    
+            return (
+                <Formik
+                    validationSchema={yup.object().shape({
+                        value: yup.number().required('A value is required.'),
+                        notes: yup
+                            .string()
+                            .required('Notes are required.')
+                            .max(500, 'Notes cannot be more than 500 characters.'),
+                    })}
+                    validateOnMount
+                    validateOnChange
+                    initialValues={{
+                        value: entry?.value ?? 0,
+                        notes: entry?.notes ?? '',
+                    }}
+                    onSubmit={async (values) => {
+                        await handleErrors(
+                            async () => {
+                                await axios.post(`/Api/Charts/${chart.id}/Entries`, {
+                                    date: day?.date,
+                                    value: values.value,
+                                    // notes: values.notes
+                                });
+    
+                                setSuccess('Updated Entry');
+                            },
+                            setError,
+                            navigate
+                        );
+                    }}
+                >
+                    {({ handleSubmit, handleChange, values, errors }) => {
+                        function ValueInput() {
+                            switch (chart?.type) {
+                                case ChartType.Checkmark:
+                                    break;
+                                default:
+                                    break;
+                            }
+                            // <InputGroup hasValidation>
+                            //                     <FormControl
+                            //                         autoFocus
+                            //                         aria-describedby="inputGroupPrepend"
+                            //                         name="name"
+                            //                         value={values.value}
+                            //                         onChange={handleChange}
+                            //                         isInvalid={!!errors.value}
+                            //                     />
+                            //                     <FormControl.Feedback type="invalid">
+                            //                         {errors.value}
+                            //                     </FormControl.Feedback>
+                            //                 </InputGroup>
+                            return <></>;
+                        }
+    
+                        return (
+                            <Modal
+                                show={day !== null}
+                                centered
+                                keyboard={true}
+                                onHide={() => setDay(null)}
+                                animation={false}
+                            >
+                                <Form noValidate onSubmit={handleSubmit}>
+                                    <Modal.Header closeButton>
+                                        <Modal.Title>Entry for {day?.day}</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>
+                                        <Row className="mb-3">
+                                            <FormGroup as={Col} controlId="NotesId">
+                                                <FormLabel>Notes</FormLabel>
+                                                <InputGroup hasValidation>
+                                                    <FormControl
+                                                        autoFocus
+                                                        aria-describedby="inputGroupPrepend"
+                                                        name="notes"
+                                                        value={values.notes}
+                                                        onChange={handleChange}
+                                                        isInvalid={!!errors.notes}
+                                                    />
+                                                    <FormControl.Feedback type="invalid">
+                                                        {errors.notes}
+                                                    </FormControl.Feedback>
+                                                </InputGroup>
+                                            </FormGroup>
+                                        </Row>
+                                        <Row className="mb-3">
+                                            <FormGroup as={Col} controlId="NameId">
+                                                <FormLabel>Value</FormLabel>
+                                                <ValueInput />
+                                            </FormGroup>
+                                        </Row>
+                                    </Modal.Body>
+                                    <Modal.Footer>
+                                        <Button type="submit" variant="warning">
+                                            Update
+                                        </Button>
+                                        <ClearButton />
+                                        <Button variant="secondary" onClick={() => setDay(null)}>
+                                            Close
+                                        </Button>
+                                    </Modal.Footer>
+                                </Form>
+                            </Modal>
+                        );
+                    }}
+                </Formik>
+            );
+    
+            function ClearButton() {
+                async function deleteEntry() {
+                    if (!day) return;
+    
+                    await handleErrors(
+                        async () => {
+                            await axios.delete(`/Api/Charts/${chart.id}/Entries`, {
+                                data: {
+                                    date: day.date,
+                                },
+                            });
+    
+                            setDay(null);
+                            setSuccess('Cleared this entry.');
+    
+                            setEntries(entries.filter((entry) => entry.day !== day.day));
+                        },
+                        setError,
+                        navigate
+                    );
+                }
+    
                 return (
                     <Button variant="danger" onClick={deleteEntry}>
                         Clear
