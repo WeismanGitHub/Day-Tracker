@@ -10,11 +10,11 @@ namespace Server;
 
 public static class AppUtilities
 {
-    public static void AddServices(IServiceCollection services)
+    public static void AddServices(IServiceCollection services, IConfiguration configuration)
     {
-        services.AddScoped<UserService>();
-        services.AddScoped<EntryService>();
-        services.AddScoped<ChartService>();
+        services.AddScoped((p) => new ChartService(configuration));
+        services.AddScoped((p) => new EntryService(configuration));
+        services.AddScoped((p) => new UserService(configuration));
 
         services.AddControllers();
         services.AddAuthorization();
