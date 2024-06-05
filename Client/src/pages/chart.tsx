@@ -139,23 +139,23 @@ export default function Chart() {
             <NavBar />
             <div className="full-height-minus-navbar">
                 <ChartBreadCrumbs />
-w                    <div className="p-0 m-0" style={{ height: 'fit-content', width: '100%' }}>
-                        <SettingsPanel />
-                        <div>
-                            {chart && (
-                                <CalendarHeatmap
-                                    entries={entries}
-                                    settings={settings}
-                                    year={year}
-                                    chart={chart}
-                                    setEntries={setEntries}
-                                    setError={setError}
-                                    setSuccess={setSuccess}
-                                />
-                            )}
-                        </div>
-                        <ColorScale />
+                <div className="p-0 m-0" style={{ height: 'fit-content', width: '100%' }}>
+                    <SettingsPanel />
+                    <div>
+                        {chart && (
+                            <CalendarHeatmap
+                                entries={entries}
+                                settings={settings}
+                                year={year}
+                                chart={chart}
+                                setEntries={setEntries}
+                                setError={setError}
+                                setSuccess={setSuccess}
+                            />
+                        )}
                     </div>
+                    <ColorScale />
+                </div>
             </div>
 
             <ToastContainer position="top-end">
