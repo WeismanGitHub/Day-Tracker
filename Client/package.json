@@ -8,7 +8,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "prettier": "npx prettier --write src",
-    "build": "tsc && vite build --mode development"
+    "build-dev": "tsc && vite build --mode development",
+    "build-prod": "tsc && vite build --mode production --outDir ./dist"
   },
   "dependencies": {
     "@nivo/calendar": "^0.87.0",
