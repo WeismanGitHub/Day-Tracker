@@ -5,7 +5,12 @@ namespace Server.Database.Services;
 
 public class UserService
 {
-    public DayTrackerContext _context { get; set; } = new();
+    public DayTrackerContext _context { get; set; }
+
+    public UserService(IConfiguration configuration)
+    {
+        _context = new(configuration);
+    }
 
     public async Task<User?> GetUser(Guid userId)
     {

@@ -1,6 +1,5 @@
 ﻿namespace Server.Database;
 
-using System;
 using Microsoft.EntityFrameworkCore;
 using Server.Database.Models;
 
@@ -10,13 +9,11 @@ public class DayTrackerContext : DbContext
     public DbSet<Chart> Charts { get; set; }
     public DbSet<Entry> Entries { get; set; }
 
-    public string DbPath { get; }
+    private readonly IConfiguration _configuration;
 
-    public DayTrackerContext()
+    public DayTrackerContext(IConfiguration configuration)
     {
-        var folder = Environment.SpecialFolder.LocalApplicationData;
-        var path = Environment.GetFolderPath(folder);
-        DbPath = Path.Join(path, "daytracker.db");
+        _configuration = configuration;
     }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -27,6 +24,7 @@ public class DayTrackerContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        options.UseSqlite($"Data Source={DbPath}");
+        var connectionString = _configuration.GetConnectionString("DefaultConnection");
+        options.UseNpgsql(connectionString);
     }
 }

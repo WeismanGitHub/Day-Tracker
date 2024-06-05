@@ -6,7 +6,12 @@ namespace Server.Database.Services;
 
 public class ChartService
 {
-    public DayTrackerContext _context { get; set; } = new();
+    public DayTrackerContext _context { get; set; }
+
+    public ChartService(IConfiguration configuration)
+    {
+        _context = new(configuration);
+    }
 
     public async Task CreateChart(Chart chart)
     {
