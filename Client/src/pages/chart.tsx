@@ -139,23 +139,23 @@ export default function Chart() {
             <NavBar />
             <div className="full-height-minus-navbar">
                 <ChartBreadCrumbs />
-                <div className="container">
-                    <SettingsPanel />
-                    <div className="mx-auto">
-                        {chart && (
-                            <CalendarHeatmap
-                                entries={entries}
-                                settings={settings}
-                                year={year}
-                                chart={chart}
-                                setEntries={setEntries}
-                                setError={setError}
-                                setSuccess={setSuccess}
-                            />
-                        )}
+w                    <div className="p-0 m-0" style={{ height: 'fit-content', width: '100%' }}>
+                        <SettingsPanel />
+                        <div>
+                            {chart && (
+                                <CalendarHeatmap
+                                    entries={entries}
+                                    settings={settings}
+                                    year={year}
+                                    chart={chart}
+                                    setEntries={setEntries}
+                                    setError={setError}
+                                    setSuccess={setSuccess}
+                                />
+                            )}
+                        </div>
+                        <ColorScale />
                     </div>
-                    <ColorScale />
-                </div>
             </div>
 
             <ToastContainer position="top-end">
@@ -196,7 +196,7 @@ export default function Chart() {
 
     function ChartBreadCrumbs() {
         return (
-            <h4 className="ps-4 pe-4 pt-2 pb-5 w-100" style={{ height: '50px' }}>
+            <h4 className="ps-4 pe-4 pt-2 w-100" style={{ height: '50px' }}>
                 <Dropdown>
                     <Breadcrumb>
                         <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
@@ -411,7 +411,7 @@ function CalendarHeatmap({
                         emptyColor="#eeeeee"
                         direction={settings.direction}
                         colors={colors}
-                        margin={{ top: 40, right: 40, bottom: 2, left: 40 }}
+                        margin={{ top: 40, right: 50, bottom: 2, left: 50 }}
                         monthBorderColor="#9cc3ff"
                         monthBorderWidth={settings.outlineMonths ? 2 : 0}
                         yearSpacing={0}
@@ -485,7 +485,7 @@ function CalendarHeatmap({
             const [value, setValue] = useState<string>('1');
             const [notes, setNotes] = useState('');
 
-            console.log(validateField(valueSchema, value), validateField(notesSchema, notes))
+            console.log(validateField(valueSchema, value), validateField(notesSchema, notes));
 
             return (
                 <Formik
@@ -499,15 +499,18 @@ function CalendarHeatmap({
 
                         await handleErrors(
                             async () => {
-                                const res = await axios.post<{ id: string }>(`/Api/Charts/${chart.id}/Entries`, {
-                                    date: day?.date,
-                                    value,
-                                    notes,
-                                });
+                                const res = await axios.post<{ id: string }>(
+                                    `/Api/Charts/${chart.id}/Entries`,
+                                    {
+                                        date: day?.date,
+                                        value,
+                                        notes,
+                                    }
+                                );
 
                                 setSuccess('Created Entry');
                                 setDay(null);
-                                setEntries([...entries, { id: res.data.id, notes, value, day: day?.day }])
+                                setEntries([...entries, { id: res.data.id, notes, value, day: day?.day }]);
                             },
                             setError,
                             navigate
@@ -818,7 +821,7 @@ function CalendarHeatmap({
                                         <Button type="submit" variant="warning">
                                             Update
                                         </Button>
-                                        <ClearButton />
+                                        <DeleteButton />
                                         <Button variant="secondary" onClick={() => setDay(null)}>
                                             Close
                                         </Button>
@@ -830,7 +833,7 @@ function CalendarHeatmap({
                 </Formik>
             );
 
-            function ClearButton() {
+            function DeleteButton() {
                 async function deleteEntry() {
                     if (!day) return;
 
@@ -843,7 +846,7 @@ function CalendarHeatmap({
                             });
 
                             setDay(null);
-                            setSuccess('Cleared this entry.');
+                            setSuccess('Deleted this entry.');
 
                             setEntries(entries.filter((entry) => entry.day !== day.day));
                         },
@@ -854,7 +857,7 @@ function CalendarHeatmap({
 
                 return (
                     <Button variant="danger" onClick={deleteEntry}>
-                        Clear
+                        Delete
                     </Button>
                 );
             }
