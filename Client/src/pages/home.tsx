@@ -127,7 +127,11 @@ export default function Home() {
     );
 
     function Charts() {
-        return (
+        return !charts.length ? (
+            <h2 className="d-flex justify-content-center align-items-center mt-5">
+                <strong>No Charts</strong>
+            </h2>
+        ) : (
             <div className="d-flex gap-2 flex-wrap justify-content-center w-100 pb-3">
                 {charts?.map((chart) => (
                     <a
