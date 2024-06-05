@@ -10,9 +10,8 @@ namespace Server;
 
 public static class AppUtilities
 {
-    public static void AddServices(IServiceCollection services, Configuration config)
+    public static void AddServices(IServiceCollection services)
     {
-        services.AddSingleton(config);
         services.AddScoped<UserService>();
         services.AddScoped<EntryService>();
         services.AddScoped<ChartService>();
