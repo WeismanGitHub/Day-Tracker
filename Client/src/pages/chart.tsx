@@ -30,7 +30,7 @@ interface Entry {
     id: string;
     day: string;
     value: number;
-    notes?: string;
+    notes: string;
 }
 
 type Day = {
@@ -461,31 +461,53 @@ function CalendarHeatmap({
 
         return entry ? <ModifyEntry /> : <CreateEntry />;
 
+        function validateField(schema: yup.Schema, input: unknown): boolean {
+            try {
+                schema.validateSync(input);
+                return true;
+            } catch (err) {
+                return false;
+            }
+        }
+
+        function getYupError(schema: yup.Schema, input: unknown): string {
+            try {
+                schema.validateSync(input);
+                return '';
+            } catch (err) {
+                // @ts-expect-error It's of type yup.ValidationError.
+                return err.message;
+            }
+        }
+
         function CreateEntry() {
             // This is kinda hacky but necessary because setError/setSuccess cause the component to re-render and reset the values.
             const [value, setValue] = useState<string>('1');
-            const [notes, setNotes] = useState('')
+            const [notes, setNotes] = useState('');
+
+            console.log(validateField(valueSchema, value), validateField(notesSchema, notes))
 
             return (
                 <Formik
-                    validationSchema={{}}
+                    validationSchema={yup.object()}
                     validateOnChange
                     initialValues={{}}
                     onSubmit={async () => {
-                        if (!valueSchema.validateSync(value) || !notesSchema.validateSync(notes)) {
-                            return
+                        if (!validateField(valueSchema, value) || !validateField(notesSchema, notes)) {
+                            return;
                         }
 
                         await handleErrors(
                             async () => {
-                                await axios.post(`/Api/Charts/${chart.id}/Entries`, {
+                                const res = await axios.post<{ id: string }>(`/Api/Charts/${chart.id}/Entries`, {
                                     date: day?.date,
                                     value,
-                                    notes
+                                    notes,
                                 });
-            
+
                                 setSuccess('Created Entry');
                                 setDay(null);
+                                setEntries([...entries, { id: res.data.id, notes, value, day: day?.day }])
                             },
                             setError,
                             navigate
@@ -515,7 +537,7 @@ function CalendarHeatmap({
                                             name="value"
                                             value={value}
                                             onChange={(e) => setValue(e.target.value)}
-                                            // isInvalid={Boolean(valueSchema.validateSync(value))}
+                                            isInvalid={!validateField(valueSchema, value)}
                                             autoFocus
                                         />
                                     );
@@ -543,7 +565,7 @@ function CalendarHeatmap({
                                                 <InputGroup hasValidation>
                                                     {valueInput}
                                                     <FormControl.Feedback type="invalid">
-                                                        {/* {valueSchema.validateSync(value)}/ */}
+                                                        {getYupError(valueSchema, value)}
                                                     </FormControl.Feedback>
                                                 </InputGroup>
                                             </FormGroup>
@@ -556,13 +578,13 @@ function CalendarHeatmap({
                                                         as="textarea"
                                                         aria-describedby="inputGroupPrepend"
                                                         name="notes"
-                                                        rows={5}
+                                                        rows={7}
                                                         value={notes}
                                                         onChange={(e) => setNotes(e.target.value)}
-                                                        // isInvalid={Boolean(notesSchema.validateSync(notes))}
+                                                        isInvalid={!validateField(notesSchema, notes)}
                                                     />
                                                     <FormControl.Feedback type="invalid">
-                                                        {/* {notesSchema.validateSync(notes)} */}
+                                                        {getYupError(notesSchema, notes)}
                                                     </FormControl.Feedback>
                                                 </InputGroup>
                                             </FormGroup>
