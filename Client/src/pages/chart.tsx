@@ -383,6 +383,13 @@ function CalendarHeatmap({
         if (calendar) {
             calendar.style.cursor = 'default';
         }
+
+        const x = document.querySelectorAll(`rect`)[15];
+
+        if (x) {
+            x.style.borderColor = 'red';
+            x.style.borderWidth = '1px';
+        }
     }, 250);
 
     return (
@@ -415,7 +422,6 @@ function CalendarHeatmap({
                         monthBorderColor="#9cc3ff"
                         monthBorderWidth={settings.outlineMonths ? 2 : 0}
                         yearSpacing={0}
-                        dayBorderWidth={2}
                         dayBorderColor="#ffffff"
                         legends={[
                             {
@@ -484,8 +490,6 @@ function CalendarHeatmap({
             // This is kinda hacky but necessary because setError/setSuccess cause the component to re-render and reset the values.
             const [value, setValue] = useState<string>('1');
             const [notes, setNotes] = useState('');
-
-            console.log(validateField(valueSchema, value), validateField(notesSchema, notes));
 
             return (
                 <Formik
@@ -604,181 +608,91 @@ function CalendarHeatmap({
                         );
                     }}
                 </Formik>
-                // <Formik
-                //     validationSchema={yup.object().shape({
-                //         value: valueSchema,
-                //         notes: yup.string().max(500, 'Notes cannot be more than 500 characters.'),
-                //     })}
-                //     validateOnChange
-                //     initialValues={{
-                //         value: 1,
-                //         notes: '',
-                //     }}
-                //     onSubmit={async (values) => {
-                //         await handleErrors(
-                //             async () => {
-                //                 await axios.post(`/Api/Charts/${chart.id}/Entries`, {
-                //                     date: day?.date,
-                //                     value: values.value,
-                //                     notes: values.notes,
-                //                 });
-
-                //                 setSuccess('Created Entry');
-                //                 setDay(null);
-                //             },
-                //             setError,
-                //             navigate
-                //         );
-                //     }}
-                // >
-                //     {({ handleSubmit, handleChange, values, errors, setFieldValue }) => {
-                //         const valueInput = (() => {
-                //             switch (chart.type) {
-                //                 case ChartType.Checkmark:
-                //                     return (
-                //                         <Form.Check
-                //                             checked={values.value === 1}
-                //                             onClick={() => setFieldValue('value', values.value === 0 ? 1 : 0)}
-                //                             value={values.value}
-                //                             reverse={true}
-                //                             name="value"
-                //                             inline={true}
-                //                             type="switch"
-                //                             autoFocus
-                //                         />
-                //                     );
-                //                 default:
-                //                     return (
-                //                         <FormControl
-                //                             aria-describedby="inputGroupPrepend"
-                //                             name="value"
-                //                             value={values.value}
-                //                             onChange={handleChange}
-                //                             isInvalid={!!errors.value}
-                //                             autoFocus
-                //                         />
-                //                     );
-                //             }
-                //         })();
-
-                //         return (
-                //             <Modal
-                //                 show={day !== null}
-                //                 centered
-                //                 keyboard={true}
-                //                 onHide={() => setDay(null)}
-                //                 animation={false}
-                //             >
-                //                 <Form noValidate onSubmit={handleSubmit}>
-                //                     <Modal.Header closeButton>
-                //                         <Modal.Title>
-                //                             Entry for {day?.date.toLocaleString([], { dateStyle: 'short' })}
-                //                         </Modal.Title>
-                //                     </Modal.Header>
-                //                     <Modal.Body>
-                //                         <Row className="mb-3">
-                //                             <FormGroup as={Col} controlId="ValueId">
-                //                                 <FormLabel>Value</FormLabel>
-                //                                 <InputGroup hasValidation>
-                //                                     {/* {valueInput} */}
-
-                //                                     <FormControl.Feedback type="invalid">
-                //                                         {errors.value}
-                //                                     </FormControl.Feedback>
-                //                                 </InputGroup>
-                //                             </FormGroup>
-                //                         </Row>
-                //                         <Row className="mb-3">
-                //                             <FormGroup as={Col} controlId="NotesId">
-                //                                 <FormLabel>Notes</FormLabel>
-                //                                 <InputGroup hasValidation>
-                //                                     <FormControl
-                //                                         as="textarea"
-                //                                         aria-describedby="inputGroupPrepend"
-                //                                         name="notes"
-                //                                         rows={5}
-                //                                         value={values.notes}
-                //                                         onChange={handleChange}
-                //                                         isInvalid={!!errors.notes}
-                //                                     />
-                //                                     <FormControl.Feedback type="invalid">
-                //                                         {errors.notes}
-                //                                     </FormControl.Feedback>
-                //                                 </InputGroup>
-                //                             </FormGroup>
-                //                         </Row>
-                //                     </Modal.Body>
-                //                     <Modal.Footer>
-                //                         <Button type="submit">Create</Button>
-                //                         <Button variant="secondary" onClick={() => setDay(null)}>
-                //                             Close
-                //                         </Button>
-                //                     </Modal.Footer>
-                //                 </Form>
-                //             </Modal>
-                //         );
-                //     }}
-                // </Formik>
             );
         }
 
         function ModifyEntry() {
+            // This is kinda hacky but necessary because setError/setSuccess cause the component to re-render and reset the values.
+
             const entry = entries.find((entry) => entry.day === day?.day);
+            const [value, setValue] = useState<string>(String(entry?.value ?? 0));
+            const [notes, setNotes] = useState(entry?.notes ?? '');
+
+            if (!entry) {
+                return <h2>Something went wrong!</h2>;
+            }
 
             return (
                 <Formik
-                    validationSchema={yup.object().shape({
-                        value: yup.number().required('A value is required.'),
-                        notes: yup
-                            .string()
-                            .required('Notes are required.')
-                            .max(500, 'Notes cannot be more than 500 characters.'),
-                    })}
-                    validateOnMount
+                    validationSchema={yup.object()}
                     validateOnChange
-                    initialValues={{
-                        value: entry?.value ?? 0,
-                        notes: entry?.notes ?? '',
-                    }}
-                    onSubmit={async (values) => {
+                    initialValues={{}}
+                    onSubmit={async () => {
+                        if (!validateField(valueSchema, value) || !validateField(notesSchema, notes)) {
+                            return;
+                        }
+
                         await handleErrors(
                             async () => {
-                                await axios.post(`/Api/Charts/${chart.id}/Entries`, {
-                                    date: day?.date,
-                                    value: values.value,
-                                    // notes: values.notes
-                                });
+                                const update: { value?: string; notes?: string } = {};
 
-                                setSuccess('Updated Entry');
+                                if (notes != entry.notes) {
+                                    update.notes = notes;
+                                }
+
+                                if (value != String(entry.value)) {
+                                    update.value = value;
+                                }
+
+                                await axios.patch(`/Api/Charts/${chart.id}/Entries/${entry.id}`, update);
+
+                                setSuccess('Created Entry');
+                                setDay(null);
+                                setEntries(
+                                    entries.map((e) => {
+                                        if (e.id === entry.id) {
+                                            e.notes = notes;
+                                            e.value = Number(value);
+                                        }
+
+                                        return e;
+                                    })
+                                );
                             },
                             setError,
                             navigate
                         );
                     }}
                 >
-                    {({ handleSubmit, handleChange, values, errors }) => {
-                        function ValueInput() {
-                            switch (chart?.type) {
+                    {({ handleSubmit }) => {
+                        const valueInput = (() => {
+                            switch (chart.type) {
                                 case ChartType.Checkmark:
-                                    break;
+                                    return (
+                                        <Form.Check
+                                            checked={Number(value) === 1}
+                                            onClick={() => setValue(String(Number(value) === 0 ? 1 : 0))}
+                                            value={value}
+                                            reverse={true}
+                                            name="value"
+                                            inline={true}
+                                            type="switch"
+                                            autoFocus
+                                        />
+                                    );
                                 default:
-                                    break;
+                                    return (
+                                        <FormControl
+                                            aria-describedby="inputGroupPrepend"
+                                            name="value"
+                                            value={value}
+                                            onChange={(e) => setValue(e.target.value)}
+                                            isInvalid={!validateField(valueSchema, value)}
+                                            autoFocus
+                                        />
+                                    );
                             }
-                            // <InputGroup hasValidation>
-                            //                     <FormControl
-                            //                         autoFocus
-                            //                         aria-describedby="inputGroupPrepend"
-                            //                         name="name"
-                            //                         value={values.value}
-                            //                         onChange={handleChange}
-                            //                         isInvalid={!!errors.value}
-                            //                     />
-                            //                     <FormControl.Feedback type="invalid">
-                            //                         {errors.value}
-                            //                     </FormControl.Feedback>
-                            //                 </InputGroup>
-                            return <></>;
-                        }
+                        })();
 
                         return (
                             <Modal
@@ -788,32 +702,41 @@ function CalendarHeatmap({
                                 onHide={() => setDay(null)}
                                 animation={false}
                             >
+                                <Modal.Header closeButton>
+                                    <Modal.Title>
+                                        Entry for {day?.date.toLocaleString([], { dateStyle: 'short' })}
+                                    </Modal.Title>
+                                </Modal.Header>
                                 <Form noValidate onSubmit={handleSubmit}>
-                                    <Modal.Header closeButton>
-                                        <Modal.Title>Entry for {day?.day}</Modal.Title>
-                                    </Modal.Header>
                                     <Modal.Body>
                                         <Row className="mb-3">
-                                            <FormGroup as={Col} controlId="NotesId">
-                                                <FormLabel>Notes</FormLabel>
+                                            <FormGroup as={Col} controlId="ValueId">
+                                                <FormLabel>Value</FormLabel>
                                                 <InputGroup hasValidation>
-                                                    <FormControl
-                                                        aria-describedby="inputGroupPrepend"
-                                                        name="notes"
-                                                        value={values.notes}
-                                                        onChange={handleChange}
-                                                        isInvalid={!!errors.notes}
-                                                    />
+                                                    {valueInput}
                                                     <FormControl.Feedback type="invalid">
-                                                        {errors.notes}
+                                                        {getYupError(valueSchema, value)}
                                                     </FormControl.Feedback>
                                                 </InputGroup>
                                             </FormGroup>
                                         </Row>
                                         <Row className="mb-3">
-                                            <FormGroup as={Col} controlId="NameId">
-                                                <FormLabel>Value</FormLabel>
-                                                <ValueInput />
+                                            <FormGroup as={Col} controlId="NotesId">
+                                                <FormLabel>Notes</FormLabel>
+                                                <InputGroup hasValidation>
+                                                    <FormControl
+                                                        as="textarea"
+                                                        aria-describedby="inputGroupPrepend"
+                                                        name="notes"
+                                                        rows={7}
+                                                        value={notes}
+                                                        onChange={(e) => setNotes(e.target.value)}
+                                                        isInvalid={!validateField(notesSchema, notes)}
+                                                    />
+                                                    <FormControl.Feedback type="invalid">
+                                                        {getYupError(notesSchema, notes)}
+                                                    </FormControl.Feedback>
+                                                </InputGroup>
                                             </FormGroup>
                                         </Row>
                                     </Modal.Body>
