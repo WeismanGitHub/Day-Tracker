@@ -13,7 +13,7 @@ public class EntriesController : CustomBase
     public class CreateEntryBody
     {
         public required string Notes { get; set; }
-        public required int Value { get; set; }
+        public required decimal Value { get; set; }
         public required DateTime Date { get; set; }
     }
 
@@ -81,7 +81,7 @@ public class EntriesController : CustomBase
 
     public class UpdateEntryBody
     {
-        public int? Value { get; set; }
+        public decimal? Value { get; set; }
         public string? Notes { get; set; }
     }
 
@@ -138,7 +138,7 @@ public class EntriesController : CustomBase
 
         if (body.Value is not null)
         {
-            entry.Value = (int)body.Value;
+            entry.Value = (decimal)body.Value;
         }
 
         if (body.Notes is not null)
@@ -192,7 +192,7 @@ public class EntriesController : CustomBase
     {
         public required Guid Id { get; set; }
         public required string Day { get; set; } // Optimized for front-end.
-        public required int Value { get; set; }
+        public required decimal Value { get; set; }
         public string? Notes { get; set; }
     }
 

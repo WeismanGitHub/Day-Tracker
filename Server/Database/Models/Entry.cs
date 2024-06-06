@@ -23,7 +23,7 @@ public class Entry
     public required int Day { get; set; }
 
     [Required]
-    public required int Value { get; set; }
+    public required decimal Value { get; set; }
 
     [MaxLength(500)]
     public required string Notes { get; set; }

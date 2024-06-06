@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Server.Database;
@@ -11,9 +12,11 @@ using Server.Database;
 namespace Server.Migrations
 {
     [DbContext(typeof(DayTrackerContext))]
-    partial class DayTrackerContextModelSnapshot : ModelSnapshot
+    [Migration("20240606190732_ValueToDecimal")]
+    partial class ValueToDecimal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
