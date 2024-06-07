@@ -182,7 +182,7 @@ function DeleteAccount({ setError }: { setError: setError }) {
                                         <FormLabel>Password</FormLabel>
                                         <InputGroup hasValidation>
                                             <FormControl
-                                                autoComplete='on'
+                                                autoComplete="on"
                                                 type="password"
                                                 aria-describedby="inputGroupPrepend"
                                                 name="password"
