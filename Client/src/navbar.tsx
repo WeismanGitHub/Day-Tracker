@@ -80,7 +80,14 @@ export default function NavBar() {
                 style={{ textAlign: 'center', fontSize: 'x-large', backgroundColor: '#9CC3FF' }}
             >
                 <div className="container-fluid">
-                    <a className="navbar-brand" href="/">
+                    <a
+                        className="navbar-brand"
+                        href="/"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            navigate('/');
+                        }}
+                    >
                         <img src="/icon.svg" width="50" height="50" alt="icon" className="me-2" />
                         <span className="d-block d-sm-inline-block">Day Tracker</span>
                     </a>
@@ -100,12 +107,28 @@ export default function NavBar() {
                     >
                         <ul className="navbar-nav d-flex justify-content-center align-items-center">
                             <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
-                                <a className="nav-item active w-100" href="/" style={{ color: 'white' }}>
+                                <a
+                                    className="nav-item active w-100"
+                                    href="/"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        navigate('/');
+                                    }}
+                                    style={{ color: 'white' }}
+                                >
                                     Home
                                 </a>
                             </li>
                             <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
-                                <a className="nav-item active w-100" href="/about" style={{ color: 'white' }}>
+                                <a
+                                    className="nav-item active w-100"
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        navigate('/about');
+                                    }}
+                                    href="/about"
+                                    style={{ color: 'white' }}
+                                >
                                     About
                                 </a>
                             </li>
@@ -114,6 +137,10 @@ export default function NavBar() {
                                     <a
                                         className="nav-item active w-100"
                                         href="/account"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            navigate('/account');
+                                        }}
                                         style={{ color: 'white' }}
                                     >
                                         Account

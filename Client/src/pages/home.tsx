@@ -136,6 +136,10 @@ export default function Home() {
                 {charts?.map((chart) => (
                     <a
                         href={`/charts/${chart.id}`}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            navigate(`/charts/${chart.id}`);
+                        }}
                         style={{ color: 'inherit', textDecoration: 'none' }}
                         className="dropdown dropdown-menu-end"
                     >
@@ -166,7 +170,10 @@ export default function Home() {
                                         </OverlayTrigger>
                                     </h4>
                                     <div
-                                        onClick={(e) => e.preventDefault()}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                        }}
                                         style={{
                                             float: 'right',
                                             display: 'inline-block',
@@ -174,6 +181,10 @@ export default function Home() {
                                         }}
                                     >
                                         <div
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                e.stopPropagation();
+                                            }}
                                             data-bs-toggle="dropdown"
                                             className="ms-auto"
                                             style={{ padding: '5px', margin: '-5px' }}
@@ -189,7 +200,10 @@ export default function Home() {
                                         <div className="dropdown-menu">
                                             <Dropdown.Item
                                                 href={`/charts/${chart.id}`}
-                                                onClick={() => navigate(`/charts/${chart.id}`)}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    navigate(`/charts/${chart.id}`);
+                                                }}
                                             >
                                                 View
                                             </Dropdown.Item>

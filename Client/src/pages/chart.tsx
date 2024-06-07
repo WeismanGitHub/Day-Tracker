@@ -208,13 +208,39 @@ function ChartBreadCrumbs({
     years: number[];
     setYear: setState<number>;
 }) {
+    const navigate = useNavigate();
+
     return (
         <h4 className="ps-4 pe-4 pt-2 w-100" style={{ height: '50px' }}>
             <Dropdown>
                 <Breadcrumb>
-                    <Breadcrumb.Item href="/">Home</Breadcrumb.Item>
-                    <Breadcrumb.Item href={`/charts/${chart.id}`}>{chart?.name}</Breadcrumb.Item>
-                    <Breadcrumb.Item href={`/charts/${chart.id}?year=${year}`}>{year}</Breadcrumb.Item>
+                    <Breadcrumb.Item
+                        href="/"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            navigate('/');
+                        }}
+                    >
+                        Home
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item
+                        href={`/charts/${chart.id}`}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            navigate(`/charts/${chart.id}`);
+                        }}
+                    >
+                        {chart?.name}
+                    </Breadcrumb.Item>
+                    <Breadcrumb.Item
+                        href={`/charts/${chart.id}?year=${year}`}
+                        onClick={(e) => {
+                            e.preventDefault();
+                            navigate(`/charts/${chart.id}?year=${year}`);
+                        }}
+                    >
+                        {year}
+                    </Breadcrumb.Item>
                     <Dropdown.Toggle
                         style={{ padding: '0px 7.5px 0px 5px', border: 0 }}
                         variant="none"
