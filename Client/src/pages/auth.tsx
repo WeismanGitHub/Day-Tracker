@@ -146,6 +146,7 @@ function Signup({
                                 <InputGroup hasValidation>
                                     <FormControl
                                         autoFocus
+                                        autoComplete="on"
                                         type="text"
                                         aria-describedby="inputGroupPrepend"
                                         name="name"
@@ -162,6 +163,7 @@ function Signup({
                                 <FormLabel>Password</FormLabel>
                                 <InputGroup hasValidation>
                                     <FormControl
+                                        autoComplete="on"
                                         type="password"
                                         aria-describedby="inputGroupPrepend"
                                         name="password"
@@ -179,6 +181,7 @@ function Signup({
                             <FormGroup as={Col} controlId="ConfirmPasswordID">
                                 <FormLabel>Confirm Password</FormLabel>
                                 <FormControl
+                                    autoComplete="on"
                                     type="password"
                                     name="confirmPassword"
                                     value={values.confirmPassword}
@@ -261,8 +264,9 @@ function Signin({
                                 <FormLabel>Name</FormLabel>
                                 <InputGroup hasValidation>
                                     <FormControl
+                                        autoComplete="on"
                                         autoFocus
-                                        type="name"
+                                        type="text"
                                         aria-describedby="inputGroupPrepend"
                                         name="name"
                                         value={values.name}
@@ -278,6 +282,7 @@ function Signin({
                                 <FormLabel>Password</FormLabel>
                                 <InputGroup hasValidation>
                                     <FormControl
+                                        autoComplete="on"
                                         type="password"
                                         aria-describedby="inputGroupPrepend"
                                         name="password"

@@ -73,8 +73,15 @@ export default function Account() {
                             </Row>
                             <Row>
                                 <Col className="d-flex justify-content-end">
-                                    {account && <EditAccount />}
-                                    <DeleteAccount />
+                                    {account && (
+                                        <EditAccount
+                                            account={account}
+                                            setAccount={setAccount}
+                                            setError={setError}
+                                            setSuccess={setSuccess}
+                                        />
+                                    )}
+                                    <DeleteAccount setError={setError} />
                                 </Col>
                             </Row>
                         </Card.Body>
@@ -117,43 +124,173 @@ export default function Account() {
             </ToastContainer>
         </>
     );
+}
 
-    function DeleteAccount() {
-        const [show, setShow] = useState(false);
+function DeleteAccount({ setError }: { setError: setError }) {
+    const [show, setShow] = useState(false);
+    const navigate = useNavigate();
 
-        async function handleSubmit(password: string) {
-            handleErrors(
-                async () => {
-                    await axios.delete('/Api/Users/Account', {
-                        data: {
-                            password,
-                        },
+    async function handleSubmit(password: string) {
+        handleErrors(
+            async () => {
+                await axios.delete('/Api/Users/Account', {
+                    data: {
+                        password,
+                    },
+                });
+
+                localStorage.removeItem('authenticated');
+                navigate('/auth');
+            },
+            setError,
+            navigate
+        );
+    }
+
+    return (
+        <>
+            <Button variant="danger" onClick={() => setShow(true)}>
+                Delete
+            </Button>
+
+            <Formik
+                validationSchema={yup.object().shape({
+                    password: passwordSchema.required('Input your current password.'),
+                })}
+                validateOnMount
+                validateOnChange
+                initialValues={{
+                    password: '',
+                }}
+                onSubmit={(values) => handleSubmit(values.password)}
+            >
+                {({ handleSubmit, handleChange, values, errors }) => (
+                    <Modal
+                        show={show}
+                        centered
+                        keyboard={true}
+                        onHide={() => setShow(false)}
+                        animation={false}
+                    >
+                        <Form noValidate onSubmit={handleSubmit}>
+                            <Modal.Header closeButton>
+                                <Modal.Title>Delete your account?</Modal.Title>
+                            </Modal.Header>
+                            <Modal.Body>
+                                <Row className="mb-3">
+                                    <FormGroup as={Col} controlId="PasswordId">
+                                        <FormLabel>Password</FormLabel>
+                                        <InputGroup hasValidation>
+                                            <FormControl
+                                                autoComplete='on'
+                                                type="password"
+                                                aria-describedby="inputGroupPrepend"
+                                                name="password"
+                                                value={values.password}
+                                                onChange={handleChange}
+                                                isInvalid={!!errors.password}
+                                            />
+                                            <FormControl.Feedback type="invalid">
+                                                {errors.password}
+                                            </FormControl.Feedback>
+                                        </InputGroup>
+                                    </FormGroup>
+                                </Row>
+                            </Modal.Body>
+                            <Modal.Footer>
+                                <Button type="submit" variant="danger">
+                                    Delete
+                                </Button>
+                                <Button variant="secondary" onClick={() => setShow(false)}>
+                                    Close
+                                </Button>
+                            </Modal.Footer>
+                        </Form>
+                    </Modal>
+                )}
+            </Formik>
+        </>
+    );
+}
+
+function EditAccount({
+    setError,
+    setAccount,
+    account,
+    setSuccess,
+}: {
+    account: Account;
+    setError: setError;
+    setAccount: setState<Account | null>;
+    setSuccess: setState<string>;
+}) {
+    const [show, setShow] = useState(false);
+    const navigate = useNavigate();
+
+    async function handleSubmit(values: { password: string; newName: string; newPassword: string }) {
+        handleErrors(
+            async () => {
+                await axios.patch('/Api/Users/Account', {
+                    currentPassword: values.password,
+                    newData: {
+                        ...(values.newName ? { name: values.newName } : {}),
+                        ...(values.newPassword ? { password: values.newPassword } : {}),
+                    },
+                });
+
+                if (values.newName && account) {
+                    setAccount({
+                        name: values.newName,
+                        createdAt: account.createdAt,
+                        id: account.id,
                     });
+                }
 
-                    localStorage.removeItem('authenticated');
-                    navigate('/auth');
-                },
-                setError,
-                navigate
-            );
-        }
+                setSuccess(true);
+            },
+            setError,
+            navigate
+        );
+    }
 
-        return (
+    return (
+        account && (
             <>
-                <Button variant="danger" onClick={() => setShow(true)}>
-                    Delete
+                <Button variant="warning" onClick={() => setShow(true)} className="me-2">
+                    Edit
                 </Button>
 
                 <Formik
                     validationSchema={yup.object().shape({
                         password: passwordSchema.required('Input your current password.'),
+                        newPassword: passwordSchema.notRequired(),
+                        newName: nameSchema.notRequired(),
                     })}
-                    validateOnMount
+                    validate={(values) => {
+                        const errors: {
+                            password?: string;
+                            newPassword?: string;
+                            newName?: string;
+                        } = {};
+
+                        if (!values.newPassword && !values.newName) {
+                            errors.newPassword = 'Must update something.';
+                            errors.newName = 'Must update something.';
+                        }
+
+                        if (values.newPassword == values.password && values.password !== '') {
+                            errors.password = 'Passwords cannot match.';
+                        }
+
+                        return errors;
+                    }}
                     validateOnChange
                     initialValues={{
+                        newPassword: '',
                         password: '',
+                        newName: '',
                     }}
-                    onSubmit={(values) => handleSubmit(values.password)}
+                    onSubmit={handleSubmit}
                 >
                     {({ handleSubmit, handleChange, values, errors }) => (
                         <Modal
@@ -165,14 +302,53 @@ export default function Account() {
                         >
                             <Form noValidate onSubmit={handleSubmit}>
                                 <Modal.Header closeButton>
-                                    <Modal.Title>Delete your account?</Modal.Title>
+                                    <Modal.Title>Update your account?</Modal.Title>
                                 </Modal.Header>
                                 <Modal.Body>
                                     <Row className="mb-3">
-                                        <FormGroup as={Col} controlId="PasswordId">
-                                            <FormLabel>Password</FormLabel>
+                                        <FormGroup as={Col} controlId="NewNameID">
+                                            <FormLabel>New Name</FormLabel>
                                             <InputGroup hasValidation>
                                                 <FormControl
+                                                    autoComplete="off"
+                                                    autoFocus
+                                                    aria-describedby="inputGroupPrepend"
+                                                    name="newName"
+                                                    value={values.newName}
+                                                    onChange={handleChange}
+                                                    isInvalid={!!errors.newName}
+                                                />
+                                                <FormControl.Feedback type="invalid">
+                                                    {errors.newName}
+                                                </FormControl.Feedback>
+                                            </InputGroup>
+                                        </FormGroup>
+                                    </Row>
+                                    <Row className="mb-3">
+                                        <FormGroup as={Col} controlId="NewPasswordId">
+                                            <FormLabel>New Password</FormLabel>
+                                            <InputGroup hasValidation>
+                                                <FormControl
+                                                    type="password"
+                                                    autoComplete="off"
+                                                    aria-describedby="inputGroupPrepend"
+                                                    name="newPassword"
+                                                    value={values.newPassword}
+                                                    onChange={handleChange}
+                                                    isInvalid={!!errors.newPassword}
+                                                />
+                                                <FormControl.Feedback type="invalid">
+                                                    {errors.newPassword}
+                                                </FormControl.Feedback>
+                                            </InputGroup>
+                                        </FormGroup>
+                                    </Row>
+                                    <Row className="mb-3">
+                                        <FormGroup as={Col} controlId="CurrentPasswordId">
+                                            <FormLabel>Current Password</FormLabel>
+                                            <InputGroup hasValidation>
+                                                <FormControl
+                                                    autoComplete="on"
                                                     type="password"
                                                     aria-describedby="inputGroupPrepend"
                                                     name="password"
@@ -188,8 +364,8 @@ export default function Account() {
                                     </Row>
                                 </Modal.Body>
                                 <Modal.Footer>
-                                    <Button type="submit" variant="danger">
-                                        Delete
+                                    <Button type="submit" variant="warning">
+                                        Update
                                     </Button>
                                     <Button variant="secondary" onClick={() => setShow(false)}>
                                         Close
@@ -200,166 +376,6 @@ export default function Account() {
                     )}
                 </Formik>
             </>
-        );
-    }
-
-    function EditAccount() {
-        const [show, setShow] = useState(false);
-
-        async function handleSubmit(values: {
-            currentPassword: string;
-            newName: string;
-            newPassword: string;
-        }) {
-            handleErrors(
-                async () => {
-                    await axios.patch('/Api/Users/Account', {
-                        currentPassword: values.currentPassword,
-                        newData: {
-                            ...(values.newName ? { name: values.newName } : {}),
-                            ...(values.newPassword ? { password: values.newPassword } : {}),
-                        },
-                    });
-
-                    if (values.newName && account) {
-                        setAccount({
-                            name: values.newName,
-                            createdAt: account.createdAt,
-                            id: account.id,
-                        });
-                    }
-
-                    setSuccess(true);
-                },
-                setError,
-                navigate
-            );
-        }
-
-        return (
-            account && (
-                <>
-                    <Button variant="warning" onClick={() => setShow(true)} className="me-2">
-                        Edit
-                    </Button>
-
-                    <Formik
-                        validationSchema={yup.object().shape({
-                            currentPassword: passwordSchema.required('Input your current password.'),
-                            newPassword: passwordSchema.notRequired(),
-                            newName: nameSchema.notRequired(),
-                        })}
-                        validate={(values) => {
-                            const errors: {
-                                currentPassword?: string;
-                                newPassword?: string;
-                                newName?: string;
-                            } = {};
-
-                            if (!values.newPassword && !values.newName) {
-                                errors.newPassword = 'Must update something.';
-                                errors.newName = 'Must update something.';
-                            }
-
-                            if (
-                                values.newPassword == values.currentPassword &&
-                                values.currentPassword !== ''
-                            ) {
-                                errors.currentPassword = 'Passwords cannot match.';
-                            }
-
-                            return errors;
-                        }}
-                        validateOnChange
-                        initialValues={{
-                            newPassword: '',
-                            currentPassword: '',
-                            newName: account.name,
-                        }}
-                        onSubmit={handleSubmit}
-                    >
-                        {({ handleSubmit, handleChange, values, errors }) => (
-                            <Modal
-                                show={show}
-                                centered
-                                keyboard={true}
-                                onHide={() => setShow(false)}
-                                animation={false}
-                            >
-                                <Form noValidate onSubmit={handleSubmit}>
-                                    <Modal.Header closeButton>
-                                        <Modal.Title>Update your account?</Modal.Title>
-                                    </Modal.Header>
-                                    <Modal.Body>
-                                        <Row className="mb-3">
-                                            <FormGroup as={Col} controlId="NewNameID">
-                                                <FormLabel>New Name</FormLabel>
-                                                <InputGroup hasValidation>
-                                                    <FormControl
-                                                        autoFocus
-                                                        aria-describedby="inputGroupPrepend"
-                                                        name="newName"
-                                                        value={values.newName}
-                                                        onChange={handleChange}
-                                                        isInvalid={!!errors.newName}
-                                                    />
-                                                    <FormControl.Feedback type="invalid">
-                                                        {errors.newName}
-                                                    </FormControl.Feedback>
-                                                </InputGroup>
-                                            </FormGroup>
-                                        </Row>
-                                        <Row className="mb-3">
-                                            <FormGroup as={Col} controlId="NewPasswordId">
-                                                <FormLabel>New Password</FormLabel>
-                                                <InputGroup hasValidation>
-                                                    <FormControl
-                                                        type="password"
-                                                        aria-describedby="inputGroupPrepend"
-                                                        name="newPassword"
-                                                        value={values.newPassword}
-                                                        onChange={handleChange}
-                                                        isInvalid={!!errors.newPassword}
-                                                    />
-                                                    <FormControl.Feedback type="invalid">
-                                                        {errors.newPassword}
-                                                    </FormControl.Feedback>
-                                                </InputGroup>
-                                            </FormGroup>
-                                        </Row>
-                                        <Row className="mb-3">
-                                            <FormGroup as={Col} controlId="CurrentPasswordId">
-                                                <FormLabel>Current Password</FormLabel>
-                                                <InputGroup hasValidation>
-                                                    <FormControl
-                                                        type="password"
-                                                        aria-describedby="inputGroupPrepend"
-                                                        name="currentPassword"
-                                                        value={values.currentPassword}
-                                                        onChange={handleChange}
-                                                        isInvalid={!!errors.currentPassword}
-                                                    />
-                                                    <FormControl.Feedback type="invalid">
-                                                        {errors.currentPassword}
-                                                    </FormControl.Feedback>
-                                                </InputGroup>
-                                            </FormGroup>
-                                        </Row>
-                                    </Modal.Body>
-                                    <Modal.Footer>
-                                        <Button type="submit" variant="warning">
-                                            Update
-                                        </Button>
-                                        <Button variant="secondary" onClick={() => setShow(false)}>
-                                            Close
-                                        </Button>
-                                    </Modal.Footer>
-                                </Form>
-                            </Modal>
-                        )}
-                    </Formik>
-                </>
-            )
-        );
-    }
+        )
+    );
 }
