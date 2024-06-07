@@ -16,6 +16,7 @@ import {
     Toast,
     Row,
     Col,
+    Card,
 } from 'react-bootstrap';
 
 const { Formik } = formik;
@@ -32,235 +33,279 @@ const signupSchema = signinSchema.shape({
 export default function Auth() {
     const [showSignin, setShowSignin] = useState<boolean>(true);
     const [error, setError] = useState<CustomError | null>(null);
-    const navigate = useNavigate();
 
     return (
         <>
             <NavBar />
-            <div className="d-flex justify-content-center align-items-center full-height-minus-navbar">
-                <div className="container">
-                    <div className="row align-items-center justify-content-center m-1 text-center">
-                        <div className="col-sm-8 col-md-6 col-lg-4 bg-white rounded shadow">
-                            {showSignin ? <Signin /> : <Signup />}
-                            <Button
-                                className="mt-1 mb-1 btn-custom-white btn-sm"
-                                onClick={() => setShowSignin(!showSignin)}
-                            >
-                                {showSignin ? 'Sign Up' : 'Sign In'}
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div className="d-flex justify-content-center align-items-center full-height-minus-navbar overflow-x-hidden">
+                <Card style={{ maxWidth: '500px', width: '80%' }} className="mx-auto shadow">
+                    <Card.Header className="bg-primary text-white">
+                        <h2>{showSignin ? 'Sign In' : 'Sign Up'}</h2>
+                    </Card.Header>
+                    <Card.Body>
+                        {showSignin ? (
+                            <Signin
+                                setError={setError}
+                                showSignin={showSignin}
+                                setShowSignin={setShowSignin}
+                            />
+                        ) : (
+                            <Signup
+                                setError={setError}
+                                showSignin={showSignin}
+                                setShowSignin={setShowSignin}
+                            />
+                        )}
+                    </Card.Body>
+                </Card>
 
-            <ToastContainer position="top-end">
-                <Toast
-                    onClose={() => setError(null)}
-                    show={error !== null}
-                    autohide={true}
-                    className="d-inline-block m-1"
-                    bg={'danger'}
-                >
-                    <Toast.Header>
-                        <strong className="me-auto">{error?.title}</strong>
-                    </Toast.Header>
-                    <Toast.Body className="text-white">
-                        <strong>{error?.detail ?? 'Something went wrong.'}</strong>
-                    </Toast.Body>
-                </Toast>
-            </ToastContainer>
+                <ToastContainer position="top-end">
+                    <Toast
+                        onClose={() => setError(null)}
+                        show={error !== null}
+                        autohide={true}
+                        className="d-inline-block m-1"
+                        bg={'danger'}
+                    >
+                        <Toast.Header>
+                            <strong className="me-auto">{error?.title}</strong>
+                        </Toast.Header>
+                        <Toast.Body className="text-white">
+                            <strong>{error?.detail ?? 'Something went wrong.'}</strong>
+                        </Toast.Body>
+                    </Toast>
+                </ToastContainer>
+            </div>
         </>
     );
+}
 
-    function Signup() {
-        return (
-            <>
-                <Formik
-                    initialValues={{
-                        name: '',
-                        password: '',
-                        confirmPassword: '',
-                    }}
-                    validationSchema={signupSchema}
-                    validate={(values) => {
-                        const errors: {
-                            password?: string;
-                            confirmPassword?: string;
-                        } = {};
+function Signup({
+    setError,
+    setShowSignin,
+    showSignin,
+}: {
+    setError: setError;
+    setShowSignin: setState<boolean>;
+    showSignin: boolean;
+}) {
+    const navigate = useNavigate();
 
-                        if (values.password !== values.confirmPassword) {
-                            errors.confirmPassword = 'Passwords do not match.';
-                        }
+    return (
+        <>
+            <Formik
+                initialValues={{
+                    name: '',
+                    password: '',
+                    confirmPassword: '',
+                }}
+                validationSchema={signupSchema}
+                validate={(values) => {
+                    const errors: {
+                        password?: string;
+                        confirmPassword?: string;
+                    } = {};
 
-                        return errors;
-                    }}
-                    validateOnChange
-                    onSubmit={async (values) => {
-                        try {
-                            await axios.post('/Api/Users/SignUp', {
-                                name: values.name,
-                                password: values.password,
+                    if (values.password !== values.confirmPassword) {
+                        errors.confirmPassword = 'Passwords do not match.';
+                    }
+
+                    return errors;
+                }}
+                validateOnChange
+                onSubmit={async (values) => {
+                    try {
+                        await axios.post('/Api/Users/SignUp', {
+                            name: values.name,
+                            password: values.password,
+                        });
+
+                        localStorage.setItem('authenticated', 'true');
+                        navigate('/');
+                    } catch (err) {
+                        if (
+                            axios.isAxiosError<CustomError>(err) &&
+                            problemDetailsSchema.isValidSync(err.response?.data)
+                        ) {
+                            setError(err.response.data);
+                        } else {
+                            setError({
+                                title: 'Unknown Error',
+                                detail: 'Something went wrong!',
+                                status: 500,
                             });
-
-                            localStorage.setItem('authenticated', 'true');
-                            navigate('/');
-                        } catch (err) {
-                            if (
-                                axios.isAxiosError<CustomError>(err) &&
-                                problemDetailsSchema.isValidSync(err.response?.data)
-                            ) {
-                                setError(err.response.data);
-                            } else {
-                                setError({
-                                    title: 'Unknown Error',
-                                    detail: 'Something went wrong!',
-                                    status: 500,
-                                });
-                            }
                         }
-                    }}
-                >
-                    {({ handleSubmit, handleChange, values, errors }) => (
-                        <Form noValidate onSubmit={handleSubmit}>
-                            <Row className="mb-3">
-                                <FormGroup as={Col} controlId="nameId">
-                                    <FormLabel>Name</FormLabel>
-                                    <InputGroup hasValidation>
-                                        <FormControl
-                                            autoFocus
-                                            type="text"
-                                            aria-describedby="inputGroupPrepend"
-                                            name="name"
-                                            value={values.name}
-                                            onChange={handleChange}
-                                            isInvalid={!!errors.name}
-                                        />
-                                        <FormControl.Feedback type="invalid">
-                                            {errors.name}
-                                        </FormControl.Feedback>
-                                    </InputGroup>
-                                </FormGroup>
-                            </Row>
-                            <Row className="mb-3">
-                                <FormGroup as={Col} controlId="PasswordID">
-                                    <FormLabel>Password</FormLabel>
-                                    <InputGroup hasValidation>
-                                        <FormControl
-                                            type="password"
-                                            aria-describedby="inputGroupPrepend"
-                                            name="password"
-                                            value={values.password}
-                                            onChange={handleChange}
-                                            isInvalid={!!errors.password}
-                                        />
-                                        <FormControl.Feedback type="invalid">
-                                            {errors.password}
-                                        </FormControl.Feedback>
-                                    </InputGroup>
-                                </FormGroup>
-                            </Row>
-                            <Row className="mb-3">
-                                <FormGroup as={Col} controlId="ConfirmPasswordID">
-                                    <FormLabel>Confirm Password</FormLabel>
+                    }
+                }}
+            >
+                {({ handleSubmit, handleChange, values, errors }) => (
+                    <Form noValidate onSubmit={handleSubmit}>
+                        <Row className="mb-3">
+                            <FormGroup as={Col} controlId="nameId">
+                                <FormLabel>Name</FormLabel>
+                                <InputGroup hasValidation>
+                                    <FormControl
+                                        autoFocus
+                                        type="text"
+                                        aria-describedby="inputGroupPrepend"
+                                        name="name"
+                                        value={values.name}
+                                        onChange={handleChange}
+                                        isInvalid={!!errors.name}
+                                    />
+                                    <FormControl.Feedback type="invalid">{errors.name}</FormControl.Feedback>
+                                </InputGroup>
+                            </FormGroup>
+                        </Row>
+                        <Row className="mb-3">
+                            <FormGroup as={Col} controlId="PasswordID">
+                                <FormLabel>Password</FormLabel>
+                                <InputGroup hasValidation>
                                     <FormControl
                                         type="password"
-                                        name="confirmPassword"
-                                        value={values.confirmPassword}
+                                        aria-describedby="inputGroupPrepend"
+                                        name="password"
+                                        value={values.password}
                                         onChange={handleChange}
-                                        isInvalid={!!errors.confirmPassword}
+                                        isInvalid={!!errors.password}
                                     />
                                     <FormControl.Feedback type="invalid">
-                                        {errors.confirmPassword}
+                                        {errors.password}
                                     </FormControl.Feedback>
-                                </FormGroup>
-                            </Row>
-                            <Button type="submit">Sign Up</Button>
-                        </Form>
-                    )}
-                </Formik>
-            </>
-        );
-    }
+                                </InputGroup>
+                            </FormGroup>
+                        </Row>
+                        <Row className="mb-3">
+                            <FormGroup as={Col} controlId="ConfirmPasswordID">
+                                <FormLabel>Confirm Password</FormLabel>
+                                <FormControl
+                                    type="password"
+                                    name="confirmPassword"
+                                    value={values.confirmPassword}
+                                    onChange={handleChange}
+                                    isInvalid={!!errors.confirmPassword}
+                                />
+                                <FormControl.Feedback type="invalid">
+                                    {errors.confirmPassword}
+                                </FormControl.Feedback>
+                            </FormGroup>
+                        </Row>
+                        <Row>
+                            <Col className="d-flex justify-content-end">
+                                <Button type="submit">Sign Up</Button>
+                                <Button
+                                    variant="secondary"
+                                    className="ms-1"
+                                    onClick={() => setShowSignin(!showSignin)}
+                                >
+                                    Sign In
+                                </Button>
+                            </Col>
+                        </Row>
+                    </Form>
+                )}
+            </Formik>
+        </>
+    );
+}
 
-    function Signin() {
-        return (
-            <>
-                <Formik
-                    validationSchema={signinSchema}
-                    validateOnChange
-                    onSubmit={async (values) => {
-                        try {
-                            await axios.post('/Api/Users/Account/SignIn', {
-                                name: values.name,
-                                password: values.password,
+function Signin({
+    setError,
+    setShowSignin,
+    showSignin,
+}: {
+    setError: setError;
+    setShowSignin: setState<boolean>;
+    showSignin: boolean;
+}) {
+    const navigate = useNavigate();
+
+    return (
+        <>
+            <Formik
+                validationSchema={signinSchema}
+                validateOnChange
+                onSubmit={async (values) => {
+                    try {
+                        await axios.post('/Api/Users/Account/SignIn', {
+                            name: values.name,
+                            password: values.password,
+                        });
+
+                        localStorage.setItem('authenticated', 'true');
+                        navigate('/');
+                    } catch (err) {
+                        if (
+                            axios.isAxiosError<CustomError>(err) &&
+                            problemDetailsSchema.isValidSync(err.response?.data)
+                        ) {
+                            setError(err.response.data);
+                        } else {
+                            setError({
+                                title: 'Unknown Error',
+                                detail: 'Something went wrong!',
+                                status: 500,
                             });
-
-                            localStorage.setItem('authenticated', 'true');
-                            navigate('/');
-                        } catch (err) {
-                            if (
-                                axios.isAxiosError<CustomError>(err) &&
-                                problemDetailsSchema.isValidSync(err.response?.data)
-                            ) {
-                                setError(err.response.data);
-                            } else {
-                                setError({
-                                    title: 'Unknown Error',
-                                    detail: 'Something went wrong!',
-                                    status: 500,
-                                });
-                            }
                         }
-                    }}
-                    initialValues={{
-                        name: '',
-                        password: '',
-                    }}
-                >
-                    {({ handleSubmit, handleChange, values, errors }) => (
-                        <Form noValidate onSubmit={handleSubmit}>
-                            <Row className="mb-3">
-                                <FormGroup as={Col} controlId="nameId">
-                                    <FormLabel>Name</FormLabel>
-                                    <InputGroup hasValidation>
-                                        <FormControl
-                                            autoFocus
-                                            type="name"
-                                            aria-describedby="inputGroupPrepend"
-                                            name="name"
-                                            value={values.name}
-                                            onChange={handleChange}
-                                            isInvalid={!!errors.name}
-                                        />
-                                        <FormControl.Feedback type="invalid">
-                                            {errors.name}
-                                        </FormControl.Feedback>
-                                    </InputGroup>
-                                </FormGroup>
-                            </Row>
-                            <Row className="mb-3">
-                                <FormGroup as={Col} controlId="PasswordID">
-                                    <FormLabel>Password</FormLabel>
-                                    <InputGroup hasValidation>
-                                        <FormControl
-                                            type="password"
-                                            aria-describedby="inputGroupPrepend"
-                                            name="password"
-                                            value={values.password}
-                                            onChange={handleChange}
-                                            isInvalid={!!errors.password}
-                                        />
-                                        <FormControl.Feedback type="invalid">
-                                            {errors.password}
-                                        </FormControl.Feedback>
-                                    </InputGroup>
-                                </FormGroup>
-                            </Row>
-                            <Button type="submit">Sign In</Button>
-                        </Form>
-                    )}
-                </Formik>
-            </>
-        );
-    }
+                    }
+                }}
+                initialValues={{
+                    name: '',
+                    password: '',
+                }}
+            >
+                {({ handleSubmit, handleChange, values, errors }) => (
+                    <Form noValidate onSubmit={handleSubmit}>
+                        <Row className="mb-3">
+                            <FormGroup as={Col} controlId="nameId">
+                                <FormLabel>Name</FormLabel>
+                                <InputGroup hasValidation>
+                                    <FormControl
+                                        autoFocus
+                                        type="name"
+                                        aria-describedby="inputGroupPrepend"
+                                        name="name"
+                                        value={values.name}
+                                        onChange={handleChange}
+                                        isInvalid={!!errors.name}
+                                    />
+                                    <FormControl.Feedback type="invalid">{errors.name}</FormControl.Feedback>
+                                </InputGroup>
+                            </FormGroup>
+                        </Row>
+                        <Row className="mb-3">
+                            <FormGroup as={Col} controlId="PasswordID">
+                                <FormLabel>Password</FormLabel>
+                                <InputGroup hasValidation>
+                                    <FormControl
+                                        type="password"
+                                        aria-describedby="inputGroupPrepend"
+                                        name="password"
+                                        value={values.password}
+                                        onChange={handleChange}
+                                        isInvalid={!!errors.password}
+                                    />
+                                    <FormControl.Feedback type="invalid">
+                                        {errors.password}
+                                    </FormControl.Feedback>
+                                </InputGroup>
+                            </FormGroup>
+                        </Row>
+                        <Row>
+                            <Col className="d-flex justify-content-end">
+                                <Button type="submit">Sign In</Button>
+                                <Button
+                                    variant="secondary"
+                                    className="ms-1"
+                                    onClick={() => setShowSignin(!showSignin)}
+                                >
+                                    Sign Up
+                                </Button>
+                            </Col>
+                        </Row>
+                    </Form>
+                )}
+            </Formik>
+        </>
+    );
 }
