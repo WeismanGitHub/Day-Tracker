@@ -304,7 +304,7 @@ function SettingsPanel({
     setSettings: setState<CalendarSettings>;
 }) {
     return (
-        <Card style={{ maxWidth: '500px' }} className="mx-auto mb-2 mt-2">
+        <Card style={{ maxWidth: '500px' }} className="mx-auto mb-2 mt-3">
             <Card.Header className="bg-primary text-white">
                 <h2>Calendar Settings</h2>
             </Card.Header>
