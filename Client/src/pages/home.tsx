@@ -313,7 +313,7 @@ function EditChartItem({
                 }}
                 onSubmit={(values) => updateChart(values.name)}
             >
-                {({ handleSubmit, handleChange, values, errors }) => (
+                {({ handleSubmit, handleChange, values, errors, submitForm }) => (
                     <Modal
                         show={show}
                         centered
@@ -346,7 +346,7 @@ function EditChartItem({
                                 </Row>
                             </Modal.Body>
                             <Modal.Footer>
-                                <Button type="submit" variant="warning">
+                                <Button type="submit" variant="warning" onClick={submitForm}>
                                     Update
                                 </Button>
                                 <Button variant="secondary" onClick={() => setShow(false)}>
