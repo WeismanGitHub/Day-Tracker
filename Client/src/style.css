@@ -95,3 +95,7 @@ rect {
 .dropdown-menu {
     position: absolute !important;
 }
+
+.example-calendar {
+    cursor: grab !important;
+}
