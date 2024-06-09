@@ -31,9 +31,10 @@ export default function About() {
                         overflowY: 'hidden',
                         minHeight: '200px',
                         height: '30%',
-                        width: '100%',
-                        minWidth: '600px',
+                        width: '90%',
+                        minWidth: '300px',
                     }}
+                    className='d-flex justify-content-center w-100 overflow-hidden'
                 >
                     <ResponsiveCalendar
                         data={Array(365)
@@ -47,6 +48,13 @@ export default function About() {
                         theme={{ labels: { text: { fontSize: 'large' } } }}
                         from={start}
                         to={end}
+                        monthLegend={(_year: number, _month: number, date: Date) => {
+                            if (window.innerWidth >= 700) {
+                                return date.toLocaleString('default', { month: 'short' })
+                            }
+
+                            return ""
+                        }}
                         emptyColor="#eeeeee"
                         direction={'horizontal'}
                         colors={colors}
