@@ -44,4 +44,17 @@ enum ChartType {
     Scale = 2,
 }
 
-export { handleErrors, RequireAuthentication, ChartType };
+const colors = [
+    '#8080ff',
+    '#6666ff',
+    '#4d4dff',
+    '#3333ff',
+    '#1a1aff',
+    '#0000ff',
+    '#0000e6',
+    '#0000cc',
+    '#0000b3',
+    '#000099',
+];
+
+export { handleErrors, RequireAuthentication, ChartType, colors };

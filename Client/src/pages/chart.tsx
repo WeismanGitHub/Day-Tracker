@@ -1,5 +1,5 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ChartType, handleErrors } from '../helpers';
+import { ChartType, handleErrors,  colors } from '../helpers';
 import { ResponsiveCalendar } from '@nivo/calendar';
 import { useEffect, useState } from 'react';
 import { chartSchema } from '../schemas';
@@ -53,19 +53,6 @@ function getYear(paramsYear: string | null): number {
 
     return Number.isNaN(castYear) ? currentYear : castYear;
 }
-
-const colors = [
-    '#8080ff',
-    '#6666ff',
-    '#4d4dff',
-    '#3333ff',
-    '#1a1aff',
-    '#0000ff',
-    '#0000e6',
-    '#0000cc',
-    '#0000b3',
-    '#000099',
-];
 
 export default function Chart() {
     const [entries, setEntries] = useState<Entry[]>([]);
