@@ -46,18 +46,6 @@ public class EntryService
             .SingleOrDefaultAsync();
     }
 
-    public async Task<Entry?> GetEntry(Guid chartId, DateTime date)
-    {
-        return await _context
-            .Entries.Where(e =>
-                (e.ChartId == chartId)
-                && (e.Year == date.Year)
-                && (e.Month == date.Month)
-                && (e.Day == date.Day)
-            )
-            .SingleOrDefaultAsync();
-    }
-
     public async Task DeleteEntry(Entry entry)
     {
         _context.Remove(entry);

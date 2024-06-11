@@ -151,17 +151,12 @@ public class EntriesController : CustomBase
         return Ok();
     }
 
-    public class DeleteEntryBody
-    {
-        public required DateTime Date { get; set; }
-    }
-
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    [HttpDelete(Name = "DeleteEntry")]
+    [HttpDelete("{entryId:guid}", Name = "DeleteEntry")]
     public async Task<IActionResult> DeleteEntry(
         [FromRoute] Guid chartId,
-        [FromBody] DeleteEntryBody body,
+        [FromRoute] Guid entryId,
         ChartService chartService,
         EntryService entryService
     )
@@ -176,7 +171,7 @@ public class EntriesController : CustomBase
         }
 
         // Must make sure entry belongs to chart.
-        var entry = await entryService.GetEntry(chartId, body.Date);
+        var entry = await entryService.GetEntry(chartId, entryId);
 
         if (entry is null)
         {
