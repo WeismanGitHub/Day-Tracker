@@ -1,5 +1,5 @@
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { ChartType, handleErrors,  colors } from '../helpers';
+import { ChartType, handleErrors, colors } from '../helpers';
 import { ResponsiveCalendar } from '@nivo/calendar';
 import { useEffect, useState } from 'react';
 import { chartSchema } from '../schemas';
@@ -875,11 +875,7 @@ function ModifyEntry({
 
             await handleErrors(
                 async () => {
-                    await axios.delete(`/Api/Charts/${chart.id}/Entries`, {
-                        data: {
-                            date: day.date,
-                        },
-                    });
+                    await axios.delete(`/Api/Charts/${chart.id}/Entries/${entry?.id}`);
 
                     setDay(null);
                     setSuccess('Deleted this entry.');
