@@ -533,7 +533,7 @@ function EntryModal({
                 schema = schema.min(1).max(10);
                 break;
             default:
-                throw new Error('Invalid Chart Type');
+                throw new Error('Invalid Calendar Type');
         }
 
         return schema;

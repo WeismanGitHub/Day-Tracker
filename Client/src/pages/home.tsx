@@ -69,7 +69,7 @@ export default function Home() {
                 <div className="container mt-3 mb-3">
                     <Card style={{ maxWidth: '500px' }} className="mx-auto mb-2">
                         <Card.Header className="bg-primary text-white">
-                            <h2>Charts</h2>
+                            <h2>Calendars</h2>
                         </Card.Header>
                         <Card.Body>
                             <Row>
@@ -152,7 +152,7 @@ function Charts({
 
     return !charts.length ? (
         <h2 className="d-flex justify-content-center align-items-center mt-5">
-            <strong>No Charts</strong>
+            <strong>No Calendars</strong>
         </h2>
     ) : (
         <div className="d-flex gap-2 flex-wrap justify-content-center w-100 pb-3">
@@ -443,7 +443,7 @@ function CreateChartButton({
 
                 values.name = '';
                 setShow(false);
-                setSuccess('Created a chart.');
+                setSuccess('Created a calendar.');
             },
             setError,
             navigate
@@ -478,7 +478,7 @@ function CreateChartButton({
                     >
                         <Form noValidate onSubmit={handleSubmit}>
                             <Modal.Header closeButton>
-                                <Modal.Title>Create a chart?</Modal.Title>
+                                <Modal.Title>Create a calendar?</Modal.Title>
                             </Modal.Header>
                             <Modal.Body>
                                 <Row className="mb-3">
@@ -501,7 +501,7 @@ function CreateChartButton({
                                 </Row>
                                 <Row className="mb-3">
                                     <FormGroup as={Col}>
-                                        <FormLabel>Chart Type</FormLabel>
+                                        <FormLabel>Calendar Type</FormLabel>
                                         <br />
                                         <ListGroup horizontal={true}>
                                             <ListGroup.Item
