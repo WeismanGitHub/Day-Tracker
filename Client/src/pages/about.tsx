@@ -34,9 +34,9 @@ export default function About() {
                                 </Card.Header>
                                 <Card.Body>
                                     <Card.Text>
-                                        <h3>What is Day Tracker?</h3>
+                                        <h3>What is It?</h3>
                                         <p>
-                                            Day Tracker is a visualization tool inspired by the GitHub commit
+                                            Day Tracker is a visualization tool inspired by the GitHub contributions
                                             calendar. This website allows you to input your own data into
                                             personalized calendar heatmaps, providing an intuitive way to
                                             visualize and analyze patterns over time. Whether you're tracking
