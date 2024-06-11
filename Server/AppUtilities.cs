@@ -54,7 +54,7 @@ public static class AppUtilities
                 {
                     Title = "Day Tracker Api",
                     Description =
-                        "Track your life and visualize it with heatmaps like the GitHub commit calendar.",
+                        "Input data into personalized calendar heatmaps inspired by the GitHub commit calendar to visualize patterns over time.",
                     Version = "1.0"
                 }
             );
