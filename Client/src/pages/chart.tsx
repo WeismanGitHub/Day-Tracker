@@ -420,7 +420,7 @@ function CalendarHeatmap({
         const todayRect = document.querySelectorAll(`rect`)[daysIntoYear + 1];
 
         if (todayRect) {
-            const overlayRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+            const overlayRect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
 
             overlayRect.setAttribute('x', todayRect.getAttribute('x') ?? '0');
             overlayRect.setAttribute('y', todayRect.getAttribute('y') ?? '0');
@@ -438,7 +438,7 @@ function CalendarHeatmap({
                 overlayRect.setAttribute('width', todayRect.getAttribute('width') ?? '0');
                 overlayRect.setAttribute('height', todayRect.getAttribute('height') ?? '0');
             });
-        
+
             observer.observe(todayRect, { attributes: true });
         }
     }, 100);
