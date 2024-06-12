@@ -441,7 +441,7 @@ function CalendarHeatmap({
         
             observer.observe(todayRect, { attributes: true });
         }
-    }, 1);
+    }, 100);
 
     return (
         <>
