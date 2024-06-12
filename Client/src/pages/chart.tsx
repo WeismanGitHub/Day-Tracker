@@ -413,13 +413,35 @@ function CalendarHeatmap({
             calendar.style.cursor = 'default';
         }
 
-        const x = document.querySelectorAll(`rect`)[15];
+        const start = Date.UTC(year, 0, 1, 0, 0, 0, 0);
+        const today = Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+        const daysIntoYear = (today - start) / 24 / 60 / 60 / 1000;
 
-        if (x) {
-            x.style.borderColor = 'red';
-            x.style.borderWidth = '1px';
+        const todayRect = document.querySelectorAll(`rect`)[daysIntoYear + 1];
+
+        if (todayRect) {
+            const overlayRect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
+
+            overlayRect.setAttribute('x', todayRect.getAttribute('x') ?? '0');
+            overlayRect.setAttribute('y', todayRect.getAttribute('y') ?? '0');
+            overlayRect.setAttribute('width', todayRect.getAttribute('width') ?? '0');
+            overlayRect.setAttribute('height', todayRect.getAttribute('height') ?? '0');
+            overlayRect.setAttribute('fill', 'none');
+            overlayRect.setAttribute('stroke', 'red');
+            overlayRect.setAttribute('stroke-width', '1.5');
+
+            todayRect.parentNode?.appendChild(overlayRect);
+
+            const observer = new MutationObserver(() => {
+                overlayRect.setAttribute('x', todayRect.getAttribute('x') ?? '0');
+                overlayRect.setAttribute('y', todayRect.getAttribute('y') ?? '0');
+                overlayRect.setAttribute('width', todayRect.getAttribute('width') ?? '0');
+                overlayRect.setAttribute('height', todayRect.getAttribute('height') ?? '0');
+            });
+        
+            observer.observe(todayRect, { attributes: true });
         }
-    }, 250);
+    }, 1);
 
     return (
         <>
