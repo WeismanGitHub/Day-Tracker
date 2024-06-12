@@ -54,7 +54,7 @@ public static class AppUtilities
                 {
                     Title = "Day Tracker Api",
                     Description =
-                        "Input data into personalized calendar heatmaps inspired by the GitHub contributions calendar to visualize patterns over time.",
+                        "Input data into personalized calendar heatmaps to visualize patterns over time.",
                     Version = "1.0"
                 }
             );

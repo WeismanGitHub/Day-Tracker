@@ -36,12 +36,13 @@ export default function About() {
                                     <Card.Text>
                                         <h3>What is It?</h3>
                                         <p>
-                                            Day Tracker is a visualization tool inspired by the GitHub contributions
-                                            calendar. This website allows you to input your own data into
-                                            personalized calendar heatmaps, providing an intuitive way to
-                                            visualize and analyze patterns over time. Whether you're tracking
-                                            habits, recording daily metrics, or monitoring project progress,
-                                            Day Tracker transforms your data into an easy-to-read format.
+                                            Day Tracker is a visualization tool inspired by the GitHub
+                                            contributions calendar. This website allows you to input your own
+                                            data into personalized calendar heatmaps, providing an intuitive
+                                            way to visualize and analyze patterns over time. Whether you're
+                                            tracking habits, recording daily metrics, or monitoring project
+                                            progress, Day Tracker transforms your data into an easy-to-read
+                                            format.
                                         </p>
                                         <h3>How Does It Work?</h3>
                                         <ul>
@@ -62,7 +63,7 @@ export default function About() {
                                                 calendar types: scale, checkmark, and counter. These types
                                                 apply different restrictions on the values you can set for a
                                                 day. Counters have no restrictions, checkmarks are true/false,
-                                                and the scale is 1-10.
+                                                and scales are 1-10.
                                             </li>
                                         </ul>
                                         <p>
@@ -71,8 +72,8 @@ export default function About() {
                                                 GitHub repository
                                             </a>{' '}
                                             for the source code, or check out the{' '}
-                                            <a href="/swagger/index.html">Swagger documentation</a> for
-                                            detailed API information.
+                                            <a href="/swagger/index.html">Swagger documentation</a> for API
+                                            information.
                                         </p>
                                     </Card.Text>
                                 </Card.Body>
