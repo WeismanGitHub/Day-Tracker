@@ -1,5 +1,6 @@
 import { Card, Col, Container, Row } from 'react-bootstrap';
 import { ResponsiveCalendar } from '@nivo/calendar';
+import { Link } from 'react-router-dom';
 import { colors } from '../helpers';
 import { useEffect } from 'react';
 import NavBar from '../navbar';
@@ -68,12 +69,12 @@ export default function About() {
                                         </ul>
                                         <p>
                                             Visit the{' '}
-                                            <a href="https://github.com/WeismanGitHub/Day-Tracker">
+                                            <Link to="https://github.com/WeismanGitHub/Day-Tracker">
                                                 GitHub repository
-                                            </a>{' '}
+                                            </Link>{' '}
                                             for the source code, or check out the{' '}
-                                            <a href="/swagger/index.html">Swagger documentation</a> for API
-                                            information.
+                                            <Link to="/swagger/index.html">Swagger documentation</Link> for
+                                            API information.
                                         </p>
                                     </Card.Text>
                                 </Card.Body>

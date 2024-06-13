@@ -1,5 +1,5 @@
-import { Form, useNavigate } from 'react-router-dom';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import { Form, Link, useNavigate } from 'react-router-dom';
 import { ChartType, handleErrors } from '../helpers';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { useEffect, useState } from 'react';
@@ -157,12 +157,8 @@ function Charts({
     ) : (
         <div className="d-flex gap-2 flex-wrap justify-content-center w-100 pb-3">
             {charts?.map((chart) => (
-                <a
-                    href={`/charts/${chart.id}`}
-                    onClick={(e) => {
-                        e.preventDefault();
-                        navigate(`/charts/${chart.id}`);
-                    }}
+                <Link
+                    to={`/charts/${chart.id}`}
                     style={{ color: 'inherit', textDecoration: 'none' }}
                     className="dropdown dropdown-menu-end"
                 >
@@ -191,10 +187,7 @@ function Charts({
                                     </OverlayTrigger>
                                 </h4>
                                 <div
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                    }}
+                                    onClick={(e) => e.stopPropagation()}
                                     style={{
                                         float: 'right',
                                         display: 'inline-block',
@@ -202,10 +195,6 @@ function Charts({
                                     }}
                                 >
                                     <div
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            e.stopPropagation();
-                                        }}
                                         data-bs-toggle="dropdown"
                                         className="ms-auto"
                                         style={{ padding: '5px', margin: '-5px' }}
@@ -219,15 +208,13 @@ function Charts({
                                     </div>
 
                                     <div className="dropdown-menu">
-                                        <Dropdown.Item
-                                            href={`/charts/${chart.id}`}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                navigate(`/charts/${chart.id}`);
-                                            }}
+                                        <Link
+                                            to={`/charts/${chart.id}`}
+                                            style={{ textDecoration: 'none' }}
+                                            onClick={() => navigate(`/charts/${chart.id}`)}
                                         >
-                                            View
-                                        </Dropdown.Item>
+                                            <Dropdown.Item>View</Dropdown.Item>
+                                        </Link>
                                         <EditChartItem
                                             chart={chart}
                                             charts={charts}
@@ -254,7 +241,7 @@ function Charts({
                             </Card.Text>
                         </Card.Body>
                     </Card>
-                </a>
+                </Link>
             ))}
         </div>
     );

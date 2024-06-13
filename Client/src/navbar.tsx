@@ -1,8 +1,8 @@
+import { ToastContainer, Toast, Modal, Button } from 'react-bootstrap';
 import { problemDetailsSchema } from './schemas';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from 'axios';
-import { ToastContainer, Toast, Modal, Button } from 'react-bootstrap';
 
 export default function NavBar() {
     const [authenticated] = useState(Boolean(localStorage.getItem('authenticated')));
@@ -80,17 +80,10 @@ export default function NavBar() {
                 style={{ textAlign: 'center', fontSize: 'x-large', backgroundColor: '#9CC3FF' }}
             >
                 <div className="container-fluid">
-                    <a
-                        className="navbar-brand"
-                        href="/"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            navigate('/');
-                        }}
-                    >
+                    <Link className="navbar-brand" to={'/'}>
                         <img src="/icon.svg" width="50" height="50" alt="icon" className="me-2" />
                         <span className="d-block d-sm-inline-block">Day Tracker</span>
-                    </a>
+                    </Link>
                     <button
                         className="navbar-toggler"
                         type="button"
@@ -107,57 +100,51 @@ export default function NavBar() {
                     >
                         <ul className="navbar-nav d-flex justify-content-center align-items-center">
                             <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
-                                <a
-                                    className="nav-item active w-100"
-                                    href="/"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        navigate('/');
-                                    }}
-                                    style={{ color: 'white' }}
-                                >
+                                <Link className="nav-item active w-100" to={'/'} style={{ color: 'white' }}>
                                     Home
-                                </a>
+                                </Link>
                             </li>
                             <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
-                                <a
+                                <Link
                                     className="nav-item active w-100"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        navigate('/about');
-                                    }}
-                                    href="/about"
+                                    to="/about"
                                     style={{ color: 'white' }}
                                 >
                                     About
-                                </a>
+                                </Link>
                             </li>
                             {authenticated && (
                                 <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
-                                    <a
+                                    <Link
                                         className="nav-item active w-100"
-                                        href="/account"
-                                        onClick={(e) => {
-                                            e.preventDefault();
-                                            navigate('/account');
-                                        }}
+                                        to="/account"
                                         style={{ color: 'white' }}
                                     >
                                         Account
-                                    </a>
+                                    </Link>
                                 </li>
                             )}
                             <li
                                 className={`m-1 w-100 ${isNavOpen ? ' mb-2' : ''}`}
                                 style={{ maxWidth: isNavOpen ? '50%' : '75%' }}
                             >
-                                <a
-                                    className="nav-item active w-100"
-                                    onClick={() => (authenticated ? setShowModal(true) : navigate('/Auth'))}
-                                    style={{ color: 'white' }}
-                                >
-                                    {authenticated ? 'Sign Out' : 'Sign In'}
-                                </a>
+                                {authenticated ? (
+                                    <div
+                                        className="nav-item active w-100"
+                                        onClick={() => setShowModal(true)}
+                                        style={{ color: 'white' }}
+                                    >
+                                        Sign Out
+                                    </div>
+                                ) : (
+                                    <Link
+                                        className="nav-item active w-100"
+                                        style={{ color: 'white' }}
+                                        to="/Auth"
+                                    >
+                                        Sign In
+                                    </Link>
+                                )}
                             </li>
                         </ul>
                     </div>
