@@ -17,7 +17,7 @@ public class EntriesController : CustomBase
         public required DateTime Date { get; set; }
     }
 
-    public class EntryIdDTO
+    public class IdDTO
     {
         public required Guid Id { get; set; }
     }
@@ -33,7 +33,7 @@ public class EntriesController : CustomBase
         }
     }
 
-    [ProducesResponseType(typeof(EntryIdDTO), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(IdDTO), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     [HttpPost(Name = "CreateEntry")]
@@ -76,7 +76,7 @@ public class EntriesController : CustomBase
 
         await entryService.CreateEntry(entry);
 
-        return Ok(new EntryIdDTO() { Id = entry.Id });
+        return Ok(new IdDTO() { Id = entry.Id });
     }
 
     public class UpdateEntryBody

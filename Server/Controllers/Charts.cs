@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Server.Database.Models;
 using Server.Database.Services;
+using static Server.Controllers.EntriesController;
 
 namespace Server.Controllers;
 
@@ -32,12 +33,7 @@ public class ChartsController : CustomBase
         }
     }
 
-    public class ChartIdDTO
-    {
-        public required Guid Id { get; set; }
-    }
-
-    [ProducesResponseType(typeof(ChartIdDTO), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(IdDTO), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [HttpPost(Name = "CreateChart")]
     public async Task<IActionResult> CreateChart(
@@ -62,7 +58,7 @@ public class ChartsController : CustomBase
 
         await service.CreateChart(chart);
 
-        return Created("", new ChartIdDTO() { Id = chart.Id });
+        return Created("", new IdDTO() { Id = chart.Id });
     }
 
     [ProducesResponseType(StatusCodes.Status200OK)]
