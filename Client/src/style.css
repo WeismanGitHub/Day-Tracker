@@ -6,33 +6,6 @@
     filter: brightness(1.3);
 }
 
-.navbar {
-    background-color: #9cc3ff;
-    text-decoration: none !important;
-}
-
-.navbar-brand {
-    font-weight: bold;
-}
-
-.nav-item {
-    background-color: #0d6efd;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-    border-radius: 0.25rem;
-    transition:
-        background-color 0.3s,
-        color 0.3s;
-    text-decoration: none;
-    display: inline-block;
-    text-align: center;
-    margin-right: 7px;
-}
-
-.nav-item:hover {
-    background-color: #0b5ed7;
-}
-
 body {
     overflow-x: hidden;
 }
@@ -58,14 +31,6 @@ body {
     border-radius: 50px;
     width: 7px;
     background-color: #9cc3ff;
-}
-
-.navbar-toggler {
-    color: #0d6efd;
-}
-
-.full-height-minus-navbar {
-    height: calc(100vh - 68px);
 }
 
 .chart:hover {
@@ -94,4 +59,35 @@ rect {
 
 .dropdown-menu {
     position: absolute !important;
+}
+
+.navbar {
+    text-decoration: none !important;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.navbar-nav {
+    font-size: 1.5em;
+}
+
+.navbar-brand {
+    font-weight: bold;
+}
+
+.navbar-toggler {
+    color: #0d6efd;
+}
+
+.fixed-top {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1030;
+}
+
+.full-height-minus-navbar {
+    margin-top: 80px;
+    height: calc(100vh - 80px);
 }

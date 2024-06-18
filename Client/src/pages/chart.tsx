@@ -127,7 +127,7 @@ export default function Chart() {
             {chart && (
                 <div className="full-height-minus-navbar">
                     <ChartBreadCrumbs chart={chart} setYear={setYear} year={year} years={years} />
-                    <div className="p-0 m-0" style={{ height: 'fit-content', width: '100%' }}>
+                    <div className="p-0 ms-2 me-2" style={{ height: 'fit-content' }}>
                         <SettingsPanel
                             setSettings={setSettings}
                             setSuccess={setSuccess}
@@ -198,7 +198,7 @@ function ChartBreadCrumbs({
     const navigate = useNavigate();
 
     return (
-        <h4 className="ps-4 pe-4 pt-2 w-100" style={{ height: '50px' }}>
+        <h4 className="pt-2 w-100 justify-content-center d-flex" style={{ height: '50px' }}>
             <Dropdown>
                 <Breadcrumb>
                     <Breadcrumb.Item
@@ -291,7 +291,7 @@ function SettingsPanel({
     setSettings: setState<CalendarSettings>;
 }) {
     return (
-        <Card style={{ maxWidth: '500px' }} className="mb-2 mt-3 m-2">
+        <Card style={{ maxWidth: '500px' }} className="mx-auto mb-2 mt-3">
             <Card.Header className="bg-primary text-white">
                 <h2>Calendar Settings</h2>
             </Card.Header>
@@ -456,7 +456,6 @@ function CalendarHeatmap({
             />
             <div
                 style={{
-                    margin: '4px',
                     textAlign: 'center',
                     overflowX: 'auto',
                     overflowY: 'hidden',

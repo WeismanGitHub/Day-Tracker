@@ -6,7 +6,6 @@ import axios from 'axios';
 
 export default function NavBar() {
     const [authenticated] = useState(Boolean(localStorage.getItem('authenticated')));
-    const [isNavOpen, setIsNavOpen] = useState(false);
     const navigate = useNavigate();
 
     const [error, setError] = useState<CustomError | null>(null);
@@ -75,79 +74,54 @@ export default function NavBar() {
                 </Modal.Footer>
             </Modal>
 
-            <nav
-                className="navbar navbar-expand-md py-1 ps-2 pe-2"
-                style={{ textAlign: 'center', fontSize: 'x-large', backgroundColor: '#9CC3FF' }}
-            >
-                <div className="container-fluid">
-                    <Link className="navbar-brand" to={'/'}>
-                        <img src="/icon.svg" width="50" height="50" alt="icon" className="me-2" />
-                        <span className="d-block d-sm-inline-block">Day Tracker</span>
-                    </Link>
-                    <button
-                        className="navbar-toggler"
-                        type="button"
-                        onClick={() => setIsNavOpen(!isNavOpen)}
-                        aria-controls="navbarNav"
-                        aria-expanded={isNavOpen ? 'true' : 'false'}
-                        aria-label="Toggle navigation"
-                    >
-                        <span className="navbar-toggler-icon"></span>
-                    </button>
-                    <div
-                        className={`justify-content-end collapse navbar-collapse${isNavOpen ? ' show' : ''}`}
-                        id="navbarNav"
-                    >
-                        <ul className="navbar-nav d-flex justify-content-center align-items-center">
-                            <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
-                                <Link className="nav-item active w-100" to={'/'} style={{ color: 'white' }}>
-                                    Home
-                                </Link>
-                            </li>
-                            <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
-                                <Link
-                                    className="nav-item active w-100"
-                                    to="/about"
-                                    style={{ color: 'white' }}
+            <nav className="navbar navbar-expand-lg navbar-dark bg-primary fixed-top" id="navbar">
+                <Link className="navbar-brand" to={'/'}>
+                    <span className="d-block d-sm-inline-block fs-3">Day Tracker</span>
+                </Link>
+                <button
+                    className="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarResponsive"
+                    aria-controls="navbarResponsive"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation"
+                >
+                    <span className="navbar-toggler-icon"></span>
+                </button>
+                <div className="collapse navbar-collapse justify-content-end" id="navbarResponsive">
+                    <ul className="navbar-nav">
+                        <li className="nav-item">
+                            <Link className="nav-link" to={'/'}>
+                                Home
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to={'/about'}>
+                                About
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            <Link className="nav-link" to={'/account'}>
+                                Account
+                            </Link>
+                        </li>
+                        <li className="nav-item">
+                            {authenticated ? (
+                                <div
+                                    className="nav-link"
+                                    style={{ cursor: 'pointer' }}
+                                    onClick={() => setShowModal(true)}
                                 >
-                                    About
+                                    Sign Out
+                                </div>
+                            ) : (
+                                <Link className="nav-link" to="/Auth">
+                                    Sign In
                                 </Link>
-                            </li>
-                            {authenticated && (
-                                <li className={`m-1 w-50 ${isNavOpen ? ' mb-2' : ''}`}>
-                                    <Link
-                                        className="nav-item active w-100"
-                                        to="/account"
-                                        style={{ color: 'white' }}
-                                    >
-                                        Account
-                                    </Link>
-                                </li>
                             )}
-                            <li
-                                className={`m-1 w-100 ${isNavOpen ? ' mb-2' : ''}`}
-                                style={{ maxWidth: isNavOpen ? '50%' : '75%' }}
-                            >
-                                {authenticated ? (
-                                    <div
-                                        className="nav-item active w-100"
-                                        onClick={() => setShowModal(true)}
-                                        style={{ color: 'white' }}
-                                    >
-                                        Sign Out
-                                    </div>
-                                ) : (
-                                    <Link
-                                        className="nav-item active w-100"
-                                        style={{ color: 'white' }}
-                                        to="/Auth"
-                                    >
-                                        Sign In
-                                    </Link>
-                                )}
-                            </li>
-                        </ul>
-                    </div>
+                        </li>
+                    </ul>
                 </div>
             </nav>
         </>
