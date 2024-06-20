@@ -101,11 +101,13 @@ export default function NavBar() {
                                 About
                             </Link>
                         </li>
-                        <li className="nav-item">
-                            <Link className="nav-link" to={'/account'}>
-                                Account
-                            </Link>
-                        </li>
+                        {authenticated && (
+                            <li className="nav-item">
+                                <Link className="nav-link" to={'/account'}>
+                                    Account
+                                </Link>
+                            </li>
+                        )}
                         <li className="nav-item">
                             {authenticated ? (
                                 <div
