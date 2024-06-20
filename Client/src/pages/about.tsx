@@ -38,20 +38,18 @@ export default function About() {
                                         <h3>What is It?</h3>
                                         <p>
                                             Day Tracker is a visualization tool inspired by the GitHub
-                                            contributions calendar. This website allows you to input your own
-                                            data into personalized calendar heatmaps, providing an intuitive
-                                            way to visualize and analyze patterns over time. Whether you're
-                                            tracking habits, recording daily metrics, or monitoring project
-                                            progress, Day Tracker transforms your data into an easy-to-read
-                                            format.
+                                            contributions calendar, allowing you to input your own data into
+                                            custom calendar heatmaps. This app provides an intuitive way to
+                                            visualize and analyze patterns over time, making it easy to track
+                                            metrics such as daily exercise minutes, study hours, mood levels,
+                                            or whether you completed a task.
                                         </p>
                                         <h3>How Does It Work?</h3>
                                         <ul>
                                             <li>
                                                 <strong>Input Data</strong>: You can input numerical data for
                                                 each day of the year. This data can represent anything you
-                                                want to track - exercise minutes, study hours, sales numbers,
-                                                or even mood levels.
+                                                want to track, such as study hours, sales numbers and more.
                                             </li>
                                             <li>
                                                 <strong>Visualize Patterns</strong>: The calendar heatmap
@@ -73,8 +71,8 @@ export default function About() {
                                                 GitHub repository
                                             </Link>{' '}
                                             for the source code, or check out the{' '}
-                                            <Link to="/swagger/index.html">Swagger documentation</Link> for
-                                            API information.
+                                            <Link to="/swagger/index.html">Swagger documentation</Link> to see
+                                            how the API works.
                                         </p>
                                     </Card.Text>
                                 </Card.Body>
