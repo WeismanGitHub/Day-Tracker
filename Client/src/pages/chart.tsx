@@ -198,7 +198,7 @@ function ChartBreadCrumbs({
     const navigate = useNavigate();
 
     return (
-        <h4 className="pt-2 w-100 justify-content-center d-flex" style={{ height: '50px' }}>
+        <h4 className="pt-2 w-100 justify-content-center d-flex p-3 p-md-0 align-content-center">
             <Dropdown>
                 <Breadcrumb>
                     <Breadcrumb.Item
