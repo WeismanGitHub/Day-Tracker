@@ -38,11 +38,10 @@ export default function About() {
                                         <h3>What is It?</h3>
                                         <p>
                                             Day Tracker is a visualization tool inspired by the GitHub
-                                            contributions calendar. This app provides an intuitive way to
-                                            input your own data into custom calendar heatmaps. You can
-                                            visualize and analyze patterns over time, making it easy to track
-                                            metrics such as daily exercise minutes, study hours, mood levels,
-                                            and more.
+                                            contributions calendar. Input custom data into calendar heatmaps
+                                            to visualize and analyze patterns over time. Easily track metrics
+                                            such as daily exercise minutes, study hours, mood levels, and
+                                            more.
                                         </p>
                                         <h3>How Does It Work?</h3>
                                         <ul>
