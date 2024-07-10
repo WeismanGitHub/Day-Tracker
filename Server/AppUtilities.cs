@@ -89,7 +89,6 @@ public static class AppUtilities
                     builder.AddStyleSrc().Self();
                     builder.AddScriptSrc().Self();
                     builder.AddBaseUri().Self();
-                    builder.AddFrameAncestors().None();
                     builder.AddCustomDirective("require-trusted-types-for", "'script'");
                 })
                 .AddStrictTransportSecurityMaxAgeIncludeSubDomains(
