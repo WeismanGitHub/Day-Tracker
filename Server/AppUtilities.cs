@@ -72,7 +72,6 @@ public static class AppUtilities
         app.UseHsts();
         app.UseSecurityHeaders(
             new HeaderPolicyCollection()
-                .AddFrameOptionsDeny()
                 .AddContentTypeOptionsNoSniff()
                 .AddReferrerPolicyStrictOriginWhenCrossOrigin()
                 .AddCrossOriginOpenerPolicy(builder => builder.SameOrigin())
@@ -137,6 +136,21 @@ public static class AppUtilities
                 )
                 {
                     throw new UnauthorizedException();
+                }
+
+                await next();
+            }
+        );
+        app.Use(
+            async (context, next) =>
+            {
+                if (context.Request.Path == "/example")
+                {
+                    context.Response.Headers.Remove("X-Frame-Options");
+                }
+                else
+                {
+                    context.Response.Headers.XFrameOptions = "DENY";
                 }
 
                 await next();
