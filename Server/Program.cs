@@ -6,3 +6,5 @@ var app = builder.Build();
 AppUtilities.ConfigureMiddleware(app);
 
 app.Run();
+
+public partial class Program { }
