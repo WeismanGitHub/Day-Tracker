@@ -24,5 +24,23 @@ namespace Tests
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
+
+        [Theory]
+        [InlineData("")]
+        [InlineData(null)]
+        [InlineData("invalidpassword1")] // Missing uppercase character
+        [InlineData("INVALIDPASSWORD1")] // Missing lowercase character
+        [InlineData("InvalidPassword")] // Missing number character
+        public async Task SignUp_WithInvalidPassword_ThrowsValidationException(string password)
+        {
+            var client = _factory.CreateClient();
+
+            var response = await client.PostAsJsonAsync(
+                "/API/Users/SignUp",
+                new { name = Constants.ValidUsername, Password = password }
+            );
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
     }
 }
