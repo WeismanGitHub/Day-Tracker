@@ -1,14 +1,14 @@
 ﻿using System.Net;
 using System.Net.Http.Json;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace Tests
 {
-    public class UsersTests(WebApplicationFactory<Program> factory)
-        : IClassFixture<WebApplicationFactory<Program>>
+    public class UsersTests(CustomWebApplicationFactory<Program> factory)
+        : IClassFixture<CustomWebApplicationFactory<Program>>
     {
-        private readonly WebApplicationFactory<Program> _factory = factory;
+        private readonly CustomWebApplicationFactory<Program> _factory = factory;
+        private const string Endpoint = "/API/Users/SignUp";
 
         [Theory]
         [InlineData("")]
@@ -18,7 +18,7 @@ namespace Tests
             var client = _factory.CreateClient();
 
             var response = await client.PostAsJsonAsync(
-                "/API/Users/SignUp",
+                Endpoint,
                 new { name, Password = Constants.ValidPassword }
             );
 
@@ -36,11 +36,24 @@ namespace Tests
             var client = _factory.CreateClient();
 
             var response = await client.PostAsJsonAsync(
-                "/API/Users/SignUp",
+                Endpoint,
                 new { name = Constants.ValidUsername, Password = password }
             );
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task SignUp_WithValidCredentials_Returns201()
+        {
+            var client = _factory.CreateClient();
+
+            var response = await client.PostAsJsonAsync(
+                Endpoint,
+                new { name = Constants.ValidUsername, Password = Constants.ValidPassword }
+            );
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
     }
 }
