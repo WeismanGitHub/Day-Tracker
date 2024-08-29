@@ -86,10 +86,16 @@ export default function Chart() {
                 }
 
                 setChart(chartRes.data);
+                document.title = chartRes.data.name;
             },
             setError,
             navigate
         );
+
+        return () => {
+            document.title = 'Day Tracker';
+        };
+
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
