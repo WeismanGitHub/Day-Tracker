@@ -45,6 +45,7 @@ type Day = {
 type CalendarSettings = {
     outlineMonths: boolean;
     direction: 'vertical' | 'horizontal';
+    reverseColors: boolean;
 };
 
 function getYear(paramsYear: string | null): number {
@@ -55,8 +56,8 @@ function getYear(paramsYear: string | null): number {
 }
 
 export default function Chart() {
-    const [entries, setEntries] = useState<Entry[]>([]);
     const [chart, setChart] = useState<Chart | null>(null);
+    const [entries, setEntries] = useState<Entry[]>([]);
     const { chartId } = useParams();
     const navigate = useNavigate();
 
@@ -74,7 +75,19 @@ export default function Chart() {
     const [settings, setSettings] = useState<CalendarSettings>({
         outlineMonths: Boolean(localStorage.getItem('outlineMonths')),
         direction: localStorage.getItem('direction') ? 'vertical' : 'horizontal',
+        reverseColors: Boolean(localStorage.getItem('reverseColors')),
     });
+
+    const [colorsState, setColors] = useState(colors);
+    const colorsCopy = colors.toString();
+
+    useEffect(() => {
+        if (settings.reverseColors && colorsState.toString() == colorsCopy) {
+            setColors(Array.from(colors).reverse());
+        } else {
+            setColors(colors);
+        }
+    }, [settings]);
 
     useEffect(() => {
         handleErrors(
@@ -140,6 +153,7 @@ export default function Chart() {
                             settings={settings}
                         />
                         <CalendarHeatmap
+                            colors={colorsState}
                             entries={entries}
                             settings={settings}
                             year={year}
@@ -148,7 +162,7 @@ export default function Chart() {
                             setError={setError}
                             setSuccess={setSuccess}
                         />
-                        <ColorScale />
+                        <ColorScale colors={colorsState} />
                     </div>
                 </div>
             )}
@@ -257,7 +271,7 @@ function ChartBreadCrumbs({
     );
 }
 
-function ColorScale() {
+function ColorScale({ colors }: { colors: string[] }) {
     const squareSize = window.innerWidth < 405 ? 21 : 30;
 
     return (
@@ -306,26 +320,48 @@ function SettingsPanel({
                     <Col>
                         <Card.Text>
                             <div className="d-flex justify-content-center align-content-center flex-wrap">
-                                <Form>
-                                    <Form.Check
-                                        checked={settings.outlineMonths}
-                                        onClick={() => {
-                                            if (!settings.outlineMonths) {
-                                                localStorage.setItem('outlineMonths', 'true');
-                                            } else {
-                                                localStorage.removeItem('outlineMonths');
-                                            }
+                                <Form style={{ width: 'fit-content' }}>
+                                    <div className="flex-column justify-content-center m-auto">
+                                        <Form.Check
+                                            checked={settings.outlineMonths}
+                                            onClick={() => {
+                                                if (!settings.outlineMonths) {
+                                                    localStorage.setItem('outlineMonths', 'true');
+                                                } else {
+                                                    localStorage.removeItem('outlineMonths');
+                                                }
 
-                                            setSettings({
-                                                outlineMonths: !settings.outlineMonths,
-                                                direction: settings.direction,
-                                            });
-                                        }}
-                                        reverse={true}
-                                        inline={true}
-                                        type="switch"
-                                        label="Show Month Borders"
-                                    />
+                                                setSettings({
+                                                    outlineMonths: !settings.outlineMonths,
+                                                    direction: settings.direction,
+                                                });
+                                            }}
+                                            reverse={true}
+                                            inline={true}
+                                            type="switch"
+                                            label="Show Month Borders"
+                                        />
+                                        <Form.Check
+                                            checked={settings.reverseColors}
+                                            onClick={() => {
+                                                if (!settings.reverseColors) {
+                                                    localStorage.setItem('reverseColors', 'true');
+                                                } else {
+                                                    localStorage.removeItem('reverseColors');
+                                                }
+
+                                                setSettings({
+                                                    outlineMonths: settings.outlineMonths,
+                                                    direction: settings.direction,
+                                                    reverseColors: !settings.reverseColors,
+                                                });
+                                            }}
+                                            reverse={true}
+                                            inline={true}
+                                            type="switch"
+                                            label="Reverse Colors"
+                                        />
+                                    </div>
                                 </Form>
                                 <div className="w-100"></div>
                                 <ButtonGroup className="mt-2">
@@ -400,6 +436,7 @@ function CalendarHeatmap({
     setError,
     setEntries,
     setSuccess,
+    colors,
     chart,
 }: {
     settings: CalendarSettings;
@@ -409,6 +446,7 @@ function CalendarHeatmap({
     setEntries: setState<Entry[]>;
     setSuccess: setState<string>;
     chart: Chart;
+    colors: string[];
 }) {
     const [day, setDay] = useState<Day | null>(null);
 
