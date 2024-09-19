@@ -319,47 +319,47 @@ function SettingsPanel({
                         <Card.Text>
                             <div className="d-flex justify-content-center align-content-center flex-wrap">
                                 <Form style={{ width: 'fit-content' }}>
-                                    <div className="flex-column justify-content-center m-auto">
-                                        <Form.Check
-                                            checked={settings.outlineMonths}
-                                            onClick={() => {
-                                                if (!settings.outlineMonths) {
-                                                    localStorage.setItem('outlineMonths', 'true');
-                                                } else {
-                                                    localStorage.removeItem('outlineMonths');
-                                                }
+                                    <Form.Check
+                                        checked={settings.outlineMonths}
+                                        onClick={() => {
+                                            if (!settings.outlineMonths) {
+                                                localStorage.setItem('outlineMonths', 'true');
+                                            } else {
+                                                localStorage.removeItem('outlineMonths');
+                                            }
 
-                                                setSettings({
-                                                    outlineMonths: !settings.outlineMonths,
-                                                    direction: settings.direction,
-                                                });
-                                            }}
-                                            reverse={true}
-                                            inline={true}
-                                            type="switch"
-                                            label="Show Month Borders"
-                                        />
-                                        <Form.Check
-                                            checked={settings.reverseColors}
-                                            onClick={() => {
-                                                if (!settings.reverseColors) {
-                                                    localStorage.setItem('reverseColors', 'true');
-                                                } else {
-                                                    localStorage.removeItem('reverseColors');
-                                                }
+                                            setSettings({
+                                                outlineMonths: !settings.outlineMonths,
+                                                direction: settings.direction,
+                                            });
+                                        }}
+                                        reverse={true}
+                                        inline={true}
+                                        type="switch"
+                                        label="Show Month Borders"
+                                    />
+                                </Form>
+                                <Form>
+                                    <Form.Check
+                                        checked={settings.reverseColors}
+                                        onClick={() => {
+                                            if (!settings.reverseColors) {
+                                                localStorage.setItem('reverseColors', 'true');
+                                            } else {
+                                                localStorage.removeItem('reverseColors');
+                                            }
 
-                                                setSettings({
-                                                    outlineMonths: settings.outlineMonths,
-                                                    direction: settings.direction,
-                                                    reverseColors: !settings.reverseColors,
-                                                });
-                                            }}
-                                            reverse={true}
-                                            inline={true}
-                                            type="switch"
-                                            label="Reverse Colors"
-                                        />
-                                    </div>
+                                            setSettings({
+                                                outlineMonths: settings.outlineMonths,
+                                                direction: settings.direction,
+                                                reverseColors: !settings.reverseColors,
+                                            });
+                                        }}
+                                        reverse={true}
+                                        inline={true}
+                                        type="switch"
+                                        label="Reverse Colors"
+                                    />
                                 </Form>
                                 <div className="w-100"></div>
                                 <ButtonGroup className="mt-2">
