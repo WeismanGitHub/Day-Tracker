@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { ChartType, handleErrors, colors } from '../helpers';
 import { ResponsiveCalendar } from '@nivo/calendar';
@@ -108,8 +109,6 @@ export default function Chart() {
         return () => {
             document.title = 'Day Tracker';
         };
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     useEffect(() => {
@@ -121,7 +120,6 @@ export default function Chart() {
             setError,
             navigate
         );
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [year]);
 
     const years = (() => {
