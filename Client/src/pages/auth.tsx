@@ -141,11 +141,11 @@ function Signup({
                 {({ handleSubmit, handleChange, values, errors, setFieldValue, setValues }) => {
                     function generateString(limit: number): string {
                         const characters = 'abcdefghijklmnopqrstuvwxyz';
-                        const chaactersLength = characters.length;
+                        const chactersLength = characters.length;
                         let result = '';
 
                         for (let i = 0; i < limit; i++) {
-                            result += characters.charAt(Math.floor(Math.random() * chaactersLength));
+                            result += characters.charAt(Math.floor(Math.random() * chactersLength));
                         }
 
                         return result;
