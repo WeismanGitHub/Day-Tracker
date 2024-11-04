@@ -672,6 +672,8 @@ function CreateEntry({
 
                         setSuccess('Created Entry');
                         setDay(null);
+                        setValue('1')
+                        setNotes('')
                         setEntries([...entries, { id: res.data.id, notes, value, day: day?.day }]);
                     },
                     setError,
